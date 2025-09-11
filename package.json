@@ -1,0 +1,18 @@
+{
+  "name": "marysblog",
+  "version": "1.0.0",
+  "description": "Mary's Author Website",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx serve . -l 3000",
+    "build": "echo 'No build step needed for static site'",
+    "preview": "npx serve . -l 3000"
+  },
+  "keywords": ["author", "website", "books", "static"],
+  "author": "Mary",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.2.1"
+  }
+}
