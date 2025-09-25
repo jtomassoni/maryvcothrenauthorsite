@@ -1,7 +1,3 @@
-const { Resend } = require('resend')
-
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ ok: false, error: 'Method not allowed' })
@@ -24,6 +20,12 @@ export default async function handler(req, res) {
     const resendApiKey = process.env.RESEND_API_KEY
     const recipientEmail = process.env.GMAIL_TO
 
+    console.log('Environment check:', {
+      hasResendKey: !!resendApiKey,
+      hasRecipientEmail: !!recipientEmail,
+      recipientEmail: recipientEmail
+    })
+
     if (!resendApiKey || !recipientEmail) {
       console.warn('Missing email configuration')
       return res.status(500).json({ 
@@ -32,8 +34,11 @@ export default async function handler(req, res) {
       })
     }
 
-    // Send email using Resend
+    // Try to import Resend dynamically to avoid module issues
     try {
+      const { Resend } = await import('resend')
+      const resend = new Resend(resendApiKey)
+
       const emailData = await resend.emails.send({
         from: 'Mary\'s Website <noreply@maryvcothren.com>',
         to: [recipientEmail],
@@ -61,7 +66,7 @@ export default async function handler(req, res) {
       console.error('Email sending error:', emailError)
       return res.status(500).json({ 
         ok: false, 
-        error: 'Failed to send email. Please try again later.' 
+        error: 'Failed to send email: ' + emailError.message 
       })
     }
 
