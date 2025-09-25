@@ -9,6 +9,20 @@
     </div>
     
     <Container class="relative z-10">
+      <!-- Mobile Image (shown first on mobile) -->
+      <div class="lg:hidden relative flex justify-center mb-8">
+        <div class="relative">
+          <!-- Mobile Image Container -->
+          <div class="relative w-48 h-48 rounded-2xl overflow-hidden shadow-xl shadow-blue-900/20">
+            <img
+              :src="imageSrc"
+              :alt="imageAlt"
+              class="w-full h-full object-cover"
+            />
+          </div>
+        </div>
+      </div>
+
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
         <!-- Hero Content -->
         <div class="lg:col-span-1 space-y-4 flex flex-col justify-center">
@@ -43,11 +57,11 @@
           </div>
         </div>
 
-        <!-- Hero Image -->
-        <div class="lg:col-span-1 relative flex justify-center">
+        <!-- Desktop Hero Image (hidden on mobile) -->
+        <div class="hidden lg:block lg:col-span-1 relative flex justify-center">
           <div class="relative">
-            <!-- Image Container -->
-            <div class="relative w-96 h-96 lg:w-[32rem] lg:h-[32rem] rounded-3xl overflow-hidden shadow-2xl shadow-blue-900/20 dark:shadow-blue-500/20 dark:ring-2 dark:ring-blue-500/30">
+            <!-- Desktop Image Container -->
+            <div class="relative w-[32rem] h-[32rem] rounded-3xl overflow-hidden shadow-2xl shadow-blue-900/20 dark:shadow-blue-500/20 dark:ring-2 dark:ring-blue-500/30">
               <img
                 :src="imageSrc"
                 :alt="imageAlt"
