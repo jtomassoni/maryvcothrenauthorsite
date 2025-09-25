@@ -1,5 +1,3 @@
-const { Resend } = require('resend')
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ ok: false, error: 'Method not allowed' })
@@ -18,39 +16,48 @@ export default async function handler(req, res) {
       })
     }
 
-    // Hardcoded environment variables for now
-    const resendApiKey = process.env.RESEND_API_KEY || 're_1234567890abcdef' // Replace with your actual key
+    // Hardcoded values for now
+    const resendApiKey = process.env.RESEND_API_KEY || 're_1234567890abcdef'
     const recipientEmail = process.env.GMAIL_TO || 'maryvcothren@gmail.com'
 
-    // Initialize Resend
-    const resend = new Resend(resendApiKey)
-
-    // Send email using Resend
-    console.log('Attempting to send email with Resend...')
+    console.log('Attempting to send email with Resend API...')
     console.log('API Key (first 10 chars):', resendApiKey.substring(0, 10))
     console.log('Recipient:', recipientEmail)
     
-    const emailData = await resend.emails.send({
-      from: 'Mary\'s Website <noreply@maryvcothren.com>',
-      to: [recipientEmail],
-      subject: `New mailing list signup from ${name.trim()}`,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #1e293b;">New Mailing List Signup</h2>
-          <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <p><strong>Name:</strong> ${name.trim()}</p>
-            <p><strong>Email:</strong> ${email.trim()}</p>
-            <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
+    // Use direct fetch to Resend API
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${resendApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: 'Mary\'s Website <noreply@maryvcothren.com>',
+        to: [recipientEmail],
+        subject: `New mailing list signup from ${name.trim()}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #1e293b;">New Mailing List Signup</h2>
+            <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+              <p><strong>Name:</strong> ${name.trim()}</p>
+              <p><strong>Email:</strong> ${email.trim()}</p>
+              <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
+            </div>
           </div>
-        </div>
-      `
+        `
+      })
     })
 
-    console.log('Email sent successfully:', emailData)
+    console.log('Resend API response status:', response.status)
     
-    if (!emailData || !emailData.id) {
-      throw new Error('Resend did not return a valid response')
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error('Resend API error:', errorText)
+      throw new Error(`Resend API error: ${response.status} - ${errorText}`)
     }
+
+    const emailData = await response.json()
+    console.log('Email sent successfully:', emailData)
     
     return res.status(200).json({ 
       ok: true, 
@@ -61,7 +68,7 @@ export default async function handler(req, res) {
     console.error('Contact API error:', error)
     return res.status(500).json({ 
       ok: false, 
-      error: 'Failed to send email. Please try again later.' 
+      error: 'Failed to send email: ' + error.message 
     })
   }
 }
