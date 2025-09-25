@@ -14,12 +14,12 @@
         <div class="lg:col-span-1 space-y-4 flex flex-col justify-center">
           <div class="space-y-3">
             <h1 class="text-4xl lg:text-6xl font-serif font-bold leading-tight">
-              <span class="bg-gradient-to-r from-primary-800 via-primary-700 to-primary-900 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
+              <span class="gradient-text dark:bg-gradient-to-r dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 dark:bg-clip-text dark:text-transparent">
                 {{ title }}
               </span>
             </h1>
             
-            <h2 v-if="subheading" class="text-xl lg:text-2xl font-serif font-medium text-primary-800 dark:text-blue-300 italic">
+            <h2 v-if="subheading" class="text-3xl lg:text-4xl font-serif font-medium gradient-text dark:text-blue-300 italic">
               {{ subheading }}
             </h2>
             

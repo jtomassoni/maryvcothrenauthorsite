@@ -5,7 +5,7 @@
         <!-- Logo -->
         <router-link
           to="/"
-          class="text-2xl font-serif font-bold bg-gradient-to-r from-primary-800 via-primary-700 to-primary-900 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent focus-ring rounded transition-all duration-300 hover:shadow-lg hover:shadow-primary-500/20 dark:hover:shadow-blue-400/30"
+s          class="text-2xl font-serif font-bold gradient-text dark:bg-gradient-to-r dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 dark:bg-clip-text dark:text-transparent focus-ring rounded transition-all duration-300 hover:shadow-lg hover:shadow-primary-500/20 dark:hover:shadow-blue-400/30"
           @click="scrollToTop"
         >
           Mary V. Cothren
