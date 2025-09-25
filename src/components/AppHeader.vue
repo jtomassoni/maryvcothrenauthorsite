@@ -45,7 +45,7 @@ s          class="text-2xl font-serif font-bold gradient-text dark:bg-gradient-t
 
         <!-- Mobile Menu Button -->
         <button
-          class="md:hidden p-2 focus-ring rounded transition-all duration-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:shadow-md hover:shadow-gray-500/20 dark:hover:shadow-gray-400/30"
+          class="md:hidden p-2 focus-ring rounded transition-all duration-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:shadow-md hover:shadow-gray-500/20 dark:hover:shadow-gray-400/30 text-gray-600 dark:text-gray-300"
           @click="toggleMobileMenu"
           :aria-expanded="isMobileMenuOpen"
           aria-controls="mobile-menu"
