@@ -7,6 +7,10 @@
       "config": {
         "distDir": "dist"
       }
+    },
+    {
+      "src": "api/contact.ts",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
