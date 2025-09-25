@@ -30,6 +30,10 @@ A simple, clean author website built with HTML, Tailwind CSS, and vanilla JavaSc
 - Vanilla JavaScript
 - Google Fonts
 
+## Documentation
+
+- [Flaky Test Documentation](./docs/flaky-tests.md) - Comprehensive guide for handling flaky tests in our test suite
+
 ## License
 
 © 2024 Mary's Books. All rights reserved.
