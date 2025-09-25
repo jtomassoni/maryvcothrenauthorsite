@@ -1,13 +1,13 @@
 const nodemailer = require('nodemailer')
 
 // Simple in-memory rate limiting
-const rateLimitMap = new Map<string, { count: number; resetTime: number }>()
+const rateLimitMap = new Map()
 
 // Rate limiting: 5 requests per 15 minutes per IP
 const RATE_LIMIT_WINDOW = 15 * 60 * 1000 // 15 minutes
 const RATE_LIMIT_MAX_REQUESTS = 5
 
-function checkRateLimit(ip: string): boolean {
+function checkRateLimit(ip) {
   const now = Date.now()
   const userLimit = rateLimitMap.get(ip)
 
@@ -30,8 +30,8 @@ function checkRateLimit(ip: string): boolean {
   return true
 }
 
-function validateInput(data: any): { isValid: boolean; errors: string[] } {
-  const errors: string[] = []
+function validateInput(data) {
+  const errors = []
 
   // Validate name
   if (!data.name || typeof data.name !== 'string' || data.name.trim().length < 2) {
@@ -59,7 +59,7 @@ function validateInput(data: any): { isValid: boolean; errors: string[] } {
   }
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req, res) {
   // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ ok: false, error: 'Method not allowed' })
@@ -67,8 +67,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     // Get client IP for rate limiting
-    const clientIP = req.headers['x-forwarded-for'] as string || 
-                     req.headers['x-real-ip'] as string || 
+    const clientIP = req.headers['x-forwarded-for'] || 
+                     req.headers['x-real-ip'] || 
                      req.connection?.remoteAddress || 
                      'unknown'
 
