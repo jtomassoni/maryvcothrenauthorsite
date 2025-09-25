@@ -20,6 +20,7 @@
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 80px; /* Account for sticky header */
 }
 
 /* Screen reader only content */

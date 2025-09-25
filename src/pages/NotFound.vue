@@ -56,7 +56,7 @@
             </router-link>
 
             <router-link
-              to="/contact"
+              to="/#contact"
               class="group bg-white border border-gray-200 rounded-lg p-4 hover:border-primary-300 hover:shadow-md transition-all focus-ring"
             >
               <div class="w-8 h-8 bg-accent-100 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-accent-200 transition-colors">

@@ -1,10 +1,10 @@
 <template>
-  <div class="bg-white rounded-lg shadow-lg p-8">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-900/50 p-8 border dark:border-gray-700">
     <div class="text-center mb-8">
-      <h2 class="text-2xl lg:text-3xl font-serif font-bold gradient-text mb-4">
+      <h2 class="text-2xl lg:text-3xl font-serif font-bold gradient-text dark:bg-gradient-to-r dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 dark:bg-clip-text dark:text-transparent mb-4">
         {{ title }}
       </h2>
-      <p class="text-gray-600 max-w-2xl mx-auto">
+      <p class="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
         {{ description }}
       </p>
     </div>
@@ -12,7 +12,7 @@
     <form @submit.prevent="handleSubmit" class="space-y-6">
       <!-- Name Field -->
       <div>
-        <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+        <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Name <span class="text-red-500">*</span>
         </label>
         <input
@@ -20,7 +20,7 @@
           v-model="form.name"
           type="text"
           required
-          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-accent-300 focus-ring"
+          class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 dark:focus:ring-blue-400 focus:border-accent-300 dark:focus:border-blue-400 focus-ring bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
           placeholder="Your name"
           :aria-describedby="errors.name ? 'name-error' : undefined"
           :aria-invalid="!!errors.name"
@@ -32,7 +32,7 @@
 
       <!-- Email Field -->
       <div>
-        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Email <span class="text-red-500">*</span>
         </label>
         <input
@@ -40,7 +40,7 @@
           v-model="form.email"
           type="email"
           required
-          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-accent-300 focus-ring"
+          class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 dark:focus:ring-blue-400 focus:border-accent-300 dark:focus:border-blue-400 focus-ring bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
           placeholder="your@email.com"
           :aria-describedby="errors.email ? 'email-error' : undefined"
           :aria-invalid="!!errors.email"
@@ -78,7 +78,7 @@
       <button
         type="submit"
         :disabled="isSubmitting"
-        class="w-full bg-primary-800 text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors focus-ring disabled:opacity-50 disabled:cursor-not-allowed"
+        class="w-full bg-gradient-to-r from-primary-800 to-primary-700 dark:from-blue-600 dark:to-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:from-primary-700 hover:to-primary-600 dark:hover:from-blue-500 dark:hover:to-purple-500 transition-all duration-300 focus-ring disabled:opacity-50 disabled:cursor-not-allowed shadow-lg dark:shadow-blue-500/30"
       >
         <span v-if="!isSubmitting">
           {{ submitText }}

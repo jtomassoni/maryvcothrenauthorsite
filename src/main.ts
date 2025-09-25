@@ -22,6 +22,19 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    } else if (to.hash) {
+      return {
+        el: to.hash,
+        behavior: 'smooth',
+        top: 80 // Account for sticky header
+      }
+    } else {
+      return { top: 0 }
+    }
+  }
 })
 
 const app = createApp(App)
