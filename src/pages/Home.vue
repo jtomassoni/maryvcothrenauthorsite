@@ -6,7 +6,7 @@
       subtitle="Mary V. Cothren is a nurse by night (yes, third shift) and writer by the light of day, or lamp. Mary is an experienced critical care and emergency nurse with over a decade in healthcare who has written many professional and academic papers, primarily for hospital quality improvement projects."
       cta-text="Read more →"
       cta-href="/about"
-      image-src="/src/assets/placeholder-mary.svg"
+      image-src="/src/assets/home-page-mary-pic.png"
       image-alt="Mary V. Cothren, nurse and writer"
       image-overlay-text="About Mary"
     />
