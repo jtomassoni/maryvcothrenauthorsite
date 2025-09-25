@@ -6,7 +6,7 @@
       subtitle="Award-winning author whose novels explore the intersection of family, memory, and place. Her work has been praised for its lyrical prose and deep emotional resonance."
       cta-text="Read more →"
       cta-href="/about"
-      image-src="/src/assets/placeholder-mary.jpg"
+      image-src="/src/assets/placeholder-mary.svg"
       image-alt="Mary, author and storyteller"
       image-overlay-text="About Mary"
     />

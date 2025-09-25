@@ -46,14 +46,14 @@
             <div class="grid grid-cols-2 gap-4">
               <div class="aspect-square bg-gray-200 rounded-lg overflow-hidden">
                 <img
-                  src="/src/assets/placeholder-mary.jpg"
+                  src="/src/assets/placeholder-mary.svg"
                   alt="Mary at her writing desk"
                   class="w-full h-full object-cover"
                 />
               </div>
               <div class="aspect-square bg-gray-200 rounded-lg overflow-hidden">
                 <img
-                  src="/src/assets/placeholder-mary.jpg"
+                  src="/src/assets/placeholder-mary.svg"
                   alt="Mary with her dog Luna"
                   class="w-full h-full object-cover"
                 />
@@ -61,7 +61,7 @@
             </div>
             <div class="aspect-[4/3] bg-gray-200 rounded-lg overflow-hidden">
               <img
-                src="/src/assets/placeholder-mary.jpg"
+                src="/src/assets/placeholder-mary.svg"
                 alt="Mary at a book signing event"
                 class="w-full h-full object-cover"
               />

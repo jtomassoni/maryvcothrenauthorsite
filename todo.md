@@ -44,10 +44,11 @@
 - [x] Add rate limiting
 - [x] Add error handling
 
-### Step 7: Assets & Content
-- [ ] Create src/assets/placeholder-mary.jpg
-- [ ] Add placeholder content to all pages
-- [ ] Create public/favicon.ico
+### ✅ Step 7: Assets & Content (COMPLETED)
+- [x] Create src/assets/placeholder-mary.svg
+- [x] Add placeholder content to all pages
+- [x] Create public/favicon.svg
+- [x] Create new index.html for Vite
 
 ### Step 8: Environment & Deployment
 - [ ] Create .env.example
@@ -66,7 +67,7 @@
 - [ ] Update README.md
 - [ ] Final commit and deploy
 
-## Current Status: Step 7 - Assets & Content (In Progress)
+## Current Status: Step 8 - Environment & Deployment (In Progress)
 
 ## Notes:
 - Each step should be small and focused
