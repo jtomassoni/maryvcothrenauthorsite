@@ -2,12 +2,12 @@
   <div>
     <!-- Hero Section -->
     <Hero
-      title="Mary — Writer & Storyteller"
-      subtitle="Award-winning author whose novels explore the intersection of family, memory, and place. Her work has been praised for its lyrical prose and deep emotional resonance."
+      title="Mary V. Cothren — Nurse & Writer"
+      subtitle="Mary V. Cothren is a nurse by night (yes, third shift) and writer by the light of day, or lamp. Mary is an experienced critical care and emergency nurse with over a decade in healthcare who has written many professional and academic papers, primarily for hospital quality improvement projects."
       cta-text="Read more →"
       cta-href="/about"
       image-src="/src/assets/placeholder-mary.svg"
-      image-alt="Mary, author and storyteller"
+      image-alt="Mary V. Cothren, nurse and writer"
       image-overlay-text="About Mary"
     />
 

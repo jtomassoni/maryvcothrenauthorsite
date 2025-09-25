@@ -18,7 +18,7 @@
             title="Get In Touch"
             description="Send me a message and I'll get back to you as soon as possible."
             submit-text="Send Message"
-            :compact="false"
+            :compact="true"
           />
         </div>
 
@@ -53,8 +53,8 @@
                 </div>
                 <div>
                   <h3 class="font-semibold text-gray-900 mb-1">Location</h3>
-                  <p class="text-gray-600">Based in the Pacific Northwest</p>
-                  <p class="text-primary-600 font-medium">Seattle, Washington</p>
+                  <p class="text-gray-600">Based in Denver, Colorado</p>
+                  <p class="text-primary-600 font-medium">Denver, Colorado</p>
                 </div>
               </div>
               

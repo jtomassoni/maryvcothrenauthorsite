@@ -7,7 +7,7 @@
           to="/"
           class="text-2xl font-serif font-bold gradient-text focus-ring rounded"
         >
-          Mary
+          Mary V. Cothren
         </router-link>
 
         <!-- Desktop Navigation -->
@@ -91,7 +91,7 @@ const navItems = [
   { name: 'Home', path: '/' },
   { name: 'About', path: '/about' },
   { name: 'Writings', path: '/writings' },
-  { name: 'Contact', path: '/contact' },
+  { name: 'Contact', path: '/#contact' },
 ]
 
 const toggleMobileMenu = () => {

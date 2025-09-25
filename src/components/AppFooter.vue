@@ -2,8 +2,8 @@
   <footer class="bg-primary-800 text-white py-12">
     <Container>
       <div class="text-center">
-        <h4 class="text-xl font-serif font-bold mb-4">Mary</h4>
-        <p class="text-gray-300 mb-6">Writer & Storyteller</p>
+        <h4 class="text-xl font-serif font-bold mb-4">Mary V. Cothren</h4>
+        <p class="text-gray-300 mb-6">Nurse by night, writer by day</p>
         
         <!-- Navigation Links -->
         <nav class="flex justify-center space-x-6 mb-6" role="navigation" aria-label="Footer navigation">
@@ -49,6 +49,6 @@ const navItems = [
   { name: 'Home', path: '/' },
   { name: 'About', path: '/about' },
   { name: 'Writings', path: '/writings' },
-  { name: 'Contact', path: '/contact' },
+  { name: 'Contact', path: '/#contact' },
 ]
 </script>
