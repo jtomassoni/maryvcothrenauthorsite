@@ -1,4 +1,6 @@
-export default function handler(req, res) {
+const nodemailer = require('nodemailer')
+
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ ok: false, error: 'Method not allowed' })
   }
@@ -29,20 +31,46 @@ export default function handler(req, res) {
       })
     }
 
-    // For now, just return success without sending email
-    // This will help us isolate if the issue is with nodemailer
-    console.log('Would send email to:', gmailTo, 'from:', name, email)
+    // Create transporter
+    const transporter = nodemailer.createTransporter({
+      service: 'gmail',
+      auth: {
+        user: gmailUser,
+        pass: gmailPass
+      }
+    })
+
+    // Prepare email content
+    const emailSubject = `New mailing list signup from ${name.trim()}`
+    const emailText = `
+New mailing list signup:
+
+Name: ${name.trim()}
+Email: ${email.trim()}
+Message: ${message ? message.trim() : 'No message provided'}
+Timestamp: ${new Date().toISOString()}
+    `.trim()
+
+    // Send email
+    await transporter.sendMail({
+      from: gmailUser,
+      to: gmailTo,
+      subject: emailSubject,
+      text: emailText
+    })
+
+    console.log(`Email sent successfully for ${email.trim()} at ${new Date().toISOString()}`)
     
     return res.status(200).json({ 
       ok: true, 
-      message: 'Contact form received successfully (email sending disabled for testing)'
+      message: 'Thank you for subscribing! You\'ll hear from me soon.'
     })
 
   } catch (error) {
     console.error('Contact API error:', error)
     return res.status(500).json({ 
       ok: false, 
-      error: 'Server error: ' + error.message 
+      error: 'Failed to send email. Please try again later.' 
     })
   }
 }
