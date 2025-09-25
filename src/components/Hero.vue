@@ -1,5 +1,5 @@
 <template>
-  <section class="py-20 lg:py-32 bg-gradient-to-br from-gray-50 via-white to-primary-50">
+  <section class="py-20 lg:py-32 bg-gradient-to-br from-slate-50 via-gray-50 to-blue-50">
     <Container>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <!-- Hero Content -->
@@ -42,16 +42,6 @@
                 :alt="imageAlt"
                 class="w-full h-full object-cover"
               />
-              
-              <!-- Overlay -->
-              <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <router-link
-                  :to="ctaHref"
-                  class="bg-white text-primary-800 px-4 py-2 rounded-lg font-medium transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 hover:bg-gray-50 focus-ring"
-                >
-                  {{ imageOverlayText }}
-                </router-link>
-              </div>
             </div>
           </div>
         </div>

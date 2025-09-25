@@ -3,7 +3,7 @@
     <!-- Hero Section -->
     <Hero
       title="Mary V. Cothren — Nurse & Writer"
-      subtitle="Mary V. Cothren is a nurse by night (yes, third shift) and writer by the light of day, or lamp. Mary is an experienced critical care and emergency nurse with over a decade in healthcare who has written many professional and academic papers, primarily for hospital quality improvement projects."
+      subtitle="Mary V. Cothren is a nurse by night (yes, third shift) and writer by the light of day, or lamp. Mary is an experienced critical care and emergency nurse with over a decade in healthcare who has written many professional and academic papers, primarily for hospital quality improvement projects. While unpublished, her writing has evolved from her first printed Mother’s Day greeting card at the age of 5 years (her mother still has it framed) to memoir, creative nonfiction, and poetry. She is currently working on the manuscript of her memoir as a COVID nurse during the pandemic and preparing several other pieces for literary submission. With active participation in writing communities (Writers.com and Authors Publish) and her upcoming blog, Salt & Stethoscopes, she hopes to build a community of fellow writers, adventurers, and foodies (nurses are invited, too)."
       cta-text="Read more →"
       cta-href="/about"
       image-src="/src/assets/home-page-mary-pic.png"
