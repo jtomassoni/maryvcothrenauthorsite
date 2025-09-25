@@ -1,3 +1,7 @@
+const { Resend } = require('resend')
+
+const resend = new Resend(process.env.RESEND_API_KEY)
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ ok: false, error: 'Method not allowed' })
@@ -17,11 +21,10 @@ export default async function handler(req, res) {
     }
 
     // Check environment variables
-    const gmailTo = process.env.GMAIL_TO
-    const gmailUser = process.env.GMAIL_USER
-    const gmailPass = process.env.GMAIL_PASS
+    const resendApiKey = process.env.RESEND_API_KEY
+    const recipientEmail = process.env.GMAIL_TO
 
-    if (!gmailTo || !gmailUser || !gmailPass) {
+    if (!resendApiKey || !recipientEmail) {
       console.warn('Missing email configuration')
       return res.status(500).json({ 
         ok: false, 
@@ -29,26 +32,26 @@ export default async function handler(req, res) {
       })
     }
 
-    // Try using fetch to send email via a webhook service
-    // This is more reliable than nodemailer in serverless environments
+    // Send email using Resend
     try {
-      const emailData = {
-        to: gmailTo,
-        from: gmailUser,
+      const emailData = await resend.emails.send({
+        from: 'Mary\'s Website <noreply@maryvcothren.com>',
+        to: [recipientEmail],
         subject: `New mailing list signup from ${name.trim()}`,
-        text: `
-New mailing list signup:
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #1e293b;">New Mailing List Signup</h2>
+            <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+              <p><strong>Name:</strong> ${name.trim()}</p>
+              <p><strong>Email:</strong> ${email.trim()}</p>
+              <p><strong>Message:</strong> ${message ? message.trim() : 'No message provided'}</p>
+              <p><strong>Timestamp:</strong> ${new Date().toLocaleString()}</p>
+            </div>
+          </div>
+        `
+      })
 
-Name: ${name.trim()}
-Email: ${email.trim()}
-Message: ${message ? message.trim() : 'No message provided'}
-Timestamp: ${new Date().toISOString()}
-        `.trim()
-      }
-
-      // For now, just log the email data
-      // In a real implementation, you could use a service like SendGrid, Mailgun, or Resend
-      console.log('Email data:', emailData)
+      console.log('Email sent successfully:', emailData)
       
       return res.status(200).json({ 
         ok: true, 
