@@ -3,9 +3,9 @@
     <!-- Background Effects -->
     <div class="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-pink-600/10 dark:from-blue-500/20 dark:via-purple-500/20 dark:to-pink-500/20"></div>
     <div class="absolute top-0 left-0 w-full h-full">
-      <div class="absolute top-20 left-10 w-72 h-72 bg-blue-500/10 dark:bg-blue-400/20 rounded-full blur-3xl animate-pulse"></div>
-      <div class="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/10 dark:bg-purple-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-pink-500/10 dark:bg-pink-400/20 rounded-full blur-3xl animate-pulse delay-500"></div>
+      <div class="absolute top-20 left-10 w-72 h-72 bg-blue-600/15 dark:bg-blue-400/20 rounded-full blur-3xl animate-pulse"></div>
+      <div class="absolute bottom-20 right-10 w-96 h-96 bg-blue-700/10 dark:bg-purple-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-800/8 dark:bg-pink-400/20 rounded-full blur-3xl animate-pulse delay-500"></div>
     </div>
     
     <Container class="relative z-10">
@@ -14,16 +14,16 @@
         <div class="lg:col-span-1 space-y-4 flex flex-col justify-center">
           <div class="space-y-3">
             <h1 class="text-4xl lg:text-6xl font-serif font-bold leading-tight">
-              <span class="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
+              <span class="bg-gradient-to-r from-primary-800 via-primary-700 to-primary-900 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
                 {{ title }}
               </span>
             </h1>
             
-            <h2 v-if="subheading" class="text-xl lg:text-2xl font-medium text-gray-700 dark:text-blue-300 italic">
+            <h2 v-if="subheading" class="text-xl lg:text-2xl font-serif font-medium text-primary-800 dark:text-blue-300 italic">
               {{ subheading }}
             </h2>
             
-            <div class="text-base lg:text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+            <div class="text-base lg:text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
               <p>{{ subtitle }}</p>
             </div>
           </div>
@@ -47,7 +47,7 @@
         <div class="lg:col-span-1 relative flex justify-center">
           <div class="relative">
             <!-- Image Container -->
-            <div class="relative w-96 h-96 lg:w-[32rem] lg:h-[32rem] rounded-3xl overflow-hidden shadow-2xl dark:shadow-blue-500/20 dark:ring-2 dark:ring-blue-500/30">
+            <div class="relative w-96 h-96 lg:w-[32rem] lg:h-[32rem] rounded-3xl overflow-hidden shadow-2xl shadow-blue-900/20 dark:shadow-blue-500/20 dark:ring-2 dark:ring-blue-500/30">
               <img
                 :src="imageSrc"
                 :alt="imageAlt"
