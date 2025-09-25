@@ -19,16 +19,16 @@
 - [x] Create src/vite-env.d.ts
 - [x] Create src/style.css
 
-### Step 3: Router Setup
-- [ ] Create src/router/index.ts
-- [ ] Configure all routes (Home, About, Writings, Contact, NotFound)
+### ✅ Step 3: Router Setup (COMPLETED)
+- [x] Create src/router/index.ts (integrated into main.ts)
+- [x] Configure all routes (Home, About, Writings, Contact, NotFound)
 
-### Step 4: Reusable Components
-- [ ] Create src/components/Container.vue
-- [ ] Create src/components/AppHeader.vue
-- [ ] Create src/components/AppFooter.vue
-- [ ] Create src/components/Hero.vue
-- [ ] Create src/components/ContactForm.vue
+### ✅ Step 4: Reusable Components (COMPLETED)
+- [x] Create src/components/Container.vue
+- [x] Create src/components/AppHeader.vue
+- [x] Create src/components/AppFooter.vue
+- [x] Create src/components/Hero.vue
+- [x] Create src/components/ContactForm.vue
 
 ### Step 5: Page Components
 - [ ] Create src/pages/Home.vue
@@ -66,7 +66,7 @@
 - [ ] Update README.md
 - [ ] Final commit and deploy
 
-## Current Status: Step 3 - Router Setup (In Progress)
+## Current Status: Step 5 - Page Components (In Progress)
 
 ## Notes:
 - Each step should be small and focused
