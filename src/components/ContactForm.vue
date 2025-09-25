@@ -132,7 +132,7 @@ interface Props {
   compact?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   title: 'Join My Mailing List',
   description: 'Get updates on new releases, events, and exclusive content delivered to your inbox.',
   submitText: 'Subscribe',

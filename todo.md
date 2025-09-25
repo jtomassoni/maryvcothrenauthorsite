@@ -50,10 +50,10 @@
 - [x] Create public/favicon.svg
 - [x] Create new index.html for Vite
 
-### Step 8: Environment & Deployment
-- [ ] Create .env.example
-- [ ] Update vercel.json for proper routing
-- [ ] Test build process
+### ✅ Step 8: Environment & Deployment (COMPLETED)
+- [x] Create .env.example
+- [x] Update vercel.json for proper routing
+- [x] Test build process
 
 ### Step 9: Testing & Polish
 - [ ] Test all routes work
@@ -67,7 +67,7 @@
 - [ ] Update README.md
 - [ ] Final commit and deploy
 
-## Current Status: Step 8 - Environment & Deployment (In Progress)
+## Current Status: Step 9 - Testing & Polish (In Progress)
 
 ## Notes:
 - Each step should be small and focused
