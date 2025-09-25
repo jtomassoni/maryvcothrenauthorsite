@@ -13,10 +13,11 @@
 - [x] Create tailwind.config.cjs
 - [x] Create postcss.config.cjs
 
-### Step 2: Core Vue Files
-- [ ] Create src/main.ts
-- [ ] Create src/App.vue
-- [ ] Create src/vite-env.d.ts
+### ✅ Step 2: Core Vue Files (COMPLETED)
+- [x] Create src/main.ts
+- [x] Create src/App.vue
+- [x] Create src/vite-env.d.ts
+- [x] Create src/style.css
 
 ### Step 3: Router Setup
 - [ ] Create src/router/index.ts
@@ -65,7 +66,7 @@
 - [ ] Update README.md
 - [ ] Final commit and deploy
 
-## Current Status: Step 2 - Core Vue Files (In Progress)
+## Current Status: Step 3 - Router Setup (In Progress)
 
 ## Notes:
 - Each step should be small and focused
