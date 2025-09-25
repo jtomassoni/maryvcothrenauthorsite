@@ -1,15 +1,15 @@
 <template>
   <section class="py-20 lg:py-32 bg-gradient-to-br from-slate-50 via-gray-50 to-blue-50">
     <Container>
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
         <!-- Hero Content -->
-        <div class="space-y-8">
-          <div class="space-y-6">
-            <h1 class="text-5xl lg:text-7xl font-serif font-bold leading-tight">
+        <div class="lg:col-span-1 space-y-4 flex flex-col justify-center">
+          <div class="space-y-3">
+            <h1 class="text-2xl lg:text-3xl font-serif font-bold leading-tight">
               <span class="gradient-text">{{ title }}</span>
             </h1>
             
-            <div class="text-xl lg:text-2xl text-gray-600 leading-relaxed">
+            <div class="text-base lg:text-lg text-gray-600 leading-relaxed">
               <p>{{ subtitle }}</p>
             </div>
           </div>
@@ -17,11 +17,11 @@
           <div class="flex flex-col sm:flex-row gap-3">
             <router-link
               :to="ctaHref"
-              class="group bg-primary-800 text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-700 transition-all duration-300 transform hover:scale-105 hover:shadow-xl text-center focus-ring"
+              class="group bg-primary-800 text-white px-4 py-2 rounded-lg font-medium hover:bg-primary-700 transition-all duration-300 transform hover:scale-105 hover:shadow-xl text-center focus-ring text-sm"
             >
               <span class="flex items-center justify-center gap-2">
                 {{ ctaText }}
-                <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-3 h-3 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                 </svg>
               </span>
@@ -30,13 +30,10 @@
         </div>
 
         <!-- Hero Image -->
-        <div class="relative flex justify-center lg:justify-end">
-          <div class="relative group">
-            <!-- Glow Effect -->
-            <div class="absolute inset-0 bg-gradient-to-br from-primary-200 to-accent-200 rounded-3xl blur-3xl scale-110 group-hover:scale-125 transition-transform duration-500 opacity-40"></div>
-            
+        <div class="lg:col-span-1 relative flex justify-center">
+          <div class="relative">
             <!-- Image Container -->
-            <div class="relative w-80 h-80 lg:w-96 lg:h-96 rounded-3xl overflow-hidden shadow-2xl group-hover:shadow-3xl transition-all duration-500 transform group-hover:scale-105">
+            <div class="relative w-96 h-96 lg:w-[32rem] lg:h-[32rem] rounded-3xl overflow-hidden shadow-2xl">
               <img
                 :src="imageSrc"
                 :alt="imageAlt"

@@ -30,7 +30,7 @@
             <div class="lg:w-1/3 flex-shrink-0 lg:float-left lg:mr-8 lg:mb-4">
               <div class="aspect-square lg:aspect-[4/5] bg-gray-200 rounded-lg overflow-hidden">
                 <img
-                  src="/src/assets/mary-about-page.jpg"
+                  :src="aboutPageImage"
                   alt="Mary V. Cothren, nurse and writer"
                   class="w-full h-full object-cover"
                 />
@@ -76,4 +76,5 @@
 
 <script setup lang="ts">
 import Container from '@/components/Container.vue'
+import aboutPageImage from '@/assets/mary-about-page.jpg'
 </script>
