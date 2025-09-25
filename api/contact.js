@@ -1,5 +1,4 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
-import nodemailer from 'nodemailer'
+const nodemailer = require('nodemailer')
 
 // Simple in-memory rate limiting
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>()
