@@ -20,7 +20,7 @@
           v-model="form.name"
           type="text"
           required
-          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent focus-ring"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-accent-300 focus-ring"
           placeholder="Your name"
           :aria-describedby="errors.name ? 'name-error' : undefined"
           :aria-invalid="!!errors.name"
@@ -40,7 +40,7 @@
           v-model="form.email"
           type="email"
           required
-          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent focus-ring"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-accent-300 focus-ring"
           placeholder="your@email.com"
           :aria-describedby="errors.email ? 'email-error' : undefined"
           :aria-invalid="!!errors.email"
@@ -59,7 +59,7 @@
           id="message"
           v-model="form.message"
           rows="4"
-          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent focus-ring"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-accent-300 focus-ring"
           placeholder="Your message (optional)"
         ></textarea>
       </div>

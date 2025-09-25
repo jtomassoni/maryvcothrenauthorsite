@@ -45,9 +45,12 @@
               
               <!-- Overlay -->
               <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <span class="bg-white text-primary-800 px-4 py-2 rounded-lg font-medium transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                <router-link
+                  :to="ctaHref"
+                  class="bg-white text-primary-800 px-4 py-2 rounded-lg font-medium transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 hover:bg-gray-50 focus-ring"
+                >
                   {{ imageOverlayText }}
-                </span>
+                </router-link>
               </div>
             </div>
           </div>
