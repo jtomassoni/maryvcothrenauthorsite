@@ -21,7 +21,7 @@
             </p>
             
             <p class="text-gray-700 leading-relaxed">
-              The only thing I had written, with any personally perceived success, was when I was 15, it was a "lengthy" 6-page paper in response to the vague prompt, "what led me to this [outlaw life]?" That assigned essay, which I titled "Soul Friend," was submitted to Colorado's 2nd District Juvenile Court and published in my now-expunged underage record. Maybe in some circles that counts as being a published author? Probably not.
+              The only thing I had written, with any personally perceived success, was when I was 15; it was a "lengthy" 6-page paper in response to the vague prompt, "what led me to this [outlaw life]?" That assigned essay, which I titled "Soul Friend," was submitted to Colorado's 2nd District Juvenile Court and published in my now-expunged underage record. Maybe in some circles that counts as being a published author? Probably not.
             </p>
           </div>
 
