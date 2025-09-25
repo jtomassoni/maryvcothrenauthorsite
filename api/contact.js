@@ -44,8 +44,7 @@ export default async function handler(req, res) {
             <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
               <p><strong>Name:</strong> ${name.trim()}</p>
               <p><strong>Email:</strong> ${email.trim()}</p>
-              <p><strong>Message:</strong> ${message ? message.trim() : 'No message provided'}</p>
-              <p><strong>Timestamp:</strong> ${new Date().toLocaleString()}</p>
+              <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
             </div>
           </div>
         `
