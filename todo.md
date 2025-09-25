@@ -30,12 +30,12 @@
 - [x] Create src/components/Hero.vue
 - [x] Create src/components/ContactForm.vue
 
-### Step 5: Page Components
-- [ ] Create src/pages/Home.vue
-- [ ] Create src/pages/About.vue
-- [ ] Create src/pages/Writings.vue
-- [ ] Create src/pages/Contact.vue
-- [ ] Create src/pages/NotFound.vue
+### ✅ Step 5: Page Components (COMPLETED)
+- [x] Create src/pages/Home.vue
+- [x] Create src/pages/About.vue
+- [x] Create src/pages/Writings.vue
+- [x] Create src/pages/Contact.vue
+- [x] Create src/pages/NotFound.vue
 
 ### Step 6: Serverless Function
 - [ ] Create api/contact.ts
@@ -66,7 +66,7 @@
 - [ ] Update README.md
 - [ ] Final commit and deploy
 
-## Current Status: Step 5 - Page Components (In Progress)
+## Current Status: Step 6 - Serverless Function (In Progress)
 
 ## Notes:
 - Each step should be small and focused
