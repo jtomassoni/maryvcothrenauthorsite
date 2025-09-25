@@ -37,12 +37,12 @@
 - [x] Create src/pages/Contact.vue
 - [x] Create src/pages/NotFound.vue
 
-### Step 6: Serverless Function
-- [ ] Create api/contact.ts
-- [ ] Add Nodemailer configuration
-- [ ] Add input validation
-- [ ] Add rate limiting
-- [ ] Add error handling
+### ✅ Step 6: Serverless Function (COMPLETED)
+- [x] Create api/contact.ts
+- [x] Add Nodemailer configuration
+- [x] Add input validation
+- [x] Add rate limiting
+- [x] Add error handling
 
 ### Step 7: Assets & Content
 - [ ] Create src/assets/placeholder-mary.jpg
@@ -66,7 +66,7 @@
 - [ ] Update README.md
 - [ ] Final commit and deploy
 
-## Current Status: Step 6 - Serverless Function (In Progress)
+## Current Status: Step 7 - Assets & Content (In Progress)
 
 ## Notes:
 - Each step should be small and focused
