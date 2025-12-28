@@ -63,3 +63,4 @@ Test your Vercel serverless functions locally before deploying.
 - Make sure DATABASE_URL is set in .env.local
 - Run `npm run db:push` to ensure tables exist
 
+
