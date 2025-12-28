@@ -96,23 +96,6 @@ async function loadServerlessFunction(path) {
   }
 }
 
-app.all('/api/admin/writings/:id', async (req, res) => {
-  try {
-    const { req: vercelReq, res: vercelRes } = convertToVercelFormat(req, res)
-    vercelReq.query.id = req.params.id
-
-    const handler = await loadServerlessFunction('./api/admin/writings/[id].js')
-    if (handler) {
-      await handler(vercelReq, vercelRes)
-    } else {
-      res.status(500).json({ ok: false, error: 'Handler not found' })
-    }
-  } catch (error) {
-    console.error('Error in /api/admin/writings/:id:', error)
-    res.status(500).json({ ok: false, error: error.message })
-  }
-})
-
 // Route handler for dynamic [slug] routes
 app.all('/api/writings/:slug', async (req, res) => {
   try {
@@ -133,11 +116,8 @@ app.all('/api/writings/:slug', async (req, res) => {
 
 // Route handler for static routes
 const staticRoutes = [
-  { path: '/api/admin/writings', file: './api/admin/writings.js' },
   { path: '/api/writings', file: './api/writings.js' },
   { path: '/api/latest', file: './api/latest.js' },
-  { path: '/api/auth/login', file: './api/auth/login.js' },
-  { path: '/api/auth/check', file: './api/auth/check.js' },
   { path: '/api/contact', file: './api/contact.js' },
 ]
 
@@ -159,14 +139,8 @@ app.listen(PORT, () => {
   console.log('📝 This runs your Vercel serverless functions locally')
   console.log('')
   console.log('Test endpoints:')
-  console.log(`  GET  http://localhost:${PORT}/api/admin/writings/:id`)
-  console.log(`  PUT  http://localhost:${PORT}/api/admin/writings/:id`)
-  console.log(`  DELETE http://localhost:${PORT}/api/admin/writings/:id`)
-  console.log('')
-  console.log('Example:')
-  console.log(
-    `  curl -X GET http://localhost:${PORT}/api/admin/writings/cmjqaok0a0000i6fu9fktzsbq \\`
-  )
-  console.log(`    -H "Authorization: Bearer YOUR_TOKEN"`)
+  console.log(`  GET  http://localhost:${PORT}/api/writings`)
+  console.log(`  GET  http://localhost:${PORT}/api/writings/:slug`)
+  console.log(`  GET  http://localhost:${PORT}/api/latest`)
   console.log('')
 })

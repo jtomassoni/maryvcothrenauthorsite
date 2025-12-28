@@ -192,7 +192,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import Hero from '@/components/Hero.vue'
 import ContactForm from '@/components/ContactForm.vue'
 import Container from '@/components/Container.vue'
@@ -200,22 +200,6 @@ import homePageImage from '@/assets/home-page-mary-pic.png'
 
 const latestItems = ref<any[]>([])
 const loadingPosts = ref(false)
-
-const fetchLatestItems = async () => {
-  loadingPosts.value = true
-  try {
-    const response = await fetch('/api/latest?limit=3')
-    const data = await response.json()
-
-    if (data.ok && data.items) {
-      latestItems.value = data.items
-    }
-  } catch (error) {
-    console.error('Error fetching latest items:', error)
-  } finally {
-    loadingPosts.value = false
-  }
-}
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)
@@ -225,8 +209,4 @@ const formatDate = (dateString: string) => {
     day: 'numeric',
   })
 }
-
-onMounted(() => {
-  fetchLatestItems()
-})
 </script>
