@@ -23,13 +23,12 @@ function checkAuth(req) {
 }
 
 export default async function handler(req, res) {
-  let prisma = null
-  
+  // Initialize Prisma client inside handler to avoid initialization issues
+  const prisma = new PrismaClient({
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  })
+
   try {
-    // Initialize Prisma client inside handler to avoid initialization issues
-    prisma = new PrismaClient({
-      log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-    })
     console.log(`[writings] ${req.method} request received`)
     
     const username = checkAuth(req)
@@ -40,7 +39,6 @@ export default async function handler(req, res) {
     }
 
     console.log(`[writings] Authenticated user: ${username}`)
-    
     // GET /api/admin/writings
     if (req.method === 'GET') {
       const { q, tag, status, sort = 'newest', page = '1', pageSize = '20' } = req.query
@@ -77,35 +75,15 @@ export default async function handler(req, res) {
         orderBy = { updatedAt: 'desc' }
       }
 
-      let writings, total
-      try {
-        console.log('[writings] Executing query with where:', JSON.stringify(where))
-        console.log('[writings] OrderBy:', JSON.stringify(orderBy))
-        console.log('[writings] Skip:', skip, 'Take:', pageSizeNum)
-        
-        // Execute queries - simplified to avoid timeout issues
-        [writings, total] = await Promise.all([
-          prisma.writing.findMany({
-            where,
-            orderBy,
-            skip,
-            take: pageSizeNum,
-          }),
-          prisma.writing.count({ where }),
-        ])
-        
-        console.log('[writings] Query successful. Found', writings.length, 'writings, total:', total)
-      } catch (queryError) {
-        console.error('[writings] Query error details:', {
-          code: queryError.code,
-          message: queryError.message,
-          name: queryError.name,
-          meta: queryError.meta,
-          stack: queryError.stack,
-        })
-        // Re-throw so outer catch can handle it
-        throw queryError
-      }
+      const [writings, total] = await Promise.all([
+        prisma.writing.findMany({
+          where,
+          orderBy,
+          skip,
+          take: pageSizeNum,
+        }),
+        prisma.writing.count({ where }),
+      ])
 
       return res.status(200).json({
         ok: true,
@@ -180,30 +158,19 @@ export default async function handler(req, res) {
     // Method not allowed
     return res.status(405).json({ ok: false, error: 'Method not allowed' })
   } catch (error) {
-    // Ensure we log the error before anything else
-    try {
-      console.error('[writings] Error caught:', error)
-      console.error('[writings] Error stack:', error?.stack)
-      console.error('[writings] Error code:', error?.code)
-      console.error('[writings] Error name:', error?.name)
-      console.error('[writings] Error message:', error?.message)
-      if (error?.meta) {
-        console.error('[writings] Error meta:', JSON.stringify(error.meta))
-      }
-    } catch (logError) {
-      console.error('[writings] Failed to log error:', logError)
-    }
+    console.error('[writings] Error:', error)
+    console.error('[writings] Error stack:', error.stack)
+    console.error('[writings] Error code:', error.code)
+    console.error('[writings] Error name:', error.name)
+    console.error('[writings] Full error object:', JSON.stringify(error, Object.getOwnPropertyNames(error)))
     
-    // Handle Prisma table missing error (P2021) or any table-related errors
-    if (error.code === 'P2021' || 
-        error.message?.includes('does not exist') || 
-        error.message?.includes('table') && error.message?.includes('not found')) {
+    // Handle Prisma table missing error (P2021)
+    if (error.code === 'P2021') {
       return res.status(500).json({
         ok: false,
         error: 'Database tables not found',
-        message: 'The writings table does not exist in the database. Please run database migrations to create it.',
-        code: error.code || 'TABLE_MISSING',
-        details: error.message,
+        message: 'The database tables do not exist. Please run database migrations.',
+        code: error.code,
       })
     }
     
@@ -224,38 +191,14 @@ export default async function handler(req, res) {
       errorResponse.code = error.code
     }
     
-    // Include Prisma meta if available (contains table/column info)
-    if (error.meta) {
-      errorResponse.meta = error.meta
-    }
-    
-    // Always include error name for debugging
-    errorResponse.name = error.name
-    
-    // Include more details in development or if it's a known Prisma error
-    if (process.env.NODE_ENV === 'development' || error.code) {
+    // Include more details in development
+    if (process.env.NODE_ENV === 'development') {
       errorResponse.stack = error.stack
+      errorResponse.name = error.name
     }
     
-    // Make sure we return a response even if something goes wrong
-    try {
-      return res.status(500).json(errorResponse)
-    } catch (responseError) {
-      console.error('[writings] Failed to send error response:', responseError)
-      // If we can't send JSON, try to send a plain text response
-      if (!res.headersSent) {
-        res.status(500).send(`Internal Server Error: ${errorResponse.message || 'Unknown error'}`)
-      }
-    }
+    return res.status(500).json(errorResponse)
   } finally {
-    // Always disconnect Prisma, but handle errors gracefully
-    if (prisma) {
-      try {
-        await prisma.$disconnect()
-      } catch (disconnectError) {
-        console.error('[writings] Error disconnecting Prisma:', disconnectError)
-      }
-    }
+    await prisma.$disconnect()
   }
 }
-

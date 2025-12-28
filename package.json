@@ -14,6 +14,8 @@
     "db:push": "node scripts/db-push.js",
     "db:setup-prod": "node scripts/db-setup-prod.js",
     "db:fix-prod": "node scripts/fix-prod-db.js",
+    "prod": "node scripts/prod-helper.js",
+    "prod:env": "vercel env pull .env.local",
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write ."
