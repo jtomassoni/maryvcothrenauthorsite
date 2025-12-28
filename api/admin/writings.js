@@ -39,8 +39,17 @@ export default async function handler(req, res) {
     }
 
     console.log(`[writings] Authenticated user: ${username}`)
+    
     // GET /api/admin/writings
     if (req.method === 'GET') {
+      // Quick check: try to verify table exists first
+      try {
+        await prisma.$queryRaw`SELECT 1 FROM writings LIMIT 1`.catch(() => {
+          // If this fails, the table likely doesn't exist
+        })
+      } catch (tableCheckError) {
+        // Ignore - we'll catch the real error in the actual query
+      }
       const { q, tag, status, sort = 'newest', page = '1', pageSize = '20' } = req.query
       
       const pageNum = parseInt(page, 10) || 1

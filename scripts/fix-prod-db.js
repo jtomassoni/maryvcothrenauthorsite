@@ -68,8 +68,38 @@ try {
     cwd: join(__dirname, '..')
   })
 
+  // Verify tables were created
+  console.log('\n🔍 Step 3: Verifying tables exist...')
+  const { PrismaClient } = await import('@prisma/client')
+  const prisma = new PrismaClient()
+  
+  try {
+    const [blogCheck, writingCheck] = await Promise.allSettled([
+      prisma.blogPost.findFirst(),
+      prisma.writing.findFirst()
+    ])
+    
+    const blogError = blogCheck.status === 'rejected' && 
+      (blogCheck.reason?.code === 'P2021' || blogCheck.reason?.message?.includes('does not exist'))
+    const writingError = writingCheck.status === 'rejected' && 
+      (writingCheck.reason?.code === 'P2021' || writingCheck.reason?.message?.includes('does not exist'))
+    
+    if (blogError) {
+      throw new Error('blog_posts table was not created successfully')
+    }
+    if (writingError) {
+      throw new Error('writings table was not created successfully')
+    }
+    
+    console.log('✅ Verified: Both blog_posts and writings tables exist')
+    await prisma.$disconnect()
+  } catch (verifyError) {
+    await prisma.$disconnect()
+    throw verifyError
+  }
+
   console.log('\n✅ SUCCESS! Your production database is now set up!')
-  console.log('   The blog_posts and writings tables have been created.')
+  console.log('   The blog_posts and writings tables have been created and verified.')
   console.log('\n🎉 You can now use your admin panel in production!')
 } catch (error) {
   console.error('\n❌ Error setting up database:', error.message)

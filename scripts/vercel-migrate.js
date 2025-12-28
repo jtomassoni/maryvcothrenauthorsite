@@ -44,11 +44,46 @@ try {
 
   console.log('\n🗄️  Step 2: Pushing schema to database...')
   console.log('   (This creates/updates tables based on your Prisma schema)')
-  execSync('npx prisma db push --skip-generate --accept-data-loss', {
-    stdio: 'inherit',
+  const pushResult = execSync('npx prisma db push --skip-generate --accept-data-loss', {
+    stdio: 'pipe',
     env: process.env,
-    cwd: join(__dirname, '..')
+    cwd: join(__dirname, '..'),
+    encoding: 'utf8'
   })
+  
+  // Log the output
+  console.log(pushResult)
+  
+  // Verify tables were created by checking with Prisma
+  console.log('\n🔍 Step 3: Verifying tables exist...')
+  const { PrismaClient } = await import('@prisma/client')
+  const prisma = new PrismaClient()
+  
+  try {
+    // Try to query both tables (this will fail if tables don't exist)
+    const [blogCheck, writingCheck] = await Promise.allSettled([
+      prisma.blogPost.findFirst(),
+      prisma.writing.findFirst()
+    ])
+    
+    const blogExists = blogCheck.status === 'fulfilled' || 
+      (blogCheck.status === 'rejected' && blogCheck.reason?.code !== 'P2021')
+    const writingExists = writingCheck.status === 'fulfilled' || 
+      (writingCheck.status === 'rejected' && writingCheck.reason?.code !== 'P2021')
+    
+    if (!blogExists) {
+      throw new Error('blog_posts table does not exist (P2021 error)')
+    }
+    if (!writingExists) {
+      throw new Error('writings table does not exist (P2021 error)')
+    }
+    
+    console.log('✅ Verified: Both blog_posts and writings tables exist')
+    await prisma.$disconnect()
+  } catch (verifyError) {
+    await prisma.$disconnect()
+    throw new Error(`Table verification failed: ${verifyError.message}`)
+  }
 
   console.log('\n✅ Database migration complete!')
   console.log('   Your database tables are now up to date.')
