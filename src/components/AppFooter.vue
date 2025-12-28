@@ -1,25 +1,28 @@
 <template>
-  <footer class="bg-primary-800 text-white py-12">
+  <footer class="bg-primary-800 text-white py-6">
     <Container>
-      <div class="text-center">
-        <h4 class="text-xl font-serif font-bold mb-4">Mary V. Cothren</h4>
-        <p class="text-gray-300 mb-6">Nurse by night, writer by day</p>
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <!-- Left: Name and Tagline -->
+        <div class="text-center md:text-left">
+          <h4 class="text-lg font-serif font-bold mb-1">Mary V. Cothren</h4>
+          <p class="text-gray-300 text-sm">Nurse by night, writer by day</p>
+        </div>
         
-        <!-- Navigation Links -->
-        <nav class="flex justify-center space-x-6 mb-6" role="navigation" aria-label="Footer navigation">
+        <!-- Center: Navigation Links -->
+        <nav class="flex justify-center space-x-4 md:space-x-6" role="navigation" aria-label="Footer navigation">
           <router-link
             v-for="item in navItems"
             :key="item.name"
             :to="item.path"
-            class="text-gray-300 hover:text-white transition-colors focus-ring rounded px-2 py-1"
+            class="text-gray-300 hover:text-white transition-colors focus-ring rounded px-2 py-1 text-sm"
           >
             {{ item.name }}
           </router-link>
         </nav>
 
-        <!-- Contact Info -->
-        <div class="mb-6">
-          <p class="text-gray-300 text-sm">
+        <!-- Right: Contact and Copyright -->
+        <div class="text-center md:text-right text-sm">
+          <p class="text-gray-300 mb-1">
             Questions? 
             <router-link
               to="/contact"
@@ -28,12 +31,10 @@
               Get in touch
             </router-link>
           </p>
+          <p class="text-gray-400">
+            © {{ currentYear }} Mary. All rights reserved.
+          </p>
         </div>
-
-        <!-- Copyright -->
-        <p class="text-gray-400 text-sm">
-          © {{ currentYear }} Mary. All rights reserved.
-        </p>
       </div>
     </Container>
   </footer>

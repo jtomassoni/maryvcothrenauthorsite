@@ -428,6 +428,7 @@ app.get('/api/blog/posts', async (req, res) => {
           title: true,
           slug: true,
           excerpt: true,
+          contentMarkdown: true,
           tags: true,
           publishedAt: true,
           createdAt: true,
@@ -505,6 +506,7 @@ app.get('/api/writings', async (req, res) => {
           title: true,
           slug: true,
           excerpt: true,
+          contentMarkdown: true,
           tags: true,
           publishedAt: true,
           createdAt: true,
@@ -976,6 +978,54 @@ app.put('/api/admin/blog/posts/:id', requireAuthEnhanced, async (req, res) => {
   }
 })
 
+// POST /api/admin/blog/posts/:id (for duplication)
+app.post('/api/admin/blog/posts/:id', requireAuthEnhanced, async (req, res) => {
+  try {
+    const { id } = req.params
+
+    const existing = await prisma.blogPost.findUnique({
+      where: { id },
+    })
+
+    if (!existing) {
+      return res.status(404).json({
+        ok: false,
+        error: 'Post not found',
+      })
+    }
+
+    const newSlug = await ensureUniqueSlug(prisma, existing.slug, null, 'blog')
+    const duplicated = await prisma.blogPost.create({
+      data: {
+        title: `${existing.title} (Copy)`,
+        slug: newSlug,
+        excerpt: existing.excerpt,
+        contentMarkdown: existing.contentMarkdown,
+        tags: existing.tags,
+        status: 'draft',
+        publishedAt: null,
+      },
+    })
+
+    return res.status(201).json({
+      ok: true,
+      post: duplicated,
+    })
+  } catch (error) {
+    console.error('Error duplicating blog post:', error)
+    if (error.code === 'P2002') {
+      return res.status(400).json({
+        ok: false,
+        error: 'A post with this slug already exists',
+      })
+    }
+    return res.status(500).json({
+      ok: false,
+      error: 'Failed to duplicate blog post',
+    })
+  }
+})
+
 // ============================================================================
 // ADMIN WRITINGS ENDPOINTS
 // ============================================================================
@@ -1257,6 +1307,54 @@ app.put('/api/admin/writings/:id', requireAuthEnhanced, async (req, res) => {
   }
 })
 
+// POST /api/admin/writings/:id (for duplication)
+app.post('/api/admin/writings/:id', requireAuthEnhanced, async (req, res) => {
+  try {
+    const { id } = req.params
+
+    const original = await prisma.writing.findUnique({
+      where: { id },
+    })
+
+    if (!original) {
+      return res.status(404).json({
+        ok: false,
+        error: 'Writing not found',
+      })
+    }
+
+    const newSlug = await ensureUniqueSlug(prisma, original.slug, null, 'writing')
+    const duplicated = await prisma.writing.create({
+      data: {
+        title: `${original.title} (Copy)`,
+        slug: newSlug,
+        excerpt: original.excerpt,
+        contentMarkdown: original.contentMarkdown,
+        tags: original.tags,
+        status: 'draft',
+        publishedAt: null,
+      },
+    })
+
+    return res.status(201).json({
+      ok: true,
+      writing: duplicated,
+    })
+  } catch (error) {
+    console.error('Error duplicating writing:', error)
+    if (error.code === 'P2002') {
+      return res.status(400).json({
+        ok: false,
+        error: 'A writing with this slug already exists',
+      })
+    }
+    return res.status(500).json({
+      ok: false,
+      error: 'Failed to duplicate writing',
+    })
+  }
+})
+
 // DELETE /api/admin/writings/:id
 app.delete('/api/admin/writings/:id', requireAuthEnhanced, async (req, res) => {
   try {
@@ -1285,109 +1383,6 @@ app.delete('/api/admin/writings/:id', requireAuthEnhanced, async (req, res) => {
     return res.status(500).json({
       ok: false,
       error: 'Failed to delete writing',
-    })
-  }
-})
-
-// POST /api/admin/writings/:id/duplicate
-app.post('/api/admin/writings/:id/duplicate', requireAuthEnhanced, async (req, res) => {
-  try {
-    const { id } = req.params
-
-    const original = await prisma.writing.findUnique({
-      where: { id },
-    })
-
-    if (!original) {
-      return res.status(404).json({
-        ok: false,
-        error: 'Writing not found',
-      })
-    }
-
-    const newTitle = `${original.title} (Copy)`
-    let newSlug = await ensureUniqueSlug(prisma, generateSlug(newTitle), null, 'writing')
-
-    const duplicate = await prisma.writing.create({
-      data: {
-        title: newTitle,
-        slug: newSlug,
-        excerpt: original.excerpt,
-        contentMarkdown: original.contentMarkdown,
-        tags: original.tags,
-        status: 'draft',
-        publishedAt: null,
-      },
-    })
-
-    return res.status(201).json({
-      ok: true,
-      writing: duplicate,
-    })
-  } catch (error) {
-    console.error('Error duplicating writing:', error)
-    if (error.code === 'P2002') {
-      return res.status(400).json({
-        ok: false,
-        error: 'A writing with this slug already exists',
-      })
-    }
-    return res.status(500).json({
-      ok: false,
-      error: 'Failed to duplicate writing',
-    })
-  }
-})
-
-// POST /api/admin/blog/posts/:id/duplicate
-app.post('/api/admin/blog/posts/:id/duplicate', requireAuthEnhanced, async (req, res) => {
-  try {
-    const { id } = req.params
-
-    // Get the original post
-    const original = await prisma.blogPost.findUnique({
-      where: { id },
-    })
-
-    if (!original) {
-      return res.status(404).json({
-        ok: false,
-        error: 'Post not found',
-      })
-    }
-
-    // Generate a new slug based on the original title
-    const newTitle = `${original.title} (Copy)`
-    let newSlug = await ensureUniqueSlug(prisma, generateSlug(newTitle), null, 'blog')
-
-    // Create the duplicate as a draft
-    const duplicate = await prisma.blogPost.create({
-      data: {
-        title: newTitle,
-        slug: newSlug,
-        excerpt: original.excerpt,
-        contentMarkdown: original.contentMarkdown,
-        tags: original.tags,
-        status: 'draft', // Always duplicate as draft
-        publishedAt: null, // Reset published date
-      },
-    })
-
-    return res.status(201).json({
-      ok: true,
-      post: duplicate,
-    })
-  } catch (error) {
-    console.error('Error duplicating blog post:', error)
-    if (error.code === 'P2002') {
-      return res.status(400).json({
-        ok: false,
-        error: 'A post with this slug already exists',
-      })
-    }
-    return res.status(500).json({
-      ok: false,
-      error: 'Failed to duplicate blog post',
     })
   }
 })

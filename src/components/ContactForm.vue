@@ -20,10 +20,13 @@
           v-model="form.name"
           type="text"
           required
-          class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 dark:focus:ring-blue-400 focus:border-accent-300 dark:focus:border-blue-400 focus-ring bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+          class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 dark:focus:ring-blue-400 focus:border-accent-300 dark:focus:border-blue-400 focus-ring bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+          :class="errors.name ? 'border-red-500 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'"
           placeholder="Your name"
           :aria-describedby="errors.name ? 'name-error' : undefined"
           :aria-invalid="!!errors.name"
+          @input="validateName"
+          @blur="validateName"
         />
         <div v-if="errors.name" id="name-error" class="mt-1 text-sm text-red-600" role="alert">
           {{ errors.name }}
@@ -40,10 +43,13 @@
           v-model="form.email"
           type="email"
           required
-          class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 dark:focus:ring-blue-400 focus:border-accent-300 dark:focus:border-blue-400 focus-ring bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+          class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 dark:focus:ring-blue-400 focus:border-accent-300 dark:focus:border-blue-400 focus-ring bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+          :class="errors.email ? 'border-red-500 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'"
           placeholder="your@email.com"
           :aria-describedby="errors.email ? 'email-error' : undefined"
           :aria-invalid="!!errors.email"
+          @input="validateEmail"
+          @blur="validateEmail"
         />
         <div v-if="errors.email" id="email-error" class="mt-1 text-sm text-red-600" role="alert">
           {{ errors.email }}
@@ -155,29 +161,30 @@ const isSubmitting = ref(false)
 const successMessage = ref('')
 const errorMessage = ref('')
 
-const validateForm = () => {
-  // Clear previous errors
-  errors.name = ''
-  errors.email = ''
-
-  let isValid = true
-
-  // Validate name
+const validateName = () => {
   if (!form.name.trim()) {
     errors.name = 'Name is required'
-    isValid = false
+  } else if (form.name.trim().length < 2) {
+    errors.name = 'Name must be at least 2 characters long'
+  } else {
+    errors.name = ''
   }
+}
 
-  // Validate email
+const validateEmail = () => {
   if (!form.email.trim()) {
     errors.email = 'Email is required'
-    isValid = false
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
     errors.email = 'Please enter a valid email address'
-    isValid = false
+  } else {
+    errors.email = ''
   }
+}
 
-  return isValid
+const validateForm = () => {
+  validateName()
+  validateEmail()
+  return !errors.name && !errors.email
 }
 
 const handleSubmit = async () => {

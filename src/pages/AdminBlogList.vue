@@ -7,7 +7,7 @@
         'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200': notification.type === 'success',
         'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200': notification.type === 'error',
       }"
-      class="fixed top-4 right-4 z-50 rounded-md border shadow-lg p-4 flex items-center justify-between min-w-[300px] max-w-md animate-slide-in"
+      class="fixed bottom-4 right-4 z-50 rounded-md border shadow-lg p-4 flex items-center justify-between min-w-[300px] max-w-md animate-slide-in"
       role="alert"
     >
       <div class="flex items-center flex-1">
@@ -75,16 +75,47 @@
         <div class="flex gap-2">
           <button
             @click="openModal(null, 'blog')"
-            class="px-4 py-2 bg-primary-800 dark:bg-primary-700 text-white rounded-md hover:bg-primary-700 dark:hover:bg-primary-600 transition-colors shadow-sm dark:shadow-md"
+            class="px-4 py-2 bg-cyan-600 dark:bg-cyan-700 text-white rounded-md hover:bg-cyan-700 dark:hover:bg-cyan-600 transition-all shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95 font-medium"
           >
-            New Blog Post
+            <span class="flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              New
+            </span>
           </button>
+        </div>
+      </div>
+
+      <!-- Pagination (above the fold) -->
+      <div v-if="!loading && pagination && pagination.total > 0" class="flex items-center justify-between gap-4 bg-white dark:bg-slate-900 rounded-lg shadow border border-gray-200 dark:border-slate-700 px-4 py-2">
+        <div class="text-xs text-gray-600 dark:text-slate-400 whitespace-nowrap">
+          <span class="font-medium text-gray-700 dark:text-slate-300">{{ (pagination.page - 1) * pagination.pageSize + 1 }}-{{ Math.min(pagination.page * pagination.pageSize, pagination.total) }}</span>
+          <span class="mx-1">of</span>
+          <span class="font-medium text-gray-700 dark:text-slate-300">{{ pagination.total }}</span>
+          <span class="ml-1">{{ pagination.total === 1 ? 'item' : 'items' }}</span>
+        </div>
+        <div v-if="pagination.totalPages > 1" class="flex items-center gap-3 flex-1 justify-center">
           <button
-            @click="openModal(null, 'writing')"
-            class="px-4 py-2 bg-purple-800 dark:bg-purple-700 text-white rounded-md hover:bg-purple-700 dark:hover:bg-purple-600 transition-colors shadow-sm dark:shadow-md"
+            @click="changePage(pagination.page - 1)"
+            :disabled="pagination.page === 1"
+            class="px-2.5 py-1 text-xs border border-gray-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
           >
-            New Writing
+            ← Previous
           </button>
+          <span class="text-xs text-gray-600 dark:text-slate-400">
+            Page <span class="font-medium text-gray-700 dark:text-slate-300">{{ pagination.page }}</span> of <span class="font-medium text-gray-700 dark:text-slate-300">{{ pagination.totalPages }}</span>
+          </span>
+          <button
+            @click="changePage(pagination.page + 1)"
+            :disabled="pagination.page === pagination.totalPages"
+            class="px-2.5 py-1 text-xs border border-gray-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
+          >
+            Next →
+          </button>
+        </div>
+        <div v-else class="text-xs text-gray-500 dark:text-slate-400 whitespace-nowrap">
+          All items shown
         </div>
       </div>
 
@@ -106,17 +137,109 @@
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider">
                 Type
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider">
-                Title
+              <th 
+                @click="handleSort('title')"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors select-none"
+              >
+                <div class="flex items-center gap-1">
+                  Title
+                  <div class="flex flex-col">
+                    <svg 
+                      class="w-3 h-3" 
+                      :class="sortField === 'title' && sortDirection === 'asc' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-slate-500'"
+                      fill="currentColor" 
+                      viewBox="0 0 20 20"
+                    >
+                      <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
+                    </svg>
+                    <svg 
+                      class="w-3 h-3 -mt-1" 
+                      :class="sortField === 'title' && sortDirection === 'desc' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-slate-500'"
+                      fill="currentColor" 
+                      viewBox="0 0 20 20"
+                    >
+                      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider">
-                Status
+              <th 
+                @click="handleSort('status')"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors select-none"
+              >
+                <div class="flex items-center gap-1">
+                  Status
+                  <div class="flex flex-col">
+                    <svg 
+                      class="w-3 h-3" 
+                      :class="sortField === 'status' && sortDirection === 'asc' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-slate-500'"
+                      fill="currentColor" 
+                      viewBox="0 0 20 20"
+                    >
+                      <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
+                    </svg>
+                    <svg 
+                      class="w-3 h-3 -mt-1" 
+                      :class="sortField === 'status' && sortDirection === 'desc' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-slate-500'"
+                      fill="currentColor" 
+                      viewBox="0 0 20 20"
+                    >
+                      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider">
-                Updated
+              <th 
+                @click="handleSort('updatedAt')"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors select-none"
+              >
+                <div class="flex items-center gap-1">
+                  Updated
+                  <div class="flex flex-col">
+                    <svg 
+                      class="w-3 h-3" 
+                      :class="sortField === 'updatedAt' && sortDirection === 'asc' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-slate-500'"
+                      fill="currentColor" 
+                      viewBox="0 0 20 20"
+                    >
+                      <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
+                    </svg>
+                    <svg 
+                      class="w-3 h-3 -mt-1" 
+                      :class="sortField === 'updatedAt' && sortDirection === 'desc' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-slate-500'"
+                      fill="currentColor" 
+                      viewBox="0 0 20 20"
+                    >
+                      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider">
-                Published
+              <th 
+                @click="handleSort('publishedAt')"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors select-none"
+              >
+                <div class="flex items-center gap-1">
+                  Published
+                  <div class="flex flex-col">
+                    <svg 
+                      class="w-3 h-3" 
+                      :class="sortField === 'publishedAt' && sortDirection === 'asc' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-slate-500'"
+                      fill="currentColor" 
+                      viewBox="0 0 20 20"
+                    >
+                      <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
+                    </svg>
+                    <svg 
+                      class="w-3 h-3 -mt-1" 
+                      :class="sortField === 'publishedAt' && sortDirection === 'desc' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-slate-500'"
+                      fill="currentColor" 
+                      viewBox="0 0 20 20"
+                    >
+                      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider">
                 Tags
@@ -127,11 +250,11 @@
             </tr>
           </thead>
           <tbody class="bg-white dark:bg-slate-900 divide-y divide-gray-200 dark:divide-slate-700">
-            <tr v-for="item in items" :key="`${item.type}-${item.id}`" class="hover:bg-gray-50 dark:hover:bg-slate-800">
+            <tr v-for="item in paginatedItems" :key="`${item.type}-${item.id}`" class="hover:bg-gray-50 dark:hover:bg-slate-800">
               <td class="px-6 py-4 whitespace-nowrap">
                 <span
                   :class="{
-                    'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200': item.type === 'blog',
+                    'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-200': item.type === 'blog',
                     'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-200': item.type === 'writing',
                   }"
                   class="px-2 py-1 text-xs font-medium rounded-full"
@@ -140,36 +263,46 @@
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900 dark:text-slate-100">
-                  {{ item.title }}
-                </div>
-                <div class="text-sm text-gray-500 dark:text-slate-400">
-                  /{{ item.slug }}
-                </div>
+                <button
+                  @click="openModal(item.id, item.type)"
+                  class="text-left hover:opacity-80 transition-opacity"
+                >
+                  <div class="text-sm font-medium text-gray-900 dark:text-slate-100 hover:text-primary-600 dark:hover:text-primary-400">
+                    {{ item.title }}
+                  </div>
+                  <div class="text-sm text-gray-500 dark:text-slate-400 hover:text-primary-500 dark:hover:text-primary-400">
+                    /{{ item.slug }}
+                  </div>
+                </button>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <button
                   @click="toggleStatus(item)"
                   :disabled="togglingStatus === `${item.type}-${item.id}`"
-                  :class="{
-                    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200 hover:bg-yellow-200 dark:hover:bg-yellow-900/50': item.status === 'draft',
-                    'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200 hover:bg-green-200 dark:hover:bg-green-900/50': item.status === 'published',
-                  }"
-                  class="px-3 py-1.5 text-xs font-medium rounded-full cursor-pointer transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
+                  :class="[
+                    {
+                      'bg-gradient-to-r from-amber-400 to-orange-500 text-white dark:from-amber-500 dark:to-orange-600 hover:from-amber-500 hover:to-orange-600 dark:hover:from-amber-600 dark:hover:to-orange-700 focus:ring-amber-500': item.status === 'draft',
+                      'bg-gradient-to-r from-emerald-400 to-green-500 text-white dark:from-emerald-500 dark:to-green-600 hover:from-emerald-500 hover:to-green-600 dark:hover:from-emerald-600 dark:hover:to-green-700 focus:ring-emerald-500': item.status === 'published',
+                    },
+                    'px-4 py-2 text-xs font-semibold rounded-full cursor-pointer transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg'
+                  ]"
                   :title="`Click to toggle to ${item.status === 'draft' ? 'published' : 'draft'}`"
                 >
                   <span v-if="togglingStatus === `${item.type}-${item.id}`" class="inline-flex items-center gap-1.5">
-                    <svg class="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <svg class="animate-spin h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                       <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
                     Updating...
                   </span>
                   <span v-else class="inline-flex items-center gap-1.5">
-                    {{ item.status }}
-                    <svg class="h-3 w-3 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    <svg v-if="item.status === 'draft'" class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
                     </svg>
+                    <svg v-else class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="uppercase tracking-wide">{{ item.status }}</span>
                   </span>
                 </button>
               </td>
@@ -198,7 +331,7 @@
                   <button
                     @click="handleDuplicate(item)"
                     :disabled="duplicatingItem === `${item.type}-${item.id}`"
-                    class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                    class="text-cyan-600 dark:text-cyan-400 hover:text-cyan-900 dark:hover:text-cyan-300 disabled:opacity-50 disabled:cursor-not-allowed"
                     :title="`Duplicate this ${item.type}`"
                   >
                     <span v-if="duplicatingItem === `${item.type}-${item.id}`" class="inline-flex items-center gap-1">
@@ -217,7 +350,7 @@
                   </button>
                   <button
                     @click="openModal(item.id, item.type)"
-                    class="text-primary-600 dark:text-blue-400 hover:text-primary-900 dark:hover:text-blue-300"
+                    class="text-cyan-600 dark:text-cyan-400 hover:text-cyan-900 dark:hover:text-cyan-300"
                   >
                     Edit
                   </button>
@@ -236,31 +369,6 @@
         <!-- Empty state -->
         <div v-if="items.length === 0" class="text-center py-12">
           <p class="text-gray-600 dark:text-slate-300">No content found.</p>
-        </div>
-      </div>
-
-      <!-- Pagination -->
-      <div v-if="pagination && pagination.totalPages > 1" class="flex items-center justify-between">
-        <div class="text-sm text-gray-700 dark:text-slate-300">
-          Showing {{ (pagination.page - 1) * pagination.pageSize + 1 }} to
-          {{ Math.min(pagination.page * pagination.pageSize, pagination.total) }} of
-          {{ pagination.total }} items
-        </div>
-        <div class="flex gap-2">
-          <button
-            @click="changePage(pagination.page - 1)"
-            :disabled="pagination.page === 1"
-            class="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-slate-700"
-          >
-            Previous
-          </button>
-          <button
-            @click="changePage(pagination.page + 1)"
-            :disabled="pagination.page === pagination.totalPages"
-            class="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-slate-700"
-          >
-            Next
-          </button>
         </div>
       </div>
     </div>
@@ -293,15 +401,16 @@
       :message="duplicateConfirmMessage"
       confirm-text="Duplicate"
       cancel-text="Cancel"
-      confirm-button-class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600"
+      confirm-button-class="bg-cyan-600 hover:bg-cyan-700 dark:bg-cyan-700 dark:hover:bg-cyan-600"
       @confirm="executeDuplicate"
       @cancel="cancelDuplicate"
     />
+
   </AdminLayout>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import AdminLayout from '@/components/AdminLayout.vue'
 import AdminEditorModal from '@/components/AdminEditorModal.vue'
@@ -322,6 +431,18 @@ const duplicatingItem = ref<string | null>(null)
 const notification = ref<{ type: 'success' | 'error'; message: string } | null>(null)
 let notificationTimeout: ReturnType<typeof setTimeout> | null = null
 
+// Sorting state
+const sortField = ref<'title' | 'updatedAt' | 'publishedAt' | 'status'>('updatedAt')
+const sortDirection = ref<'asc' | 'desc'>('desc')
+
+// Computed property for paginated items
+const paginatedItems = computed(() => {
+  if (!pagination.value) return items.value
+  const start = (pagination.value.page - 1) * pagination.value.pageSize
+  const end = start + pagination.value.pageSize
+  return items.value.slice(start, end)
+})
+
 // Editor modal state
 const showEditorModal = ref(false)
 const editId = ref<string | null>(null)
@@ -338,6 +459,18 @@ const duplicateConfirmMessage = ref('')
 const itemToDuplicate = ref<any>(null)
 
 let searchTimeout: ReturnType<typeof setTimeout> | null = null
+
+const handleSort = (field: 'title' | 'updatedAt' | 'publishedAt' | 'status') => {
+  if (sortField.value === field) {
+    // Toggle direction if clicking the same field
+    sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc'
+  } else {
+    // Set new field and default to descending
+    sortField.value = field
+    sortDirection.value = 'desc'
+  }
+  fetchContent()
+}
 
 const openModal = (id: string | null, type: 'blog' | 'writing') => {
   editId.value = id
@@ -362,7 +495,7 @@ const closeModal = () => {
 
 const handleEditorSaved = () => {
   fetchContent()
-  showNotification('Content saved successfully', 'success')
+  showNotification('success', 'Content saved successfully')
 }
 
 // Watch route changes to open modal
@@ -395,11 +528,12 @@ const fetchContent = async () => {
       headers['Authorization'] = `Bearer ${token}`
     }
 
-    // Fetch both blog posts and writings
+    // Fetch both blog posts and writings (no pagination - we do client-side pagination)
     const params = new URLSearchParams()
     if (searchQuery.value) params.append('q', searchQuery.value)
     if (statusFilter.value) params.append('status', statusFilter.value)
-    if (pagination.value) params.append('page', pagination.value.page.toString())
+    // Fetch all items, we'll paginate client-side
+    params.append('pageSize', '1000') // Get a large number to fetch all
 
     const [blogResponse, writingResponse] = await Promise.all([
       typeFilter.value === 'writing' ? null : fetch(`/api/admin/blog/posts?${params.toString()}`, {
@@ -426,19 +560,43 @@ const fetchContent = async () => {
       ...(writingData.writings || []).map((writing: any) => ({ ...writing, type: 'writing' })),
     ]
 
-    // Sort by updatedAt (most recent first)
+    // Sort based on current sort settings
     combined.sort((a, b) => {
-      const dateA = new Date(a.updatedAt).getTime()
-      const dateB = new Date(b.updatedAt).getTime()
-      return dateB - dateA
+      let aValue: any
+      let bValue: any
+      
+      if (sortField.value === 'title') {
+        aValue = (a.title || '').toLowerCase()
+        bValue = (b.title || '').toLowerCase()
+      } else if (sortField.value === 'status') {
+        aValue = a.status || ''
+        bValue = b.status || ''
+      } else if (sortField.value === 'updatedAt') {
+        aValue = new Date(a.updatedAt || 0).getTime()
+        bValue = new Date(b.updatedAt || 0).getTime()
+      } else if (sortField.value === 'publishedAt') {
+        aValue = a.publishedAt ? new Date(a.publishedAt).getTime() : 0
+        bValue = b.publishedAt ? new Date(b.publishedAt).getTime() : 0
+      } else {
+        aValue = new Date(a.updatedAt || 0).getTime()
+        bValue = new Date(b.updatedAt || 0).getTime()
+      }
+      
+      if (sortDirection.value === 'asc') {
+        return aValue > bValue ? 1 : aValue < bValue ? -1 : 0
+      } else {
+        return aValue < bValue ? 1 : aValue > bValue ? -1 : 0
+      }
     })
 
     items.value = combined
+    const pageSize = 12
+    const total = (blogData.pagination?.total || 0) + (writingData.pagination?.total || 0)
     pagination.value = {
       page: pagination.value?.page || 1,
-      pageSize: pagination.value?.pageSize || 20,
-      total: (blogData.pagination?.total || 0) + (writingData.pagination?.total || 0),
-      totalPages: Math.ceil(((blogData.pagination?.total || 0) + (writingData.pagination?.total || 0)) / (pagination.value?.pageSize || 20)),
+      pageSize,
+      total,
+      totalPages: Math.ceil(total / pageSize),
     }
   } catch (err) {
     console.error('Error fetching content:', err)
@@ -459,7 +617,8 @@ const debouncedSearch = () => {
 const changePage = (page: number) => {
   if (!pagination.value) return
   pagination.value = { ...pagination.value, page }
-  fetchContent()
+  // Scroll to top of table when changing pages
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 const toggleStatus = async (item: any) => {
@@ -503,7 +662,17 @@ const toggleStatus = async (item: any) => {
     const index = items.value.findIndex(i => i.id === item.id && i.type === item.type)
     if (index !== -1) {
       const updated = item.type === 'blog' ? data.post : data.writing
-      items.value[index] = { ...updated, type: item.type }
+      // Ensure we preserve all fields and update with the response data
+      const updatedItem = { 
+        ...items.value[index], // Preserve existing fields
+        ...updated, // Update with API response
+        type: item.type // Ensure type is preserved
+      }
+      // If toggling to published and publishedAt is missing, set it now
+      if (newStatus === 'published' && !updatedItem.publishedAt) {
+        updatedItem.publishedAt = new Date().toISOString()
+      }
+      items.value[index] = updatedItem
     }
     showNotification('success', `${item.type === 'blog' ? 'Post' : 'Writing'} ${newStatus === 'published' ? 'published' : 'moved to draft'} successfully`)
   } catch (err) {
@@ -543,8 +712,8 @@ const executeDuplicate = async () => {
     }
 
     const endpoint = item.type === 'blog'
-      ? `/api/admin/blog/posts/${item.id}/duplicate`
-      : `/api/admin/writings/${item.id}/duplicate`
+      ? `/api/admin/blog/posts/${item.id}`
+      : `/api/admin/writings/${item.id}`
     
     const response = await fetch(endpoint, {
       method: 'POST',
@@ -664,7 +833,7 @@ const formatDate = (dateString: string) => {
 }
 
 onMounted(() => {
-  pagination.value = { page: 1, pageSize: 20, total: 0, totalPages: 1 }
+  pagination.value = { page: 1, pageSize: 12, total: 0, totalPages: 1 }
   fetchContent()
 })
 </script>

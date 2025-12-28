@@ -1,6 +1,9 @@
 <template>
   <div 
-    class="prose prose-lg dark:prose-invert max-w-none"
+    :class="[
+      'prose dark:prose-invert max-w-none prose-a:text-primary-800 prose-a:dark:text-blue-400 prose-a:hover:text-primary-700 prose-a:dark:hover:text-blue-300 prose-a:underline',
+      size === 'sm' ? 'prose-sm' : size === 'base' ? 'prose-base' : 'prose-lg'
+    ]"
     v-html="sanitizedHtml"
   />
 </template>
@@ -12,6 +15,7 @@ import DOMPurify from 'dompurify'
 
 const props = defineProps<{
   content: string
+  size?: 'sm' | 'base' | 'lg'
 }>()
 
 const sanitizedHtml = computed(() => {

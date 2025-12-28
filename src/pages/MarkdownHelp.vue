@@ -5,56 +5,57 @@
         <div class="bg-white dark:bg-slate-900 rounded-lg shadow-lg p-8">
           <h1 class="text-3xl font-bold text-gray-900 dark:text-slate-100 mb-2">Markdown Formatting Guide</h1>
           <p class="text-gray-600 dark:text-slate-400 mb-8">
-            A quick reference guide for writing markdown content
+            A quick reference guide for writing your nursing stories, blog posts, and reflections
           </p>
 
           <div class="space-y-8 text-sm text-gray-700 dark:text-slate-300">
             <!-- Headers -->
             <section>
               <h2 class="text-xl font-semibold text-gray-900 dark:text-slate-100 mb-3">Headers</h2>
+              <p class="text-sm text-gray-600 dark:text-slate-400 mb-2">Use headers to structure your nursing stories and organize your content.</p>
               <div class="bg-gray-50 dark:bg-slate-800 p-4 rounded font-mono text-xs space-y-1">
-                <div># H1 Header</div>
-                <div>## H2 Header</div>
-                <div>### H3 Header</div>
-                <div>#### H4 Header</div>
-                <div>##### H5 Header</div>
-                <div>###### H6 Header</div>
+                <div># Reflections on Night Shift</div>
+                <div>## Patient Care Experiences</div>
+                <div>### Lessons Learned</div>
+                <div>#### Key Takeaways</div>
               </div>
             </section>
 
             <!-- Emphasis -->
             <section>
               <h2 class="text-xl font-semibold text-gray-900 dark:text-slate-100 mb-3">Emphasis</h2>
+              <p class="text-sm text-gray-600 dark:text-slate-400 mb-2">Highlight important nursing concepts, protocols, or emotional moments.</p>
               <div class="bg-gray-50 dark:bg-slate-800 p-4 rounded font-mono text-xs space-y-1">
-                <div>*italic* or _italic_</div>
-                <div>**bold** or __bold__</div>
-                <div>***bold italic***</div>
-                <div>~~strikethrough~~</div>
+                <div>*gentle reminder* or _personal reflection_</div>
+                <div>**critical care protocol** or __important note__</div>
+                <div>***urgent patient need***</div>
               </div>
             </section>
 
             <!-- Lists -->
             <section>
               <h2 class="text-xl font-semibold text-gray-900 dark:text-slate-100 mb-3">Lists</h2>
+              <p class="text-sm text-gray-600 dark:text-slate-400 mb-2">Organize nursing tips, patient care steps, or key insights.</p>
               <div class="bg-gray-50 dark:bg-slate-800 p-4 rounded font-mono text-xs space-y-2">
-                <div class="font-semibold">Unordered list:</div>
-                <div class="ml-2">- Item 1</div>
-                <div class="ml-2">- Item 2</div>
-                <div class="ml-2">  - Nested item</div>
-                <div class="mt-3 font-semibold">Ordered list:</div>
-                <div class="ml-2">1. First item</div>
-                <div class="ml-2">2. Second item</div>
-                <div class="ml-2">3. Third item</div>
+                <div class="font-semibold">Unordered list (for tips or insights):</div>
+                <div class="ml-2">- Always verify patient identity</div>
+                <div class="ml-2">- Practice active listening</div>
+                <div class="ml-2">  - Especially during difficult conversations</div>
+                <div class="mt-3 font-semibold">Ordered list (for procedures or steps):</div>
+                <div class="ml-2">1. Assess the patient's condition</div>
+                <div class="ml-2">2. Document your findings</div>
+                <div class="ml-2">3. Communicate with the care team</div>
               </div>
             </section>
 
             <!-- Links -->
             <section>
               <h2 class="text-xl font-semibold text-gray-900 dark:text-slate-100 mb-3">Links</h2>
+              <p class="text-sm text-gray-600 dark:text-slate-400 mb-2">Reference nursing research, protocols, or helpful resources.</p>
               <div class="bg-gray-50 dark:bg-slate-800 p-4 rounded font-mono text-xs space-y-1">
-                <div>[Link text](https://example.com)</div>
-                <div>[Link with title](https://example.com "Title text")</div>
-                <div>&lt;https://example.com&gt; (automatic link)</div>
+                <div>[ANA Code of Ethics](https://www.nursingworld.org/)</div>
+                <div>[Evidence-based practice guidelines](https://example.com "Nursing Research")</div>
+                <div>&lt;https://www.cdc.gov/nursing&gt; (automatic link)</div>
               </div>
             </section>
 
@@ -71,26 +72,28 @@
 
             <!-- Code -->
             <section>
-              <h2 class="text-xl font-semibold text-gray-900 dark:text-slate-100 mb-3">Code</h2>
+              <h2 class="text-xl font-semibold text-gray-900 dark:text-slate-100 mb-3">Code & Medical Terms</h2>
+              <p class="text-sm text-gray-600 dark:text-slate-400 mb-2">Format medical terminology, abbreviations, or medication names.</p>
               <div class="bg-gray-50 dark:bg-slate-800 p-4 rounded font-mono text-xs space-y-2">
-                <div>Inline code: `code here`</div>
-                <div class="mt-2">Code block:</div>
-                <div class="ml-2">```language</div>
-                <div class="ml-2">code here</div>
-                <div class="ml-2">more code</div>
+                <div>Inline: `BP`, `HR`, `O2 sat`, `PRN`</div>
+                <div class="mt-2">For medication lists or protocols:</div>
                 <div class="ml-2">```</div>
-                <div class="mt-2 text-xs text-gray-500 dark:text-slate-400">(language is optional: js, python, html, etc.)</div>
+                <div class="ml-2">Medication: Morphine 2mg IV</div>
+                <div class="ml-2">Frequency: Q4H PRN</div>
+                <div class="ml-2">Indication: Pain management</div>
+                <div class="ml-2">```</div>
               </div>
             </section>
 
             <!-- Blockquotes -->
             <section>
               <h2 class="text-xl font-semibold text-gray-900 dark:text-slate-100 mb-3">Blockquotes</h2>
+              <p class="text-sm text-gray-600 dark:text-slate-400 mb-2">Highlight inspiring quotes, patient words, or important nursing wisdom.</p>
               <div class="bg-gray-50 dark:bg-slate-800 p-4 rounded font-mono text-xs space-y-1">
-                <div>&gt; This is a quote</div>
-                <div>&gt; Multiple lines</div>
+                <div>&gt; "Nursing is not just an art, it has a heart."</div>
                 <div>&gt; </div>
-                <div>&gt; With paragraph breaks</div>
+                <div>&gt; "Thank you for being here with me," the patient said.</div>
+                <div>&gt; Those words reminded me why I became a nurse.</div>
               </div>
             </section>
 
@@ -118,11 +121,12 @@
             <!-- Tables -->
             <section>
               <h2 class="text-xl font-semibold text-gray-900 dark:text-slate-100 mb-3">Tables</h2>
+              <p class="text-sm text-gray-600 dark:text-slate-400 mb-2">Organize shift schedules, medication lists, or assessment data.</p>
               <div class="bg-gray-50 dark:bg-slate-800 p-4 rounded font-mono text-xs space-y-1">
-                <div>| Header 1 | Header 2 |</div>
-                <div>|----------|----------|</div>
-                <div>| Cell 1   | Cell 2   |</div>
-                <div>| Cell 3   | Cell 4   |</div>
+                <div>| Medication | Dosage | Frequency |</div>
+                <div>|------------|--------|-----------|</div>
+                <div>| Morphine   | 2mg    | Q4H PRN   |</div>
+                <div>| Aspirin    | 81mg   | Daily     |</div>
               </div>
             </section>
 

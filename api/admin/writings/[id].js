@@ -90,11 +90,6 @@ export default async function handler(req, res) {
               : [])
         : existing.tags
 
-      let publishedAt = existing.publishedAt
-      if (status === 'published' && existing.status === 'draft') {
-        publishedAt = new Date()
-      }
-
       const updateData = {}
       if (title !== undefined) updateData.title = title.trim()
       if (slug !== undefined || title !== undefined) updateData.slug = finalSlug
@@ -103,7 +98,8 @@ export default async function handler(req, res) {
       if (tags !== undefined) updateData.tags = tagsArray
       if (status !== undefined) {
         updateData.status = status
-        if (status === 'published' && !publishedAt) {
+        // If changing to published and it doesn't have a publishedAt date, set it now
+        if (status === 'published' && !existing.publishedAt) {
           updateData.publishedAt = new Date()
         }
       }
@@ -114,6 +110,30 @@ export default async function handler(req, res) {
       })
 
       return res.status(200).json({ ok: true, writing })
+    }
+
+    // POST /api/admin/writings/:id (for duplication)
+    if (req.method === 'POST') {
+      const original = await prisma.writing.findUnique({ where: { id } })
+      
+      if (!original) {
+        return res.status(404).json({ ok: false, error: 'Writing not found' })
+      }
+
+      const newSlug = await ensureUniqueSlug(prisma, original.slug, null, 'writing')
+      const duplicated = await prisma.writing.create({
+        data: {
+          title: `${original.title} (Copy)`,
+          slug: newSlug,
+          excerpt: original.excerpt,
+          contentMarkdown: original.contentMarkdown,
+          tags: original.tags,
+          status: 'draft',
+          publishedAt: null,
+        },
+      })
+
+      return res.status(201).json({ ok: true, writing: duplicated })
     }
 
     // DELETE /api/admin/writings/:id

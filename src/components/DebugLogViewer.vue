@@ -76,11 +76,11 @@
         Auto-scroll
       </label>
       <button
-        @click="exportLogs"
+        @click="copyLogs"
         class="px-2 py-1 text-xs text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-100 transition-colors"
-        title="Export logs"
+        title="Copy logs to clipboard"
       >
-        Export
+        {{ copyButtonText }}
       </button>
     </div>
   </div>
@@ -105,7 +105,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick, onMounted, onUnmounted } from 'vue'
+import { ref, nextTick, onMounted, onUnmounted } from 'vue'
 
 interface LogEntry {
   type: 'log' | 'error' | 'warn' | 'info'
@@ -118,6 +118,7 @@ const isOpen = ref(false)
 const logs = ref<LogEntry[]>([])
 const autoScroll = ref(true)
 const maxLogs = 500
+const copyButtonText = ref('Copy')
 
 const originalConsole = {
   log: console.log,
@@ -177,14 +178,14 @@ const restoreConsole = () => {
 
 const interceptFetch = () => {
   const originalFetch = window.fetch
-  window.fetch = async (...args: any[]) => {
-    const url = typeof args[0] === 'string' ? args[0] : args[0].url
-    const method = args[1]?.method || 'GET'
+  window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url
+    const method = init?.method || 'GET'
     
     addLog('info', `Fetch: ${method} ${url}`)
     
     try {
-      const response = await originalFetch(...args)
+      const response = await originalFetch(input, init)
       
       // Clone response to read body without consuming it
       const clonedResponse = response.clone()
@@ -192,7 +193,12 @@ const interceptFetch = () => {
       // Log response status
       if (!response.ok) {
         try {
-          const errorData = await clonedResponse.json().catch(() => ({ text: await clonedResponse.text() }))
+          let errorData
+          try {
+            errorData = await clonedResponse.json()
+          } catch (jsonError) {
+            errorData = { text: await clonedResponse.text() }
+          }
           addLog('error', `Fetch Error: ${method} ${url} - ${response.status} ${response.statusText}`, errorData)
         } catch (e) {
           addLog('error', `Fetch Error: ${method} ${url} - ${response.status} ${response.statusText}`)
@@ -211,13 +217,14 @@ const interceptFetch = () => {
 
 const formatTime = (timestamp: number) => {
   const date = new Date(timestamp)
-  return date.toLocaleTimeString('en-US', { 
+  const timeString = date.toLocaleTimeString('en-US', { 
     hour12: false,
     hour: '2-digit',
     minute: '2-digit',
-    second: '2-digit',
-    fractionalSecondDigits: 3
+    second: '2-digit'
   })
+  const milliseconds = date.getMilliseconds().toString().padStart(3, '0')
+  return `${timeString}.${milliseconds}`
 }
 
 const toggleOpen = () => {
@@ -228,7 +235,7 @@ const clearLogs = () => {
   logs.value = []
 }
 
-const exportLogs = () => {
+const copyLogs = async () => {
   const logText = logs.value.map(log => {
     const time = formatTime(log.timestamp)
     const message = typeof log.message === 'string' 
@@ -237,15 +244,19 @@ const exportLogs = () => {
     return `[${time}] ${log.type.toUpperCase()}: ${message}${log.stack ? '\n' + log.stack : ''}`
   }).join('\n\n')
   
-  const blob = new Blob([logText], { type: 'text/plain' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `debug-logs-${new Date().toISOString()}.txt`
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
+  try {
+    await navigator.clipboard.writeText(logText)
+    copyButtonText.value = 'Copied!'
+    setTimeout(() => {
+      copyButtonText.value = 'Copy'
+    }, 2000)
+  } catch (err) {
+    console.error('Failed to copy logs:', err)
+    copyButtonText.value = 'Failed'
+    setTimeout(() => {
+      copyButtonText.value = 'Copy'
+    }, 2000)
+  }
 }
 
 // Watch for errors
