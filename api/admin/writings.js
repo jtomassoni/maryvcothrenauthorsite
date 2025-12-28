@@ -86,6 +86,10 @@ export default async function handler(req, res) {
 
       let writings, total
       try {
+        console.log('[writings] Executing query with where:', JSON.stringify(where))
+        console.log('[writings] OrderBy:', JSON.stringify(orderBy))
+        console.log('[writings] Skip:', skip, 'Take:', pageSizeNum)
+        
         [writings, total] = await Promise.all([
           prisma.writing.findMany({
             where,
@@ -95,12 +99,16 @@ export default async function handler(req, res) {
           }),
           prisma.writing.count({ where }),
         ])
+        
+        console.log('[writings] Query successful. Found', writings.length, 'writings, total:', total)
       } catch (queryError) {
-        // If it's a table missing error, throw it so it gets caught by the outer catch
-        if (queryError.code === 'P2021' || queryError.message?.includes('does not exist')) {
-          throw queryError
-        }
-        // Re-throw other errors
+        console.error('[writings] Query error details:', {
+          code: queryError.code,
+          message: queryError.message,
+          name: queryError.name,
+          meta: queryError.meta,
+        })
+        // Re-throw so outer catch can handle it
         throw queryError
       }
 
@@ -214,10 +222,17 @@ export default async function handler(req, res) {
       errorResponse.code = error.code
     }
     
-    // Include more details in development
-    if (process.env.NODE_ENV === 'development') {
+    // Include Prisma meta if available (contains table/column info)
+    if (error.meta) {
+      errorResponse.meta = error.meta
+    }
+    
+    // Always include error name for debugging
+    errorResponse.name = error.name
+    
+    // Include more details in development or if it's a known Prisma error
+    if (process.env.NODE_ENV === 'development' || error.code) {
       errorResponse.stack = error.stack
-      errorResponse.name = error.name
     }
     
     return res.status(500).json(errorResponse)

@@ -618,26 +618,57 @@ const fetchContent = async () => {
     if (writingResponse) {
       if (!writingResponse.ok) {
         try {
-          writingData = await writingResponse.json()
+          const contentType = writingResponse.headers.get('content-type')
+          if (contentType && contentType.includes('application/json')) {
+            writingData = await writingResponse.json()
+            // Log the actual error for debugging
+            console.error('[AdminBlogList] Writings API error:', writingData)
+          } else {
+            // Not JSON, read as text
+            const text = await writingResponse.text()
+            console.error('[AdminBlogList] Writings API non-JSON error:', text)
+            writingData = { 
+              ok: false, 
+              error: `Server error: ${writingResponse.status} ${writingResponse.statusText}`,
+              message: text.substring(0, 200)
+            }
+          }
         } catch (e) {
-          // Response is not JSON, use error message from status
+          console.error('[AdminBlogList] Error parsing writings response:', e)
           writingData = { 
             ok: false, 
-            error: `Database error: Tables may not exist. Please run database migrations.`,
-            message: `Server returned ${writingResponse.status} ${writingResponse.statusText}`
+            error: `Failed to parse error response: ${writingResponse.status} ${writingResponse.statusText}`,
+            message: e instanceof Error ? e.message : 'Unknown error'
           }
         }
       } else {
         try {
           writingData = await writingResponse.json()
         } catch (e) {
+          console.error('[AdminBlogList] Error parsing writings JSON:', e)
           writingData = { ok: false, error: 'Invalid response from server' }
         }
       }
     }
 
     if ((blogResponse && (!blogResponse.ok || !blogData.ok)) || (writingResponse && (!writingResponse.ok || !writingData.ok))) {
-      const errorMsg = blogData.error || writingData.error || blogData.message || writingData.message || 'Failed to fetch content'
+      // Build a comprehensive error message
+      const errors = []
+      if (blogResponse && (!blogResponse.ok || !blogData.ok)) {
+        errors.push(`Blog: ${blogData.error || blogData.message || 'Unknown error'}`)
+      }
+      if (writingResponse && (!writingResponse.ok || !writingData.ok)) {
+        errors.push(`Writings: ${writingData.error || writingData.message || 'Unknown error'}`)
+        // Log full error details for debugging
+        if (writingData.code) {
+          console.error('[AdminBlogList] Writings error code:', writingData.code)
+        }
+        if (writingData.meta) {
+          console.error('[AdminBlogList] Writings error meta:', writingData.meta)
+        }
+      }
+      
+      const errorMsg = errors.length > 0 ? errors.join(' | ') : 'Failed to fetch content'
       error.value = errorMsg
       // Still set empty arrays so the UI doesn't break
       items.value = []
