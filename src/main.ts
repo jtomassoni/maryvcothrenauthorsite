@@ -37,12 +37,12 @@ const router = createRouter({
       return {
         el: to.hash,
         behavior: 'smooth',
-        top: 80 // Account for sticky header
+        top: 80, // Account for sticky header
       }
     } else {
       return { top: 0 }
     }
-  }
+  },
 })
 
 // Navigation guard to protect admin routes
@@ -52,21 +52,21 @@ router.beforeEach(async (to, from, next) => {
     try {
       // Get token from localStorage
       const token = localStorage.getItem('auth_token')
-      
+
       if (!token) {
         // No token, redirect to login
         next('/login')
         return
       }
-      
+
       const response = await fetch('/api/auth/check', {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         credentials: 'include',
       })
-      
+
       // Check if response is JSON
       const contentType = response.headers.get('content-type')
       if (!contentType || !contentType.includes('application/json')) {
@@ -74,9 +74,9 @@ router.beforeEach(async (to, from, next) => {
         next('/login')
         return
       }
-      
+
       const data = await response.json()
-      
+
       if (data.ok && data.authenticated) {
         // User is authenticated, allow access
         next()

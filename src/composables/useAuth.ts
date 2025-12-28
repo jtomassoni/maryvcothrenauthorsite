@@ -9,7 +9,10 @@ const isAuthenticated = computed(() => !!token.value)
 // In dev, Vite proxies to localhost:3001
 const API_BASE_URL = import.meta.env.VITE_API_URL || ''
 
-async function login(userUsername: string, password: string): Promise<{ ok: boolean; error?: string }> {
+async function login(
+  userUsername: string,
+  password: string
+): Promise<{ ok: boolean; error?: string }> {
   try {
     const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
       method: 'POST',
@@ -45,7 +48,7 @@ async function checkAuth(): Promise<boolean> {
     const response = await fetch(`${API_BASE_URL}/api/auth/check`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token.value}`,
+        Authorization: `Bearer ${token.value}`,
       },
     })
 
@@ -97,4 +100,3 @@ export function useAuth() {
     checkAuth,
   }
 }
-

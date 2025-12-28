@@ -4,7 +4,10 @@ import { PrismaClient } from '@prisma/client'
 export default async function handler(req, res) {
   // Initialize Prisma client inside handler to avoid initialization issues
   const prisma = new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    log:
+      process.env.NODE_ENV === 'development'
+        ? ['query', 'error', 'warn']
+        : ['error'],
   })
 
   try {
@@ -49,4 +52,3 @@ export default async function handler(req, res) {
     await prisma.$disconnect()
   }
 }
-

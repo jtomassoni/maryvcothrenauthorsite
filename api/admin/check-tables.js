@@ -11,14 +11,17 @@ export default async function handler(req, res) {
       prisma.writing.findFirst(),
     ])
 
-    const writingsTableExists = writingsExist.status === 'fulfilled' || 
-      (writingsExist.status === 'rejected' && 
-       writingsExist.reason?.code !== 'P2021' && 
-       !writingsExist.reason?.message?.includes('does not exist'))
+    const writingsTableExists =
+      writingsExist.status === 'fulfilled' ||
+      (writingsExist.status === 'rejected' &&
+        writingsExist.reason?.code !== 'P2021' &&
+        !writingsExist.reason?.message?.includes('does not exist'))
 
     // Check for P2021 errors specifically
-    const writingsError = writingsExist.status === 'rejected' && 
-      (writingsExist.reason?.code === 'P2021' || writingsExist.reason?.message?.includes('does not exist'))
+    const writingsError =
+      writingsExist.status === 'rejected' &&
+      (writingsExist.reason?.code === 'P2021' ||
+        writingsExist.reason?.message?.includes('does not exist'))
 
     return res.status(200).json({
       ok: true,
@@ -40,4 +43,3 @@ export default async function handler(req, res) {
     await prisma.$disconnect()
   }
 }
-

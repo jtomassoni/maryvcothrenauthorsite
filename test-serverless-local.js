@@ -2,7 +2,7 @@
 /**
  * Local server that runs Vercel serverless functions for testing
  * This mimics how Vercel runs the functions in production
- * 
+ *
  * Usage:
  *   node test-serverless-local.js
  *   Then test with: curl http://localhost:3002/api/admin/writings/cmjqaok0a0000i6fu9fktzsbq
@@ -30,7 +30,7 @@ app.use(express.json())
 function convertToVercelFormat(expressReq, expressRes) {
   // Merge params into query (Vercel does this automatically)
   const query = { ...expressReq.query, ...expressReq.params }
-  
+
   const vercelReq = {
     method: expressReq.method,
     url: expressReq.url,
@@ -38,25 +38,25 @@ function convertToVercelFormat(expressReq, expressRes) {
     query: query,
     body: expressReq.body,
   }
-  
+
   console.log(`[test-server] ${vercelReq.method} ${vercelReq.url}`)
   console.log(`[test-server] Query:`, query)
-  
+
   const vercelRes = {
     statusCode: 200,
     headers: {},
     headersSent: false,
-    
+
     setHeader(key, value) {
       this.headers[key.toLowerCase()] = value
       expressRes.setHeader(key, value)
     },
-    
+
     status(code) {
       this.statusCode = code
       return this
     },
-    
+
     json(data) {
       if (!this.headersSent) {
         this.headersSent = true
@@ -64,7 +64,7 @@ function convertToVercelFormat(expressReq, expressRes) {
       }
       return this
     },
-    
+
     send(data) {
       if (!this.headersSent) {
         this.headersSent = true
@@ -72,16 +72,16 @@ function convertToVercelFormat(expressReq, expressRes) {
       }
       return this
     },
-    
+
     end(data) {
       if (!this.headersSent) {
         this.headersSent = true
         expressRes.status(this.statusCode).end(data)
       }
       return this
-    }
+    },
   }
-  
+
   return { req: vercelReq, res: vercelRes }
 }
 
@@ -100,7 +100,7 @@ app.all('/api/admin/writings/:id', async (req, res) => {
   try {
     const { req: vercelReq, res: vercelRes } = convertToVercelFormat(req, res)
     vercelReq.query.id = req.params.id
-    
+
     const handler = await loadServerlessFunction('./api/admin/writings/[id].js')
     if (handler) {
       await handler(vercelReq, vercelRes)
@@ -118,7 +118,7 @@ app.all('/api/writings/:slug', async (req, res) => {
   try {
     const { req: vercelReq, res: vercelRes } = convertToVercelFormat(req, res)
     vercelReq.query.slug = req.params.slug
-    
+
     const handler = await loadServerlessFunction('./api/writings/[slug].js')
     if (handler) {
       await handler(vercelReq, vercelRes)
@@ -144,7 +144,7 @@ const staticRoutes = [
 for (const route of staticRoutes) {
   app.all(route.path, async (req, res) => {
     const { req: vercelReq, res: vercelRes } = convertToVercelFormat(req, res)
-    
+
     const handler = await loadServerlessFunction(route.file)
     if (handler) {
       await handler(vercelReq, vercelRes)
@@ -164,8 +164,9 @@ app.listen(PORT, () => {
   console.log(`  DELETE http://localhost:${PORT}/api/admin/writings/:id`)
   console.log('')
   console.log('Example:')
-  console.log(`  curl -X GET http://localhost:${PORT}/api/admin/writings/cmjqaok0a0000i6fu9fktzsbq \\`)
+  console.log(
+    `  curl -X GET http://localhost:${PORT}/api/admin/writings/cmjqaok0a0000i6fu9fktzsbq \\`
+  )
   console.log(`    -H "Authorization: Bearer YOUR_TOKEN"`)
   console.log('')
 })
-

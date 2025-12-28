@@ -26,8 +26,18 @@
           class="px-4 py-2 bg-purple-600 dark:bg-purple-700 text-white rounded-md hover:bg-purple-700 dark:hover:bg-purple-600 transition-all shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95 font-medium"
         >
           <span class="flex items-center gap-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4v16m8-8H4"
+              />
             </svg>
             New Writing
           </span>
@@ -35,14 +45,30 @@
       </div>
 
       <!-- Pagination summary -->
-      <div v-if="!loading && pagination && pagination.total > 0" class="flex items-center justify-between gap-4 bg-white dark:bg-slate-900 rounded-lg shadow border border-gray-200 dark:border-slate-700 px-4 py-2">
-        <div class="text-xs text-gray-600 dark:text-slate-400 whitespace-nowrap">
-          <span class="font-medium text-gray-700 dark:text-slate-300">{{ (pagination.page - 1) * pagination.pageSize + 1 }}-{{ Math.min(pagination.page * pagination.pageSize, pagination.total) }}</span>
+      <div
+        v-if="!loading && pagination && pagination.total > 0"
+        class="flex items-center justify-between gap-4 bg-white dark:bg-slate-900 rounded-lg shadow border border-gray-200 dark:border-slate-700 px-4 py-2"
+      >
+        <div
+          class="text-xs text-gray-600 dark:text-slate-400 whitespace-nowrap"
+        >
+          <span class="font-medium text-gray-700 dark:text-slate-300"
+            >{{ (pagination.page - 1) * pagination.pageSize + 1 }}-{{
+              Math.min(pagination.page * pagination.pageSize, pagination.total)
+            }}</span
+          >
           <span class="mx-1">of</span>
-          <span class="font-medium text-gray-700 dark:text-slate-300">{{ pagination.total }}</span>
-          <span class="ml-1">{{ pagination.total === 1 ? 'item' : 'items' }}</span>
+          <span class="font-medium text-gray-700 dark:text-slate-300">{{
+            pagination.total
+          }}</span>
+          <span class="ml-1">{{
+            pagination.total === 1 ? 'item' : 'items'
+          }}</span>
         </div>
-        <div v-if="pagination.totalPages > 1" class="flex items-center gap-3 flex-1 justify-center">
+        <div
+          v-if="pagination.totalPages > 1"
+          class="flex items-center gap-3 flex-1 justify-center"
+        >
           <button
             @click="changePage(pagination.page - 1)"
             :disabled="pagination.page === 1"
@@ -51,7 +77,14 @@
             ← Previous
           </button>
           <span class="text-xs text-gray-600 dark:text-slate-400">
-            Page <span class="font-medium text-gray-700 dark:text-slate-300">{{ pagination.page }}</span> of <span class="font-medium text-gray-700 dark:text-slate-300">{{ pagination.totalPages }}</span>
+            Page
+            <span class="font-medium text-gray-700 dark:text-slate-300">{{
+              pagination.page
+            }}</span>
+            of
+            <span class="font-medium text-gray-700 dark:text-slate-300">{{
+              pagination.totalPages
+            }}</span>
           </span>
           <button
             @click="changePage(pagination.page + 1)"
@@ -61,7 +94,10 @@
             Next →
           </button>
         </div>
-        <div v-else class="text-xs text-gray-500 dark:text-slate-400 whitespace-nowrap">
+        <div
+          v-else
+          class="text-xs text-gray-500 dark:text-slate-400 whitespace-nowrap"
+        >
           All items shown
         </div>
       </div>
@@ -77,29 +113,68 @@
       </div>
 
       <!-- Writings Table -->
-      <div v-if="!loading" class="bg-white dark:bg-slate-900 shadow rounded-lg overflow-hidden border border-gray-200 dark:border-slate-700">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+      <div
+        v-if="!loading"
+        class="bg-white dark:bg-slate-900 shadow rounded-lg overflow-hidden border border-gray-200 dark:border-slate-700"
+      >
+        <table
+          class="min-w-full divide-y divide-gray-200 dark:divide-slate-700"
+        >
           <thead class="bg-gray-50 dark:bg-slate-800">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider">Title</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider">Status</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider">Updated</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider">Published</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider">Tags</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider"
+              >
+                Title
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider"
+              >
+                Status
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider"
+              >
+                Updated
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider"
+              >
+                Published
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider"
+              >
+                Tags
+              </th>
+              <th
+                class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+              >
+                Actions
+              </th>
             </tr>
           </thead>
-          <tbody class="bg-white dark:bg-slate-900 divide-y divide-gray-200 dark:divide-slate-700">
-            <tr v-for="item in writings" :key="item.id" class="hover:bg-gray-50 dark:hover:bg-slate-800">
+          <tbody
+            class="bg-white dark:bg-slate-900 divide-y divide-gray-200 dark:divide-slate-700"
+          >
+            <tr
+              v-for="item in writings"
+              :key="item.id"
+              class="hover:bg-gray-50 dark:hover:bg-slate-800"
+            >
               <td class="px-6 py-4 whitespace-nowrap">
                 <button
                   @click="openModal(item.id)"
                   class="text-left hover:opacity-80 transition-opacity"
                 >
-                  <div class="text-sm font-medium text-gray-900 dark:text-slate-100 hover:text-primary-600 dark:hover:text-primary-400">
+                  <div
+                    class="text-sm font-medium text-gray-900 dark:text-slate-100 hover:text-primary-600 dark:hover:text-primary-400"
+                  >
                     {{ item.title }}
                   </div>
-                  <div class="text-sm text-gray-500 dark:text-slate-400 hover:text-primary-500 dark:hover:text-primary-400">
+                  <div
+                    class="text-sm text-gray-500 dark:text-slate-400 hover:text-primary-500 dark:hover:text-primary-400"
+                  >
                     /{{ item.slug }}
                   </div>
                 </button>
@@ -110,35 +185,80 @@
                   :disabled="togglingStatus === item.id"
                   :class="[
                     {
-                      'bg-gradient-to-r from-amber-400 to-orange-500 text-white dark:from-amber-500 dark:to-orange-600 hover:from-amber-500 hover:to-orange-600 dark:hover:from-amber-600 dark:hover:to-orange-700 focus:ring-amber-500': item.status === 'draft',
-                      'bg-gradient-to-r from-emerald-400 to-green-500 text-white dark:from-emerald-500 dark:to-green-600 hover:from-emerald-500 hover:to-green-600 dark:hover:from-emerald-600 dark:hover:to-green-700 focus:ring-emerald-500': item.status === 'published',
+                      'bg-gradient-to-r from-amber-400 to-orange-500 text-white dark:from-amber-500 dark:to-orange-600 hover:from-amber-500 hover:to-orange-600 dark:hover:from-amber-600 dark:hover:to-orange-700 focus:ring-amber-500':
+                        item.status === 'draft',
+                      'bg-gradient-to-r from-emerald-400 to-green-500 text-white dark:from-emerald-500 dark:to-green-600 hover:from-emerald-500 hover:to-green-600 dark:hover:from-emerald-600 dark:hover:to-green-700 focus:ring-emerald-500':
+                        item.status === 'published',
                     },
-                    'px-4 py-2 text-xs font-semibold rounded-full cursor-pointer transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg'
+                    'px-4 py-2 text-xs font-semibold rounded-full cursor-pointer transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg',
                   ]"
                   :title="`Click to toggle to ${item.status === 'draft' ? 'published' : 'draft'}`"
                 >
-                  <span v-if="togglingStatus === item.id" class="inline-flex items-center gap-1.5">
-                    <svg class="animate-spin h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <span
+                    v-if="togglingStatus === item.id"
+                    class="inline-flex items-center gap-1.5"
+                  >
+                    <svg
+                      class="animate-spin h-3.5 w-3.5"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        class="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        stroke-width="4"
+                      ></circle>
+                      <path
+                        class="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
                     </svg>
                     Updating...
                   </span>
                   <span v-else class="inline-flex items-center gap-1.5">
-                    <svg v-if="item.status === 'draft'" class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                    <svg
+                      v-if="item.status === 'draft'"
+                      class="h-3.5 w-3.5"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                        clip-rule="evenodd"
+                      />
                     </svg>
-                    <svg v-else class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    <svg
+                      v-else
+                      class="h-3.5 w-3.5"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clip-rule="evenodd"
+                      />
                     </svg>
-                    <span class="uppercase tracking-wide">{{ item.status }}</span>
+                    <span class="uppercase tracking-wide">{{
+                      item.status
+                    }}</span>
                   </span>
                 </button>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-slate-400">
+              <td
+                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-slate-400"
+              >
                 {{ formatDate(item.updatedAt) }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-slate-400">
+              <td
+                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-slate-400"
+              >
                 {{ item.publishedAt ? formatDate(item.publishedAt) : '-' }}
               </td>
               <td class="px-6 py-4">
@@ -150,12 +270,17 @@
                   >
                     {{ tag }}
                   </span>
-                  <span v-if="(item.tags || []).length > 3" class="text-xs text-gray-500 dark:text-slate-400">
+                  <span
+                    v-if="(item.tags || []).length > 3"
+                    class="text-xs text-gray-500 dark:text-slate-400"
+                  >
                     +{{ (item.tags || []).length - 3 }}
                   </span>
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <td
+                class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+              >
                 <div class="flex items-center justify-end gap-4">
                   <button
                     @click="handleDuplicate(item)"
@@ -163,16 +288,45 @@
                     class="text-purple-600 dark:text-purple-400 hover:text-purple-900 dark:hover:text-purple-300 disabled:opacity-50 disabled:cursor-not-allowed"
                     title="Duplicate this writing"
                   >
-                    <span v-if="duplicatingItem === item.id" class="inline-flex items-center gap-1">
-                      <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <span
+                      v-if="duplicatingItem === item.id"
+                      class="inline-flex items-center gap-1"
+                    >
+                      <svg
+                        class="animate-spin h-4 w-4"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          class="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          stroke-width="4"
+                        ></circle>
+                        <path
+                          class="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
                       </svg>
                       Duplicating...
                     </span>
                     <span v-else class="inline-flex items-center gap-1">
-                      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      <svg
+                        class="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                        />
                       </svg>
                       Duplicate
                     </span>
@@ -214,13 +368,21 @@
                 />
               </svg>
             </div>
-            <h3 class="text-2xl font-bold text-gray-900 dark:text-slate-100 mb-3">
-              {{ searchQuery || statusFilter ? 'No writings match your filters' : 'No writings yet' }}
+            <h3
+              class="text-2xl font-bold text-gray-900 dark:text-slate-100 mb-3"
+            >
+              {{
+                searchQuery || statusFilter
+                  ? 'No writings match your filters'
+                  : 'No writings yet'
+              }}
             </h3>
             <p class="text-lg text-gray-600 dark:text-slate-400 mb-6">
-              {{ searchQuery || statusFilter 
-                ? 'Try adjusting your search or filter criteria.' 
-                : 'Get started by creating your first writing!' }}
+              {{
+                searchQuery || statusFilter
+                  ? 'Try adjusting your search or filter criteria.'
+                  : 'Get started by creating your first writing!'
+              }}
             </p>
             <div v-if="searchQuery || statusFilter" class="mt-6">
               <button
@@ -235,8 +397,18 @@
                 @click="openModal(null)"
                 class="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 dark:bg-purple-700 text-white rounded-lg hover:bg-purple-700 dark:hover:bg-purple-600 transition-all shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95 font-medium text-base"
               >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 4v16m8-8H4"
+                  />
                 </svg>
                 Create Writing
               </button>
@@ -327,14 +499,22 @@ const fetchWritings = async () => {
     }
 
     if (!response.ok || !data?.ok) {
-      throw new Error(data?.error || data?.message || 'Failed to fetch writings')
+      throw new Error(
+        data?.error || data?.message || 'Failed to fetch writings'
+      )
     }
 
     writings.value = data.writings || []
-    pagination.value = data.pagination || { page: 1, pageSize: 12, total: writings.value.length, totalPages: 1 }
+    pagination.value = data.pagination || {
+      page: 1,
+      pageSize: 12,
+      total: writings.value.length,
+      totalPages: 1,
+    }
   } catch (err) {
     console.error('Error fetching writings:', err)
-    error.value = err instanceof Error ? err.message : 'Failed to fetch writings'
+    error.value =
+      err instanceof Error ? err.message : 'Failed to fetch writings'
     writings.value = []
     pagination.value = { page: 1, pageSize: 12, total: 0, totalPages: 1 }
   } finally {
@@ -418,10 +598,16 @@ const toggleStatus = async (item: any) => {
     }
 
     if (!response.ok || !data?.ok) {
-      throw new Error(data?.error || `Failed to update status (${response.status})`)
+      throw new Error(
+        data?.error || `Failed to update status (${response.status})`
+      )
     }
 
-    const updated = data.writing || { ...item, status: newStatus, publishedAt: newStatus === 'published' ? new Date().toISOString() : null }
+    const updated = data.writing || {
+      ...item,
+      status: newStatus,
+      publishedAt: newStatus === 'published' ? new Date().toISOString() : null,
+    }
     const index = writings.value.findIndex((w) => w.id === item.id)
     if (index !== -1) {
       writings.value[index] = { ...writings.value[index], ...updated }
@@ -461,7 +647,8 @@ const handleDuplicate = async (item: any) => {
     fetchWritings()
   } catch (err) {
     console.error('Error duplicating writing:', err)
-    error.value = err instanceof Error ? err.message : 'Failed to duplicate writing'
+    error.value =
+      err instanceof Error ? err.message : 'Failed to duplicate writing'
   } finally {
     duplicatingItem.value = null
   }
@@ -480,11 +667,14 @@ const executeDelete = async () => {
   }
 
   try {
-    const response = await fetch(`/api/admin/writings/${itemToDelete.value.id}`, {
-      method: 'DELETE',
-      headers: buildHeaders(),
-      credentials: 'include',
-    })
+    const response = await fetch(
+      `/api/admin/writings/${itemToDelete.value.id}`,
+      {
+        method: 'DELETE',
+        headers: buildHeaders(),
+        credentials: 'include',
+      }
+    )
 
     const contentType = response.headers.get('content-type') || ''
     let data: any = null
@@ -502,7 +692,8 @@ const executeDelete = async () => {
     fetchWritings()
   } catch (err) {
     console.error('Error deleting writing:', err)
-    error.value = err instanceof Error ? err.message : 'Failed to delete writing'
+    error.value =
+      err instanceof Error ? err.message : 'Failed to delete writing'
   } finally {
     itemToDelete.value = null
     showDeleteConfirmModal.value = false
@@ -518,5 +709,3 @@ onMounted(() => {
   fetchWritings()
 })
 </script>
-
-

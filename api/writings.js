@@ -4,7 +4,10 @@ import { PrismaClient } from '@prisma/client'
 export default async function handler(req, res) {
   // Initialize Prisma client inside handler to avoid initialization issues
   const prisma = new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    log:
+      process.env.NODE_ENV === 'development'
+        ? ['query', 'error', 'warn']
+        : ['error'],
   })
 
   try {
@@ -13,7 +16,7 @@ export default async function handler(req, res) {
     }
 
     const { q, tag, sort = 'newest', page = '1', pageSize = '10' } = req.query
-    
+
     const pageNum = parseInt(page, 10) || 1
     const pageSizeNum = Math.min(parseInt(pageSize, 10) || 10, 50)
     const skip = (pageNum - 1) * pageSizeNum
@@ -88,4 +91,3 @@ export default async function handler(req, res) {
     await prisma.$disconnect()
   }
 }
-

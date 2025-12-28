@@ -2,13 +2,13 @@
 
 /**
  * Production Helper Script
- * 
+ *
  * This script helps you run commands against your production environment locally.
  * It pulls environment variables from Vercel and sets them up for local execution.
- * 
+ *
  * Usage:
  *   node scripts/prod-helper.js <command>
- * 
+ *
  * Examples:
  *   node scripts/prod-helper.js "node scripts/fix-prod-db.js"
  *   node scripts/prod-helper.js "npx prisma studio"
@@ -33,20 +33,24 @@ const envPath = join(__dirname, '..', '.env.local')
 if (existsSync(envPath)) {
   dotenv.config({ path: envPath })
   console.log('✅ Loaded PRODUCTION environment variables from .env.local')
-  console.log('💡 Note: .env.local contains PRODUCTION vars downloaded from Vercel\n')
+  console.log(
+    '💡 Note: .env.local contains PRODUCTION vars downloaded from Vercel\n'
+  )
 } else {
   console.log('⚠️  No .env.local found.')
   console.log('📥 Downloading PRODUCTION variables FROM Vercel...')
   console.log('   (Saving them TO .env.local file)\n')
-  
+
   // Try to pull from Vercel
   try {
     execSync('npx vercel env pull .env.local', {
       stdio: 'inherit',
-      cwd: join(__dirname, '..')
+      cwd: join(__dirname, '..'),
     })
     dotenv.config({ path: envPath })
-    console.log('\n✅ Downloaded PRODUCTION env vars FROM Vercel TO .env.local\n')
+    console.log(
+      '\n✅ Downloaded PRODUCTION env vars FROM Vercel TO .env.local\n'
+    )
   } catch (error) {
     console.error('❌ Failed to pull from Vercel. Try:')
     console.error('   npx vercel login')
@@ -83,9 +87,10 @@ if (!command) {
 // Show which database we're connecting to (masked)
 const dbUrl = process.env.DATABASE_URL
 const isNeon = dbUrl.includes('neon.tech') || dbUrl.includes('neon')
-const maskedUrl = dbUrl.length > 30 
-  ? `${dbUrl.substring(0, 15)}...${dbUrl.substring(dbUrl.length - 15)}`
-  : '***'
+const maskedUrl =
+  dbUrl.length > 30
+    ? `${dbUrl.substring(0, 15)}...${dbUrl.substring(dbUrl.length - 15)}`
+    : '***'
 
 console.log('🔧 Running command against PRODUCTION environment')
 console.log(`📊 Database: ${isNeon ? 'Neon Postgres' : 'PostgreSQL'}`)
@@ -97,10 +102,9 @@ try {
   execSync(command, {
     stdio: 'inherit',
     env: process.env,
-    cwd: join(__dirname, '..')
+    cwd: join(__dirname, '..'),
   })
 } catch (error) {
   console.error('\n❌ Command failed')
   process.exit(1)
 }
-

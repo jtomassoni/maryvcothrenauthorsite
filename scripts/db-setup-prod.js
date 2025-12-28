@@ -4,9 +4,9 @@
  * Production database setup script
  * This script pushes the Prisma schema to the production database
  * Run this manually if the build process doesn't create the tables
- * 
+ *
  * Usage: node scripts/db-setup-prod.js
- * 
+ *
  * Note: This uses DATABASE_URL from environment variables
  */
 
@@ -31,14 +31,14 @@ try {
   execSync('npx prisma generate', {
     stdio: 'inherit',
     env: process.env,
-    cwd: join(__dirname, '..')
+    cwd: join(__dirname, '..'),
   })
 
   console.log('\n🗄️  Pushing schema to database...')
   execSync('npx prisma db push --skip-generate --accept-data-loss', {
     stdio: 'inherit',
     env: process.env,
-    cwd: join(__dirname, '..')
+    cwd: join(__dirname, '..'),
   })
 
   console.log('\n✅ Database setup complete!')
@@ -46,4 +46,3 @@ try {
   console.error('\n❌ Error setting up database:', error.message)
   process.exit(1)
 }
-

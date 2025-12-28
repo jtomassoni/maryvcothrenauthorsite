@@ -4,12 +4,12 @@ import cookieParser from 'cookie-parser'
 import dotenv from 'dotenv'
 import jwt from 'jsonwebtoken'
 import { prisma } from './lib/db.js'
-import { 
-  createSession, 
-  setAuthCookie, 
-  clearAuthCookie, 
-  getSession, 
-  requireAuth 
+import {
+  createSession,
+  setAuthCookie,
+  clearAuthCookie,
+  getSession,
+  requireAuth,
 } from './lib/auth.js'
 import { generateSlug, ensureUniqueSlug } from './lib/slug.js'
 import { timingSafeEqual } from 'crypto'
@@ -29,7 +29,10 @@ process.on('unhandledRejection', (reason, promise) => {
 const envResult = dotenv.config({ path: '.env.local' })
 
 if (envResult.error) {
-  console.warn('⚠️  Warning: Could not load .env.local file:', envResult.error.message)
+  console.warn(
+    '⚠️  Warning: Could not load .env.local file:',
+    envResult.error.message
+  )
   console.warn('   Make sure .env.local exists in the project root')
 } else {
   console.log('✅ Loaded environment variables from .env.local')
@@ -37,15 +40,31 @@ if (envResult.error) {
 
 // Log auth configuration status (without revealing values)
 console.log('\n📋 Auth Configuration:')
-console.log('   AUTH_USERNAME:', process.env.AUTH_USERNAME ? `✅ Set (${process.env.AUTH_USERNAME.length} chars)` : '❌ NOT SET')
-console.log('   AUTH_PASSWORD:', process.env.AUTH_PASSWORD ? `✅ Set (${process.env.AUTH_PASSWORD.length} chars)` : '❌ NOT SET')
-console.log('   AUTH_SECRET:', process.env.AUTH_SECRET ? `✅ Set` : '⚠️  NOT SET (using fallback in dev)')
+console.log(
+  '   AUTH_USERNAME:',
+  process.env.AUTH_USERNAME
+    ? `✅ Set (${process.env.AUTH_USERNAME.length} chars)`
+    : '❌ NOT SET'
+)
+console.log(
+  '   AUTH_PASSWORD:',
+  process.env.AUTH_PASSWORD
+    ? `✅ Set (${process.env.AUTH_PASSWORD.length} chars)`
+    : '❌ NOT SET'
+)
+console.log(
+  '   AUTH_SECRET:',
+  process.env.AUTH_SECRET ? `✅ Set` : '⚠️  NOT SET (using fallback in dev)'
+)
 
 // Log database configuration
 console.log('\n📊 Database Configuration:')
 const dbUrl = process.env.DATABASE_URL || ''
 if (dbUrl) {
-  const isLocal = dbUrl.includes('localhost') || dbUrl.includes('127.0.0.1') || dbUrl.includes('5432')
+  const isLocal =
+    dbUrl.includes('localhost') ||
+    dbUrl.includes('127.0.0.1') ||
+    dbUrl.includes('5432')
   const isNeon = dbUrl.includes('neon.tech') || dbUrl.includes('neon')
   if (isLocal) {
     console.log('   DATABASE_URL: ✅ Set (Local Postgres)')
@@ -61,13 +80,20 @@ if (dbUrl) {
 
 // Log email service configuration
 console.log('\n📧 Email Service Configuration:')
-console.log('   RESEND_API_KEY:', process.env.RESEND_API_KEY ? `✅ Set (${process.env.RESEND_API_KEY.length} chars)` : '❌ NOT SET')
+console.log(
+  '   RESEND_API_KEY:',
+  process.env.RESEND_API_KEY
+    ? `✅ Set (${process.env.RESEND_API_KEY.length} chars)`
+    : '❌ NOT SET'
+)
 const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
 const fromName = process.env.RESEND_FROM_NAME || 'Mary V Cothren'
 console.log('   RESEND_FROM_EMAIL:', fromEmail)
 console.log('   RESEND_FROM_NAME:', fromName)
 if (!process.env.RESEND_FROM_EMAIL) {
-  console.log('   ℹ️  Using test domain (onboarding@resend.dev) - set RESEND_FROM_EMAIL to use your verified domain')
+  console.log(
+    '   ℹ️  Using test domain (onboarding@resend.dev) - set RESEND_FROM_EMAIL to use your verified domain'
+  )
 }
 console.log('')
 
@@ -75,12 +101,15 @@ const app = express()
 const PORT = 3001
 
 // Middleware
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? 'https://www.maryvcothren.com' 
-    : 'http://localhost:3000',
-  credentials: true,
-}))
+app.use(
+  cors({
+    origin:
+      process.env.NODE_ENV === 'production'
+        ? 'https://www.maryvcothren.com'
+        : 'http://localhost:3000',
+    credentials: true,
+  })
+)
 app.use(express.json())
 app.use(cookieParser())
 
@@ -120,12 +149,20 @@ function checkLoginRateLimit(ip) {
   const userLimit = loginRateLimitMap.get(ip)
 
   if (!userLimit) {
-    loginRateLimitMap.set(ip, { count: 1, resetTime: now + LOGIN_RATE_LIMIT_WINDOW, lastFailure: 0 })
+    loginRateLimitMap.set(ip, {
+      count: 1,
+      resetTime: now + LOGIN_RATE_LIMIT_WINDOW,
+      lastFailure: 0,
+    })
     return { allowed: true, delay: 0 }
   }
 
   if (now > userLimit.resetTime) {
-    loginRateLimitMap.set(ip, { count: 1, resetTime: now + LOGIN_RATE_LIMIT_WINDOW, lastFailure: 0 })
+    loginRateLimitMap.set(ip, {
+      count: 1,
+      resetTime: now + LOGIN_RATE_LIMIT_WINDOW,
+      lastFailure: 0,
+    })
     return { allowed: true, delay: 0 }
   }
 
@@ -136,7 +173,7 @@ function checkLoginRateLimit(ip) {
   // Add exponential backoff delay for repeated failures
   const timeSinceLastFailure = now - userLimit.lastFailure
   const delay = Math.min(1000 * Math.pow(2, userLimit.count - 1), 5000) // Max 5 seconds
-  
+
   if (timeSinceLastFailure < delay) {
     return { allowed: false, delay: delay - timeSinceLastFailure }
   }
@@ -156,7 +193,11 @@ function recordLoginFailure(ip) {
 function validateInput(data) {
   const errors = []
 
-  if (!data.name || typeof data.name !== 'string' || data.name.trim().length < 2) {
+  if (
+    !data.name ||
+    typeof data.name !== 'string' ||
+    data.name.trim().length < 2
+  ) {
     errors.push('Name must be at least 2 characters long')
   }
 
@@ -169,13 +210,17 @@ function validateInput(data) {
     }
   }
 
-  if (data.message && typeof data.message === 'string' && data.message.length > 1000) {
+  if (
+    data.message &&
+    typeof data.message === 'string' &&
+    data.message.length > 1000
+  ) {
     errors.push('Message must be less than 1000 characters')
   }
 
   return {
     isValid: errors.length === 0,
-    errors
+    errors,
   }
 }
 
@@ -194,14 +239,17 @@ app.get('/health', (req, res) => {
 // Helper to check JWT token from Authorization header
 function checkJWTToken(req) {
   const authHeader = req.headers.authorization || req.headers.Authorization
-  if (!authHeader || (!authHeader.startsWith('Bearer ') && !authHeader.startsWith('bearer '))) {
+  if (
+    !authHeader ||
+    (!authHeader.startsWith('Bearer ') && !authHeader.startsWith('bearer '))
+  ) {
     return null
   }
-  
+
   const token = authHeader.substring(7) // Remove 'Bearer ' or 'bearer ' prefix
   const JWT_SECRET = process.env.AUTH_SECRET
   if (!JWT_SECRET) return null
-  
+
   try {
     const decoded = jwt.verify(token, JWT_SECRET)
     return decoded.username
@@ -218,14 +266,14 @@ function requireAuthEnhanced(req, res, next) {
     req.user = jwtUsername
     return next()
   }
-  
+
   // Fall back to cookie-based session (for backward compatibility)
   const session = getSession(req)
   if (session && session.u) {
     req.user = session.u
     return next()
   }
-  
+
   return res.status(401).json({ ok: false, error: 'Unauthorized' })
 }
 
@@ -238,10 +286,10 @@ app.post('/api/auth/login', async (req, res) => {
   try {
     const clientIP = req.ip || req.connection.remoteAddress || 'unknown'
     const rateLimit = checkLoginRateLimit(clientIP)
-    
+
     if (!rateLimit.allowed) {
       if (rateLimit.delay > 0) {
-        await new Promise(resolve => setTimeout(resolve, rateLimit.delay))
+        await new Promise((resolve) => setTimeout(resolve, rateLimit.delay))
       }
       return res.status(429).json({
         ok: false,
@@ -266,13 +314,23 @@ app.post('/api/auth/login', async (req, res) => {
     if (process.env.NODE_ENV !== 'production') {
       console.log('Login attempt:')
       console.log('  Username provided:', username)
-      console.log('  AUTH_USERNAME set:', !!AUTH_USERNAME, AUTH_USERNAME ? `(length: ${AUTH_USERNAME.length})` : 'NOT SET')
-      console.log('  AUTH_PASSWORD set:', !!AUTH_PASSWORD, AUTH_PASSWORD ? '(length: ' + AUTH_PASSWORD.length + ')' : 'NOT SET')
+      console.log(
+        '  AUTH_USERNAME set:',
+        !!AUTH_USERNAME,
+        AUTH_USERNAME ? `(length: ${AUTH_USERNAME.length})` : 'NOT SET'
+      )
+      console.log(
+        '  AUTH_PASSWORD set:',
+        !!AUTH_PASSWORD,
+        AUTH_PASSWORD ? '(length: ' + AUTH_PASSWORD.length + ')' : 'NOT SET'
+      )
       console.log('  AUTH_SECRET set:', !!process.env.AUTH_SECRET)
     }
 
     if (!AUTH_USERNAME || !AUTH_PASSWORD) {
-      console.error('❌ AUTH_USERNAME and AUTH_PASSWORD must be set in .env.local')
+      console.error(
+        '❌ AUTH_USERNAME and AUTH_PASSWORD must be set in .env.local'
+      )
       console.error('   Make sure your .env.local file exists and contains:')
       console.error('   AUTH_USERNAME=your_username')
       console.error('   AUTH_PASSWORD=your_password')
@@ -283,15 +341,17 @@ app.post('/api/auth/login', async (req, res) => {
     }
 
     // Constant-time comparison to avoid timing attacks
-    const usernameMatch = username.length === AUTH_USERNAME.length &&
+    const usernameMatch =
+      username.length === AUTH_USERNAME.length &&
       timingSafeEqual(Buffer.from(username), Buffer.from(AUTH_USERNAME))
-    const passwordMatch = password.length === AUTH_PASSWORD.length &&
+    const passwordMatch =
+      password.length === AUTH_PASSWORD.length &&
       timingSafeEqual(Buffer.from(password), Buffer.from(AUTH_PASSWORD))
 
     if (!usernameMatch || !passwordMatch) {
       recordLoginFailure(clientIP)
       // Add a small delay to prevent brute force
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 500))
       return res.status(401).json({
         ok: false,
         error: 'Invalid username or password',
@@ -315,18 +375,14 @@ app.post('/api/auth/login', async (req, res) => {
       })
     }
 
-    const jwtToken = jwt.sign(
-      { username },
-      JWT_SECRET,
-      { expiresIn: '7d' }
-    )
+    const jwtToken = jwt.sign({ username }, JWT_SECRET, { expiresIn: '7d' })
 
     console.log('Login: Token generated successfully for user:', username)
 
-    return res.status(200).json({ 
-      ok: true, 
+    return res.status(200).json({
+      ok: true,
       token: jwtToken,
-      username 
+      username,
     })
   } catch (error) {
     console.error('Login error:', error)
@@ -347,30 +403,33 @@ app.post('/api/auth/logout', (req, res) => {
 app.get('/api/auth/check', (req, res) => {
   // Check JWT token first (matches production behavior)
   const authHeader = req.headers.authorization || req.headers.Authorization
-  if (authHeader && (authHeader.startsWith('Bearer ') || authHeader.startsWith('bearer '))) {
+  if (
+    authHeader &&
+    (authHeader.startsWith('Bearer ') || authHeader.startsWith('bearer '))
+  ) {
     const token = authHeader.substring(7)
     const JWT_SECRET = process.env.AUTH_SECRET
-    
+
     if (JWT_SECRET) {
       try {
         const decoded = jwt.verify(token, JWT_SECRET)
         return res.status(200).json({
           ok: true,
           authenticated: true,
-          username: decoded.username
+          username: decoded.username,
         })
       } catch (jwtError) {
         // JWT invalid, fall through to check cookies
       }
     }
   }
-  
+
   // Fall back to cookie-based session check
   const session = getSession(req)
   return res.status(200).json({
     ok: true,
     authenticated: !!session,
-    username: session?.u || null
+    username: session?.u || null,
   })
 })
 
@@ -382,7 +441,7 @@ app.get('/api/auth/check', (req, res) => {
 app.get('/api/writings', async (req, res) => {
   try {
     const { q, tag, sort = 'newest', page = '1', pageSize = '10' } = req.query
-    
+
     const pageNum = parseInt(page, 10) || 1
     const pageSizeNum = Math.min(parseInt(pageSize, 10) || 10, 50)
     const skip = (pageNum - 1) * pageSizeNum
@@ -492,7 +551,7 @@ app.get('/api/writings/:slug', async (req, res) => {
 app.get('/api/latest', async (req, res) => {
   try {
     const limit = parseInt(req.query.limit || '3', 10)
-    
+
     // Fetch published writings (include those without publishedAt for backwards compatibility)
     const writings = await prisma.writing.findMany({
       where: {
@@ -517,7 +576,7 @@ app.get('/api/latest', async (req, res) => {
 
     return res.status(200).json({
       ok: true,
-      items: writings.map(item => ({ ...item, type: 'writing' })),
+      items: writings.map((item) => ({ ...item, type: 'writing' })),
     })
   } catch (error) {
     console.error('Error fetching latest items:', error)
@@ -531,8 +590,15 @@ app.get('/api/latest', async (req, res) => {
 // GET /api/admin/writings
 app.get('/api/admin/writings', requireAuthEnhanced, async (req, res) => {
   try {
-    const { q, tag, status, sort = 'newest', page = '1', pageSize = '20' } = req.query
-    
+    const {
+      q,
+      tag,
+      status,
+      sort = 'newest',
+      page = '1',
+      pageSize = '20',
+    } = req.query
+
     const pageNum = parseInt(page, 10) || 1
     const pageSizeNum = Math.min(parseInt(pageSize, 10) || 20, 100)
     const skip = (pageNum - 1) * pageSizeNum
@@ -642,7 +708,11 @@ app.post('/api/admin/writings', requireAuthEnhanced, async (req, res) => {
       })
     }
 
-    if (!contentMarkdown || typeof contentMarkdown !== 'string' || !contentMarkdown.trim()) {
+    if (
+      !contentMarkdown ||
+      typeof contentMarkdown !== 'string' ||
+      !contentMarkdown.trim()
+    ) {
       return res.status(400).json({
         ok: false,
         error: 'Content is required',
@@ -656,16 +726,22 @@ app.post('/api/admin/writings', requireAuthEnhanced, async (req, res) => {
       })
     }
 
-    let finalSlug = slug && typeof slug === 'string' && slug.trim()
-      ? slug.trim()
-      : generateSlug(title)
-    
+    let finalSlug =
+      slug && typeof slug === 'string' && slug.trim()
+        ? slug.trim()
+        : generateSlug(title)
+
     finalSlug = await ensureUniqueSlug(prisma, finalSlug, null)
 
     const tagsArray = Array.isArray(tags)
-      ? tags.filter(t => typeof t === 'string' && t.trim()).map(t => t.trim())
+      ? tags
+          .filter((t) => typeof t === 'string' && t.trim())
+          .map((t) => t.trim())
       : typeof tags === 'string' && tags.trim()
-        ? tags.split(',').map(t => t.trim()).filter(t => t)
+        ? tags
+            .split(',')
+            .map((t) => t.trim())
+            .filter((t) => t)
         : []
 
     const finalStatus = status || 'draft'
@@ -719,21 +795,32 @@ app.put('/api/admin/writings/:id', requireAuthEnhanced, async (req, res) => {
       })
     }
 
-    if (title !== undefined && (!title || typeof title !== 'string' || !title.trim())) {
+    if (
+      title !== undefined &&
+      (!title || typeof title !== 'string' || !title.trim())
+    ) {
       return res.status(400).json({
         ok: false,
         error: 'Title is required',
       })
     }
 
-    if (excerpt !== undefined && (!excerpt || typeof excerpt !== 'string' || !excerpt.trim())) {
+    if (
+      excerpt !== undefined &&
+      (!excerpt || typeof excerpt !== 'string' || !excerpt.trim())
+    ) {
       return res.status(400).json({
         ok: false,
         error: 'Excerpt is required',
       })
     }
 
-    if (contentMarkdown !== undefined && (!contentMarkdown || typeof contentMarkdown !== 'string' || !contentMarkdown.trim())) {
+    if (
+      contentMarkdown !== undefined &&
+      (!contentMarkdown ||
+        typeof contentMarkdown !== 'string' ||
+        !contentMarkdown.trim())
+    ) {
       return res.status(400).json({
         ok: false,
         error: 'Content is required',
@@ -747,21 +834,28 @@ app.put('/api/admin/writings/:id', requireAuthEnhanced, async (req, res) => {
       })
     }
 
-    let finalSlug = slug && typeof slug === 'string' && slug.trim()
-      ? slug.trim()
-      : title
-        ? generateSlug(title)
-        : existing.slug
-    
+    let finalSlug =
+      slug && typeof slug === 'string' && slug.trim()
+        ? slug.trim()
+        : title
+          ? generateSlug(title)
+          : existing.slug
+
     finalSlug = await ensureUniqueSlug(prisma, finalSlug, id)
 
-    const tagsArray = tags !== undefined
-      ? (Array.isArray(tags)
-          ? tags.filter(t => typeof t === 'string' && t.trim()).map(t => t.trim())
+    const tagsArray =
+      tags !== undefined
+        ? Array.isArray(tags)
+          ? tags
+              .filter((t) => typeof t === 'string' && t.trim())
+              .map((t) => t.trim())
           : typeof tags === 'string' && tags.trim()
-            ? tags.split(',').map(t => t.trim()).filter(t => t)
-            : [])
-      : existing.tags
+            ? tags
+                .split(',')
+                .map((t) => t.trim())
+                .filter((t) => t)
+            : []
+        : existing.tags
 
     let publishedAt = existing.publishedAt
     if (status === 'published' && existing.status === 'draft') {
@@ -772,7 +866,8 @@ app.put('/api/admin/writings/:id', requireAuthEnhanced, async (req, res) => {
     if (title !== undefined) updateData.title = title.trim()
     if (slug !== undefined || title !== undefined) updateData.slug = finalSlug
     if (excerpt !== undefined) updateData.excerpt = excerpt.trim()
-    if (contentMarkdown !== undefined) updateData.contentMarkdown = contentMarkdown.trim()
+    if (contentMarkdown !== undefined)
+      updateData.contentMarkdown = contentMarkdown.trim()
     if (tags !== undefined) updateData.tags = tagsArray
     if (status !== undefined) {
       updateData.status = status
@@ -895,9 +990,9 @@ app.post('/api/contact', async (req, res) => {
     const clientIP = req.ip || req.connection.remoteAddress || 'unknown'
 
     if (!checkRateLimit(clientIP)) {
-      return res.status(429).json({ 
-        ok: false, 
-        error: 'Too many requests. Please try again later.' 
+      return res.status(429).json({
+        ok: false,
+        error: 'Too many requests. Please try again later.',
       })
     }
 
@@ -905,9 +1000,9 @@ app.post('/api/contact', async (req, res) => {
 
     const validation = validateInput({ name, email, message })
     if (!validation.isValid) {
-      return res.status(400).json({ 
-        ok: false, 
-        error: validation.errors.join(', ') 
+      return res.status(400).json({
+        ok: false,
+        error: validation.errors.join(', '),
       })
     }
 
@@ -915,28 +1010,29 @@ app.post('/api/contact', async (req, res) => {
     const resendApiKey = process.env.RESEND_API_KEY
     if (!resendApiKey) {
       console.error('❌ RESEND_API_KEY not set in environment variables')
-      return res.status(500).json({ 
-        ok: false, 
-        error: 'Email service not configured. Please contact the administrator.' 
+      return res.status(500).json({
+        ok: false,
+        error:
+          'Email service not configured. Please contact the administrator.',
       })
     }
     const recipientEmail = 'maryvcothren@gmail.com'
-    
+
     // Use verified domain email if set, otherwise use Resend's test domain
     // For development: use onboarding@resend.dev (no verification needed)
     // For production: verify your domain at https://resend.com/domains and use your domain email
     const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
     const fromName = process.env.RESEND_FROM_NAME || 'Mary V Cothren'
-    
+
     console.log(`📧 Sending email from: ${fromName} <${fromEmail}>`)
     console.log(`📧 Sending email to: ${recipientEmail}`)
 
     // Determine if this is a contact message or mailing list signup
     const hasMessage = message && message.trim().length > 0
-    const subject = hasMessage 
+    const subject = hasMessage
       ? `New contact form message from ${name.trim()}`
       : `New mailing list signup from ${name.trim()}`
-    const title = hasMessage 
+    const title = hasMessage
       ? 'New Contact Form Message'
       : 'New Mailing List Signup'
 
@@ -948,14 +1044,14 @@ app.post('/api/contact', async (req, res) => {
           <p><strong>Name:</strong> ${name.trim()}</p>
           <p><strong>Email:</strong> ${email.trim()}</p>
     `
-    
+
     if (hasMessage) {
       emailHtml += `
           <p><strong>Message:</strong></p>
           <div style="background: white; padding: 15px; border-radius: 4px; margin-top: 10px; white-space: pre-wrap;">${message.trim().replace(/\n/g, '<br>')}</div>
       `
     }
-    
+
     emailHtml += `
           <p style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e2e8f0;"><strong>Timestamp:</strong> ${new Date().toLocaleString()}</p>
         </div>
@@ -966,15 +1062,15 @@ app.post('/api/contact', async (req, res) => {
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${resendApiKey}`,
+        Authorization: `Bearer ${resendApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         from: `${fromName} <${fromEmail}>`,
         to: [recipientEmail],
         subject: subject,
-        html: emailHtml
-      })
+        html: emailHtml,
+      }),
     })
 
     if (!response.ok) {
@@ -982,7 +1078,7 @@ app.post('/api/contact', async (req, res) => {
       console.error('❌ Resend API error:', errorText)
       console.error(`   Status: ${response.status}`)
       console.error(`   From email used: ${fromEmail}`)
-      
+
       // Provide helpful error message
       let errorMessage = 'Failed to send email. Please try again later.'
       try {
@@ -991,68 +1087,91 @@ app.post('/api/contact', async (req, res) => {
           errorMessage = errorData.message
           // If domain not verified, provide helpful guidance
           if (errorData.message.includes('domain is not verified')) {
-            console.error('   💡 Tip: Make sure your domain is verified at https://resend.com/domains')
-            console.error('   💡 Or use onboarding@resend.dev for testing (set RESEND_FROM_EMAIL=onboarding@resend.dev)')
+            console.error(
+              '   💡 Tip: Make sure your domain is verified at https://resend.com/domains'
+            )
+            console.error(
+              '   💡 Or use onboarding@resend.dev for testing (set RESEND_FROM_EMAIL=onboarding@resend.dev)'
+            )
           }
         }
       } catch (e) {
         // If error text is not JSON, use it as-is
         errorMessage = errorText
       }
-      
+
       throw new Error(`Resend API error: ${response.status} - ${errorMessage}`)
     }
 
     const emailData = await response.json()
-    console.log(`Email sent successfully for ${email.trim()} at ${new Date().toISOString()}`)
+    console.log(
+      `Email sent successfully for ${email.trim()} at ${new Date().toISOString()}`
+    )
 
     return res.status(200).json({ ok: true })
-
   } catch (error) {
     console.error('Email sending error:', error)
-    return res.status(500).json({ 
-      ok: false, 
-      error: 'Failed to send email. Please try again later.' 
+    return res.status(500).json({
+      ok: false,
+      error: 'Failed to send email. Please try again later.',
     })
   }
 })
 
-app.listen(PORT, async () => {
-  console.log(`🚀 Local API server running on http://localhost:${PORT}`)
-  console.log(`📧 Contact form endpoint: http://localhost:${PORT}/api/contact`)
-  console.log(`🔐 Auth endpoints: http://localhost:${PORT}/api/auth/*`)
-  console.log(`📝 Writing endpoints: http://localhost:${PORT}/api/writings*`)
-  console.log(`⚙️  Admin endpoints: http://localhost:${PORT}/api/admin/*`)
-  console.log('✅ Server is ready to accept requests\n')
-  
-  // Test database connection
-  try {
-    await prisma.$connect()
-    const dbUrl = process.env.DATABASE_URL || ''
-    const isLocal = dbUrl.includes('localhost') || dbUrl.includes('127.0.0.1') || dbUrl.includes('5432')
-    const dbType = isLocal ? 'Local Postgres' : 'Neon Postgres'
-    console.log(`✅ Database connection successful (${dbType})\n`)
-  } catch (error) {
-    console.error('❌ Database connection failed:', error.message)
-    if (error.code === 'P1001') {
-      console.error('   Cannot reach database server. Make sure:')
+app
+  .listen(PORT, async () => {
+    console.log(`🚀 Local API server running on http://localhost:${PORT}`)
+    console.log(
+      `📧 Contact form endpoint: http://localhost:${PORT}/api/contact`
+    )
+    console.log(`🔐 Auth endpoints: http://localhost:${PORT}/api/auth/*`)
+    console.log(`📝 Writing endpoints: http://localhost:${PORT}/api/writings*`)
+    console.log(`⚙️  Admin endpoints: http://localhost:${PORT}/api/admin/*`)
+    console.log('✅ Server is ready to accept requests\n')
+
+    // Test database connection
+    try {
+      await prisma.$connect()
       const dbUrl = process.env.DATABASE_URL || ''
-      const isLocal = dbUrl.includes('localhost') || dbUrl.includes('127.0.0.1') || dbUrl.includes('5432')
-      if (isLocal) {
-        console.error('   - Local Postgres is running (try: brew services start postgresql@14)')
-        console.error('   - DATABASE_URL points to correct local database')
-        console.error('   - Database exists and migrations are applied (run: npm run db:push)')
-      } else {
-        console.error('   - Neon database is accessible')
-        console.error('   - DATABASE_URL is correct')
+      const isLocal =
+        dbUrl.includes('localhost') ||
+        dbUrl.includes('127.0.0.1') ||
+        dbUrl.includes('5432')
+      const dbType = isLocal ? 'Local Postgres' : 'Neon Postgres'
+      console.log(`✅ Database connection successful (${dbType})\n`)
+    } catch (error) {
+      console.error('❌ Database connection failed:', error.message)
+      if (error.code === 'P1001') {
+        console.error('   Cannot reach database server. Make sure:')
+        const dbUrl = process.env.DATABASE_URL || ''
+        const isLocal =
+          dbUrl.includes('localhost') ||
+          dbUrl.includes('127.0.0.1') ||
+          dbUrl.includes('5432')
+        if (isLocal) {
+          console.error(
+            '   - Local Postgres is running (try: brew services start postgresql@14)'
+          )
+          console.error('   - DATABASE_URL points to correct local database')
+          console.error(
+            '   - Database exists and migrations are applied (run: npm run db:push)'
+          )
+        } else {
+          console.error('   - Neon database is accessible')
+          console.error('   - DATABASE_URL is correct')
+        }
       }
+      console.error(
+        '   Server will continue running, but database operations may fail\n'
+      )
     }
-    console.error('   Server will continue running, but database operations may fail\n')
-  }
-}).on('error', (error) => {
-  console.error('❌ Server error:', error)
-  if (error.code === 'EADDRINUSE') {
-    console.error(`   Port ${PORT} is already in use. Please stop the other process.`)
-  }
-  process.exit(1)
-})
+  })
+  .on('error', (error) => {
+    console.error('❌ Server error:', error)
+    if (error.code === 'EADDRINUSE') {
+      console.error(
+        `   Port ${PORT} is already in use. Please stop the other process.`
+      )
+    }
+    process.exit(1)
+  })

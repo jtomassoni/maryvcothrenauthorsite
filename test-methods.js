@@ -7,7 +7,9 @@ import dotenv from 'dotenv'
 import { fileURLToPath } from 'url'
 import { dirname, resolve } from 'path'
 
-dotenv.config({ path: resolve(dirname(fileURLToPath(import.meta.url)), '.env.local') })
+dotenv.config({
+  path: resolve(dirname(fileURLToPath(import.meta.url)), '.env.local'),
+})
 
 // Mock request/response
 function createMockReq(method, id) {
@@ -15,10 +17,10 @@ function createMockReq(method, id) {
     method: method,
     url: `/api/admin/writings/${id}`,
     headers: {
-      'authorization': 'Bearer fake-token-for-testing'
+      authorization: 'Bearer fake-token-for-testing',
     },
     query: { id },
-    body: method === 'PUT' ? { status: 'published' } : {}
+    body: method === 'PUT' ? { status: 'published' } : {},
   }
 }
 
@@ -27,24 +29,24 @@ function createMockRes() {
     statusCode: 200,
     headers: {},
     headersSent: false,
-    body: null
+    body: null,
   }
-  
+
   res.setHeader = (key, value) => {
     res.headers[key.toLowerCase()] = value
   }
-  
+
   res.status = (code) => {
     res.statusCode = code
     return res
   }
-  
+
   res.json = (data) => {
     res.body = data
     res.headersSent = true
     return res
   }
-  
+
   return res
 }
 
@@ -53,15 +55,15 @@ async function testMethod(method, testId = 'test-id') {
     const handler = (await import('./api/admin/writings/[id].js')).default
     const req = createMockReq(method, testId)
     const res = createMockRes()
-    
+
     console.log(`\n🧪 Testing ${method} method...`)
     console.log(`   req.method: "${req.method}" (type: ${typeof req.method})`)
-    
+
     await handler(req, res)
-    
+
     console.log(`   Status: ${res.statusCode}`)
     console.log(`   Response: ${JSON.stringify(res.body)}`)
-    
+
     if (res.statusCode === 405) {
       console.log(`   ❌ Method not allowed!`)
       return false
@@ -80,20 +82,20 @@ async function testMethod(method, testId = 'test-id') {
 
 async function runTests() {
   console.log('🔍 Testing method handling in writings handler...\n')
-  
+
   const methods = ['GET', 'PUT', 'POST', 'DELETE']
   const results = {}
-  
+
   for (const method of methods) {
     results[method] = await testMethod(method)
   }
-  
+
   console.log('\n📊 Results:')
   for (const [method, passed] of Object.entries(results)) {
     console.log(`   ${method}: ${passed ? '✅' : '❌'}`)
   }
-  
-  const allPassed = Object.values(results).every(r => r)
+
+  const allPassed = Object.values(results).every((r) => r)
   if (allPassed) {
     console.log('\n✅ All methods are working!')
   } else {
@@ -102,5 +104,3 @@ async function runTests() {
 }
 
 runTests().catch(console.error)
-
-

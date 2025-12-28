@@ -27,7 +27,10 @@ if (envResult.error) {
 
 console.log('📋 Required Variables:')
 const dbUrl = process.env.DATABASE_URL || ''
-const isLocal = dbUrl.includes('localhost') || dbUrl.includes('127.0.0.1') || dbUrl.includes('5432')
+const isLocal =
+  dbUrl.includes('localhost') ||
+  dbUrl.includes('127.0.0.1') ||
+  dbUrl.includes('5432')
 const isNeon = dbUrl.includes('neon.tech') || dbUrl.includes('neon')
 
 if (dbUrl) {
@@ -42,10 +45,28 @@ if (dbUrl) {
   console.log('   DATABASE_URL: ❌ NOT SET')
 }
 
-console.log('   AUTH_USERNAME:', process.env.AUTH_USERNAME ? `✅ Set (${process.env.AUTH_USERNAME.length} chars)` : '❌ NOT SET')
-console.log('   AUTH_PASSWORD:', process.env.AUTH_PASSWORD ? `✅ Set (${process.env.AUTH_PASSWORD.length} chars)` : '❌ NOT SET')
-console.log('   AUTH_SECRET:', process.env.AUTH_SECRET ? `✅ Set` : '⚠️  NOT SET (using fallback in dev)')
+console.log(
+  '   AUTH_USERNAME:',
+  process.env.AUTH_USERNAME
+    ? `✅ Set (${process.env.AUTH_USERNAME.length} chars)`
+    : '❌ NOT SET'
+)
+console.log(
+  '   AUTH_PASSWORD:',
+  process.env.AUTH_PASSWORD
+    ? `✅ Set (${process.env.AUTH_PASSWORD.length} chars)`
+    : '❌ NOT SET'
+)
+console.log(
+  '   AUTH_SECRET:',
+  process.env.AUTH_SECRET ? `✅ Set` : '⚠️  NOT SET (using fallback in dev)'
+)
 
 console.log('\n📧 Email Service Configuration:')
-console.log('   RESEND_API_KEY:', process.env.RESEND_API_KEY ? `✅ Set (${process.env.RESEND_API_KEY.length} chars)` : '❌ NOT SET')
+console.log(
+  '   RESEND_API_KEY:',
+  process.env.RESEND_API_KEY
+    ? `✅ Set (${process.env.RESEND_API_KEY.length} chars)`
+    : '❌ NOT SET'
+)
 console.log('\n')

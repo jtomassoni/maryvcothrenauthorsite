@@ -1,19 +1,31 @@
 <template>
-  <section class="py-8 lg:py-16 bg-gradient-to-br from-slate-50 via-gray-50 to-blue-50 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800 relative overflow-hidden">
+  <section
+    class="py-8 lg:py-16 bg-gradient-to-br from-slate-50 via-gray-50 to-blue-50 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800 relative overflow-hidden"
+  >
     <!-- Background Effects -->
-    <div class="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-pink-600/10 dark:from-blue-500/20 dark:via-purple-500/20 dark:to-pink-500/20"></div>
+    <div
+      class="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-pink-600/10 dark:from-blue-500/20 dark:via-purple-500/20 dark:to-pink-500/20"
+    ></div>
     <div class="absolute top-0 left-0 w-full h-full">
-      <div class="absolute top-20 left-10 w-72 h-72 bg-blue-600/15 dark:bg-blue-400/20 rounded-full blur-3xl animate-pulse"></div>
-      <div class="absolute bottom-20 right-10 w-96 h-96 bg-blue-700/10 dark:bg-purple-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-800/8 dark:bg-pink-400/20 rounded-full blur-3xl animate-pulse delay-500"></div>
+      <div
+        class="absolute top-20 left-10 w-72 h-72 bg-blue-600/15 dark:bg-blue-400/20 rounded-full blur-3xl animate-pulse"
+      ></div>
+      <div
+        class="absolute bottom-20 right-10 w-96 h-96 bg-blue-700/10 dark:bg-purple-400/20 rounded-full blur-3xl animate-pulse delay-1000"
+      ></div>
+      <div
+        class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-800/8 dark:bg-pink-400/20 rounded-full blur-3xl animate-pulse delay-500"
+      ></div>
     </div>
-    
+
     <Container class="relative z-10">
       <!-- Mobile Image (shown first on mobile) -->
       <div class="lg:hidden relative flex justify-center mb-6">
         <div class="relative">
           <!-- Mobile Image Container -->
-          <div class="relative w-56 h-56 rounded-xl overflow-hidden shadow-lg shadow-blue-900/20">
+          <div
+            class="relative w-56 h-56 rounded-xl overflow-hidden shadow-lg shadow-blue-900/20"
+          >
             <img
               :src="imageSrc"
               :alt="imageAlt"
@@ -27,17 +39,26 @@
         <!-- Hero Content -->
         <div class="lg:col-span-1 space-y-6 flex flex-col justify-center">
           <div class="space-y-4">
-            <h1 class="text-4xl lg:text-5xl xl:text-6xl font-serif font-bold leading-tight">
-              <span class="gradient-text dark:bg-gradient-to-r dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 dark:bg-clip-text dark:text-transparent">
+            <h1
+              class="text-4xl lg:text-5xl xl:text-6xl font-serif font-bold leading-tight"
+            >
+              <span
+                class="gradient-text dark:bg-gradient-to-r dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 dark:bg-clip-text dark:text-transparent"
+              >
                 {{ title }}
               </span>
             </h1>
-            
-            <h2 v-if="subheading" class="text-2xl lg:text-3xl xl:text-4xl font-serif font-medium gradient-text dark:text-blue-300 italic">
+
+            <h2
+              v-if="subheading"
+              class="text-2xl lg:text-3xl xl:text-4xl font-serif font-medium gradient-text dark:text-blue-300 italic"
+            >
               {{ subheading }}
             </h2>
-            
-            <div class="text-base lg:text-lg xl:text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
+
+            <div
+              class="text-base lg:text-lg xl:text-xl text-gray-700 dark:text-gray-300 leading-relaxed"
+            >
               <p>{{ subtitle }}</p>
             </div>
           </div>
@@ -49,8 +70,18 @@
             >
               <span class="flex items-center justify-center gap-2">
                 {{ ctaText }}
-                <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                <svg
+                  class="w-4 h-4 transition-transform group-hover:translate-x-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"
+                  ></path>
                 </svg>
               </span>
             </router-link>
@@ -61,7 +92,9 @@
         <div class="hidden lg:block lg:col-span-1 relative flex justify-center">
           <div class="relative">
             <!-- Desktop Image Container -->
-            <div class="relative w-80 h-80 lg:w-96 lg:h-96 xl:w-[28rem] xl:h-[28rem] rounded-2xl overflow-hidden shadow-xl shadow-blue-900/20 dark:shadow-blue-500/20 dark:ring-2 dark:ring-blue-500/30">
+            <div
+              class="relative w-80 h-80 lg:w-96 lg:h-96 xl:w-[28rem] xl:h-[28rem] rounded-2xl overflow-hidden shadow-xl shadow-blue-900/20 dark:shadow-blue-500/20 dark:ring-2 dark:ring-blue-500/30"
+            >
               <img
                 :src="imageSrc"
                 :alt="imageAlt"
@@ -90,6 +123,6 @@ interface Props {
 }
 
 withDefaults(defineProps<Props>(), {
-  imageOverlayText: 'Learn More'
+  imageOverlayText: 'Learn More',
 })
 </script>

@@ -21,9 +21,8 @@ try {
   execSync('npx prisma migrate dev', {
     stdio: 'inherit',
     env: process.env,
-    cwd: join(__dirname, '..')
+    cwd: join(__dirname, '..'),
   })
 } catch (error) {
   process.exit(1)
 }
-

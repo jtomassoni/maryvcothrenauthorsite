@@ -4,7 +4,10 @@ import { PrismaClient } from '@prisma/client'
 export default async function handler(req, res) {
   // Initialize Prisma client inside handler to avoid initialization issues
   const prisma = new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    log:
+      process.env.NODE_ENV === 'development'
+        ? ['query', 'error', 'warn']
+        : ['error'],
   })
 
   try {
@@ -38,7 +41,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       ok: true,
-      items: writings.map(item => ({ ...item, type: 'writing' })),
+      items: writings.map((item) => ({ ...item, type: 'writing' })),
     })
   } catch (error) {
     console.error('[latest] Error:', error)
@@ -50,4 +53,3 @@ export default async function handler(req, res) {
     await prisma.$disconnect()
   }
 }
-

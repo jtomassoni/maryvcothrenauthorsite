@@ -12,7 +12,10 @@ const envPath = resolve(__dirname, '.env.local')
 dotenv.config({ path: envPath })
 
 console.log('✅ Environment variables loaded')
-console.log('   AUTH_USERNAME:', process.env.AUTH_USERNAME ? `"${process.env.AUTH_USERNAME}"` : 'NOT SET')
+console.log(
+  '   AUTH_USERNAME:',
+  process.env.AUTH_USERNAME ? `"${process.env.AUTH_USERNAME}"` : 'NOT SET'
+)
 console.log('   AUTH_PASSWORD:', process.env.AUTH_PASSWORD ? 'SET' : 'NOT SET')
 
 // Now import other modules after env vars are loaded
@@ -48,11 +51,17 @@ app.listen(PORT, () => {
   console.log(`🌐 Production uses Vercel serverless functions`)
   console.log(`\n🔍 Server ready - waiting for requests...`)
   console.log(`\n🔐 Auth check at startup:`)
-  console.log(`   process.env.AUTH_USERNAME: ${process.env.AUTH_USERNAME || 'NOT SET'}`)
-  console.log(`   process.env.AUTH_PASSWORD: ${process.env.AUTH_PASSWORD ? 'SET' : 'NOT SET'}`)
+  console.log(
+    `   process.env.AUTH_USERNAME: ${process.env.AUTH_USERNAME || 'NOT SET'}`
+  )
+  console.log(
+    `   process.env.AUTH_PASSWORD: ${process.env.AUTH_PASSWORD ? 'SET' : 'NOT SET'}`
+  )
   if (!process.env.AUTH_USERNAME || !process.env.AUTH_PASSWORD) {
     console.error(`\n❌ WARNING: Auth credentials not loaded!`)
-    console.error(`   Make sure .env.local exists and has AUTH_USERNAME and AUTH_PASSWORD`)
+    console.error(
+      `   Make sure .env.local exists and has AUTH_USERNAME and AUTH_PASSWORD`
+    )
   }
 })
 
@@ -66,4 +75,3 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('❌ UNHANDLED REJECTION:', reason)
   console.error('   Promise:', promise)
 })
-

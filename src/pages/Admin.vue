@@ -16,18 +16,25 @@
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
           <div class="space-y-6">
             <div>
-              <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
+              <h2
+                class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200"
+              >
                 Welcome, {{ username || 'Admin' }}
               </h2>
               <p class="text-gray-600 dark:text-gray-400 mb-6">
-                This is your content management dashboard for writings and site content.
+                This is your content management dashboard for writings and site
+                content.
               </p>
             </div>
 
             <!-- Placeholder Sections -->
             <div class="grid md:grid-cols-2 gap-6">
-              <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-6">
-                <h3 class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">
+              <div
+                class="border border-gray-200 dark:border-gray-700 rounded-lg p-6"
+              >
+                <h3
+                  class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200"
+                >
                   Writings
                 </h3>
                 <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
@@ -38,8 +45,12 @@
                 </p>
               </div>
 
-              <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-6">
-                <h3 class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">
+              <div
+                class="border border-gray-200 dark:border-gray-700 rounded-lg p-6"
+              >
+                <h3
+                  class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200"
+                >
                   Site Content
                 </h3>
                 <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
@@ -50,7 +61,6 @@
                 </p>
               </div>
             </div>
-
           </div>
         </div>
       </div>
@@ -65,4 +75,3 @@ import { useAuth } from '@/composables/useAuth'
 
 const { username } = useAuth()
 </script>
-

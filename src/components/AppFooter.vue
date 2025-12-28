@@ -7,9 +7,13 @@
           <h4 class="text-lg font-serif font-bold mb-1">Mary V. Cothren</h4>
           <p class="text-gray-300 text-sm">Nurse by night, writer by day</p>
         </div>
-        
+
         <!-- Center: Navigation Links -->
-        <nav class="flex justify-center space-x-4 md:space-x-6" role="navigation" aria-label="Footer navigation">
+        <nav
+          class="flex justify-center space-x-4 md:space-x-6"
+          role="navigation"
+          aria-label="Footer navigation"
+        >
           <router-link
             v-for="item in navItems"
             :key="item.name"
@@ -23,7 +27,7 @@
         <!-- Right: Contact and Copyright -->
         <div class="text-center md:text-right text-sm">
           <p class="text-gray-300 mb-1">
-            Questions? 
+            Questions?
             <router-link
               to="/contact"
               class="text-accent-300 hover:text-accent-200 transition-colors focus-ring rounded px-1"

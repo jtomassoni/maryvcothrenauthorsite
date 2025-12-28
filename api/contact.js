@@ -5,14 +5,14 @@ export default async function handler(req, res) {
 
   try {
     console.log('Contact API called with:', req.body)
-    
+
     // Basic validation
     const { name, email, message } = req.body
-    
+
     if (!name || !email) {
-      return res.status(400).json({ 
-        ok: false, 
-        error: 'Name and email are required' 
+      return res.status(400).json({
+        ok: false,
+        error: 'Name and email are required',
       })
     }
 
@@ -20,13 +20,14 @@ export default async function handler(req, res) {
     const resendApiKey = process.env.RESEND_API_KEY
     if (!resendApiKey) {
       console.error('❌ RESEND_API_KEY not set in environment variables')
-      return res.status(500).json({ 
-        ok: false, 
-        error: 'Email service not configured. Please contact the administrator.' 
+      return res.status(500).json({
+        ok: false,
+        error:
+          'Email service not configured. Please contact the administrator.',
       })
     }
     const recipientEmail = 'maryvcothren@gmail.com'
-    
+
     // Use verified domain email if set, otherwise use Resend's test domain
     // For development: use onboarding@resend.dev (no verification needed)
     // For production: verify your domain at https://resend.com/domains and use your domain email
@@ -37,12 +38,12 @@ export default async function handler(req, res) {
     console.log('API Key (first 10 chars):', resendApiKey.substring(0, 10))
     console.log('From:', fromEmail)
     console.log('Recipient:', recipientEmail)
-    
+
     // Use direct fetch to Resend API
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${resendApiKey}`,
+        Authorization: `Bearer ${resendApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -58,12 +59,12 @@ export default async function handler(req, res) {
               <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
             </div>
           </div>
-        `
-      })
+        `,
+      }),
     })
 
     console.log('Resend API response status:', response.status)
-    
+
     if (!response.ok) {
       const errorText = await response.text()
       console.error('Resend API error:', errorText)
@@ -72,17 +73,16 @@ export default async function handler(req, res) {
 
     const emailData = await response.json()
     console.log('Email sent successfully:', emailData)
-    
-    return res.status(200).json({ 
-      ok: true, 
-      message: 'Thank you for subscribing! You\'ll hear from me soon.'
-    })
 
+    return res.status(200).json({
+      ok: true,
+      message: "Thank you for subscribing! You'll hear from me soon.",
+    })
   } catch (error) {
     console.error('Contact API error:', error)
-    return res.status(500).json({ 
-      ok: false, 
-      error: 'Failed to send email: ' + error.message 
+    return res.status(500).json({
+      ok: false,
+      error: 'Failed to send email: ' + error.message,
     })
   }
 }

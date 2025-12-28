@@ -1,5 +1,8 @@
 <template>
-  <div id="app" class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+  <div
+    id="app"
+    class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300"
+  >
     <!-- Skip to content link for accessibility -->
     <a
       href="#main-content"

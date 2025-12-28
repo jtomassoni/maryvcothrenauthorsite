@@ -1,17 +1,27 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-amber-50/50 via-orange-50/30 to-rose-50/40 dark:from-stone-950 dark:via-amber-950/20 dark:to-rose-950/20 relative overflow-hidden">
+  <div
+    class="min-h-screen bg-gradient-to-br from-amber-50/50 via-orange-50/30 to-rose-50/40 dark:from-stone-950 dark:via-amber-950/20 dark:to-rose-950/20 relative overflow-hidden"
+  >
     <!-- Decorative background elements -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
-      <div class="absolute top-0 left-0 w-96 h-96 bg-amber-200/20 dark:bg-amber-900/10 rounded-full blur-3xl"></div>
-      <div class="absolute bottom-0 right-0 w-96 h-96 bg-rose-200/20 dark:bg-rose-900/10 rounded-full blur-3xl"></div>
-      <div class="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-orange-200/15 dark:bg-orange-900/5 rounded-full blur-3xl"></div>
+      <div
+        class="absolute top-0 left-0 w-96 h-96 bg-amber-200/20 dark:bg-amber-900/10 rounded-full blur-3xl"
+      ></div>
+      <div
+        class="absolute bottom-0 right-0 w-96 h-96 bg-rose-200/20 dark:bg-rose-900/10 rounded-full blur-3xl"
+      ></div>
+      <div
+        class="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-orange-200/15 dark:bg-orange-900/5 rounded-full blur-3xl"
+      ></div>
     </div>
-    
+
     <Container class="relative z-10">
       <div class="py-16 max-w-7xl mx-auto">
         <!-- Breadcrumbs -->
         <nav class="mb-6" aria-label="Breadcrumb">
-          <ol class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+          <ol
+            class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400"
+          >
             <li>
               <router-link
                 to="/"
@@ -22,10 +32,17 @@
             </li>
             <li>
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                <path
+                  fill-rule="evenodd"
+                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                  clip-rule="evenodd"
+                />
               </svg>
             </li>
-            <li class="text-gray-900 dark:text-white font-medium" aria-current="page">
+            <li
+              class="text-gray-900 dark:text-white font-medium"
+              aria-current="page"
+            >
               Writings
             </li>
           </ol>
@@ -34,18 +51,27 @@
         <!-- Header -->
         <div class="text-center mb-16">
           <div class="inline-block mb-6">
-            <div class="w-20 h-1 bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400 dark:from-amber-500 dark:via-orange-500 dark:to-rose-500 mx-auto rounded-full"></div>
+            <div
+              class="w-20 h-1 bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400 dark:from-amber-500 dark:via-orange-500 dark:to-rose-500 mx-auto rounded-full"
+            ></div>
           </div>
-          <h1 class="text-5xl md:text-6xl font-serif text-stone-900 dark:text-stone-100 mb-6 tracking-tight">
+          <h1
+            class="text-5xl md:text-6xl font-serif text-stone-900 dark:text-stone-100 mb-6 tracking-tight"
+          >
             Writings
           </h1>
-          <p class="text-xl text-stone-700 dark:text-stone-300 font-light italic max-w-2xl mx-auto leading-relaxed">
-            A collection of stories that explore the depths of human experience and the beauty of everyday moments.
+          <p
+            class="text-xl text-stone-700 dark:text-stone-300 font-light italic max-w-2xl mx-auto leading-relaxed"
+          >
+            A collection of stories that explore the depths of human experience
+            and the beauty of everyday moments.
           </p>
         </div>
 
         <!-- Filters and Search -->
-        <div class="mb-12 flex flex-col sm:flex-row gap-4 items-center justify-between">
+        <div
+          class="mb-12 flex flex-col sm:flex-row gap-4 items-center justify-between"
+        >
           <div class="flex-1 w-full sm:max-w-md">
             <input
               v-model="searchQuery"
@@ -67,11 +93,31 @@
                   {{ tag }}
                 </option>
               </select>
-              <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500 dark:text-stone-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+              <svg
+                class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500 dark:text-stone-400 pointer-events-none"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                />
               </svg>
-              <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500 dark:text-stone-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              <svg
+                class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500 dark:text-stone-400 pointer-events-none"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </div>
             <div class="relative">
@@ -84,15 +130,39 @@
                 <option value="oldest">Oldest First</option>
                 <option value="title">Title A-Z</option>
               </select>
-              <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500 dark:text-stone-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+              <svg
+                class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500 dark:text-stone-400 pointer-events-none"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"
+                />
               </svg>
-              <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500 dark:text-stone-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              <svg
+                class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500 dark:text-stone-400 pointer-events-none"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </div>
-            <label class="flex items-center gap-2 px-4 py-3 border-2 border-stone-300 dark:border-stone-700 rounded-lg bg-white/60 dark:bg-stone-900/60 backdrop-blur-sm shadow-sm hover:shadow-md hover:bg-white/80 dark:hover:bg-stone-900/80 transition-all cursor-pointer font-serif italic">
-              <span class="text-sm text-stone-700 dark:text-stone-300">Show preview</span>
+            <label
+              class="flex items-center gap-2 px-4 py-3 border-2 border-stone-300 dark:border-stone-700 rounded-lg bg-white/60 dark:bg-stone-900/60 backdrop-blur-sm shadow-sm hover:shadow-md hover:bg-white/80 dark:hover:bg-stone-900/80 transition-all cursor-pointer font-serif italic"
+            >
+              <span class="text-sm text-stone-700 dark:text-stone-300"
+                >Show preview</span
+              >
               <input
                 v-model="showPreview"
                 type="checkbox"
@@ -104,11 +174,16 @@
 
         <!-- Loading -->
         <div v-if="loading" class="text-center py-16">
-          <p class="text-stone-600 dark:text-stone-400 font-serif italic">Loading writings...</p>
+          <p class="text-stone-600 dark:text-stone-400 font-serif italic">
+            Loading writings...
+          </p>
         </div>
 
         <!-- Error -->
-        <div v-else-if="error" class="rounded-md bg-red-50 dark:bg-red-900/20 p-4 mb-8">
+        <div
+          v-else-if="error"
+          class="rounded-md bg-red-50 dark:bg-red-900/20 p-4 mb-8"
+        >
           <p class="text-sm text-red-800 dark:text-red-200">{{ error }}</p>
         </div>
 
@@ -120,10 +195,14 @@
             class="group relative pl-10 border-l-2 border-stone-300 dark:border-stone-700 hover:border-amber-400 dark:hover:border-amber-600 transition-all duration-300"
           >
             <!-- Timeline dot -->
-            <div class="absolute left-0 top-0 -translate-x-1/2 w-5 h-5 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 dark:from-amber-600 dark:to-orange-700 group-hover:scale-125 group-hover:shadow-lg group-hover:shadow-amber-500/50 transition-all duration-300 border-2 border-white dark:border-stone-900"></div>
-            
+            <div
+              class="absolute left-0 top-0 -translate-x-1/2 w-5 h-5 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 dark:from-amber-600 dark:to-orange-700 group-hover:scale-125 group-hover:shadow-lg group-hover:shadow-amber-500/50 transition-all duration-300 border-2 border-white dark:border-stone-900"
+            ></div>
+
             <!-- Content card with subtle background -->
-            <div class="pb-8 pl-4 pr-4 py-4 rounded-r-lg bg-white/40 dark:bg-stone-900/40 backdrop-blur-sm border border-stone-200/50 dark:border-stone-800/50 group-hover:bg-white/60 dark:group-hover:bg-stone-900/60 group-hover:shadow-lg transition-all duration-300">
+            <div
+              class="pb-8 pl-4 pr-4 py-4 rounded-r-lg bg-white/40 dark:bg-stone-900/40 backdrop-blur-sm border border-stone-200/50 dark:border-stone-800/50 group-hover:bg-white/60 dark:group-hover:bg-stone-900/60 group-hover:shadow-lg transition-all duration-300"
+            >
               <div class="mb-4">
                 <span
                   v-for="tag in writing.tags.slice(0, 3)"
@@ -133,7 +212,9 @@
                   {{ tag }}
                 </span>
               </div>
-              <h2 class="text-3xl font-serif text-stone-900 dark:text-stone-100 mb-3 leading-tight group-hover:text-amber-700 dark:group-hover:text-amber-400 transition-colors">
+              <h2
+                class="text-3xl font-serif text-stone-900 dark:text-stone-100 mb-3 leading-tight group-hover:text-amber-700 dark:group-hover:text-amber-400 transition-colors"
+              >
                 <router-link
                   :to="`/writings/${writing.slug}`"
                   class="hover:underline"
@@ -141,18 +222,30 @@
                   {{ writing.title }}
                 </router-link>
               </h2>
-              <p class="text-sm text-stone-500 dark:text-stone-500 mb-4 font-serif italic">
+              <p
+                class="text-sm text-stone-500 dark:text-stone-500 mb-4 font-serif italic"
+              >
                 {{ formatDate(writing.publishedAt) }}
               </p>
               <div v-if="showPreview" class="mb-4">
-                <MarkdownRenderer :content="getContentPreview(writing.contentMarkdown || writing.excerpt)" size="sm" />
+                <MarkdownRenderer
+                  :content="
+                    getContentPreview(
+                      writing.contentMarkdown || writing.excerpt
+                    )
+                  "
+                  size="sm"
+                />
               </div>
               <router-link
                 :to="`/writings/${writing.slug}`"
                 class="inline-flex items-center text-amber-700 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 font-serif italic font-medium transition-colors group/link"
               >
                 Continue reading
-                <span class="ml-2 group-hover/link:translate-x-1 transition-transform">→</span>
+                <span
+                  class="ml-2 group-hover/link:translate-x-1 transition-transform"
+                  >→</span
+                >
               </router-link>
             </div>
           </article>
@@ -177,13 +270,23 @@
                 />
               </svg>
             </div>
-            <h3 class="text-3xl font-serif text-stone-900 dark:text-stone-100 mb-4">
-              {{ searchQuery || tagFilter ? 'No writings match your filters' : 'Coming Soon' }}
+            <h3
+              class="text-3xl font-serif text-stone-900 dark:text-stone-100 mb-4"
+            >
+              {{
+                searchQuery || tagFilter
+                  ? 'No writings match your filters'
+                  : 'Coming Soon'
+              }}
             </h3>
-            <p class="text-xl text-stone-600 dark:text-stone-400 font-light italic mb-8 leading-relaxed">
-              {{ searchQuery || tagFilter 
-                ? 'Try adjusting your search or filter criteria to discover new stories.' 
-                : 'New writings are being crafted with care. Check back soon for stories that explore the depths of human experience.' }}
+            <p
+              class="text-xl text-stone-600 dark:text-stone-400 font-light italic mb-8 leading-relaxed"
+            >
+              {{
+                searchQuery || tagFilter
+                  ? 'Try adjusting your search or filter criteria to discover new stories.'
+                  : 'New writings are being crafted with care. Check back soon for stories that explore the depths of human experience.'
+              }}
             </p>
             <div v-if="searchQuery || tagFilter" class="mt-8">
               <button
@@ -205,7 +308,10 @@
         </div>
 
         <!-- Pagination -->
-        <div v-if="pagination && pagination.totalPages > 1" class="flex items-center justify-center gap-6 pt-8 border-t border-stone-300 dark:border-stone-700">
+        <div
+          v-if="pagination && pagination.totalPages > 1"
+          class="flex items-center justify-center gap-6 pt-8 border-t border-stone-300 dark:border-stone-700"
+        >
           <button
             @click="changePage(pagination.page - 1)"
             :disabled="pagination.page === 1"
@@ -252,7 +358,7 @@ let searchTimeout: ReturnType<typeof setTimeout> | null = null
 // Extract available tags from writings
 const availableTags = computed(() => {
   const tags = new Set<string>()
-  writings.value.forEach(writing => {
+  writings.value.forEach((writing) => {
     writing.tags?.forEach((tag: string) => tags.add(tag))
   })
   return Array.from(tags).sort()
@@ -267,11 +373,12 @@ const fetchWritings = async () => {
     if (searchQuery.value) params.append('q', searchQuery.value)
     if (tagFilter.value) params.append('tag', tagFilter.value)
     params.append('sort', sortBy.value)
-    if (pagination.value) params.append('page', pagination.value.page.toString())
+    if (pagination.value)
+      params.append('page', pagination.value.page.toString())
     params.append('pageSize', '10')
 
     const response = await fetch(`/api/writings?${params.toString()}`)
-    
+
     // Check if response is ok before trying to parse JSON
     if (!response.ok) {
       // If it's a 500 error, it might be a database connection issue
@@ -304,14 +411,16 @@ const fetchWritings = async () => {
     else delete newQuery.tag
     if (sortBy.value !== 'newest') newQuery.sort = sortBy.value
     else delete newQuery.sort
-    if (pagination.value && pagination.value.page > 1) newQuery.page = pagination.value.page.toString()
+    if (pagination.value && pagination.value.page > 1)
+      newQuery.page = pagination.value.page.toString()
     else delete newQuery.page
 
     router.replace({ query: newQuery })
   } catch (err) {
     console.error('Error fetching writings:', err)
     // Network errors or JSON parsing errors
-    error.value = 'Unable to connect to the server. Please check your connection and try again.'
+    error.value =
+      'Unable to connect to the server. Please check your connection and try again.'
     writings.value = []
   } finally {
     loading.value = false
@@ -350,10 +459,10 @@ const formatDate = (dateString: string) => {
 
 const getContentPreview = (content: string) => {
   if (!content) return ''
-  
+
   // Get first 500 characters of markdown (preserving formatting)
   const preview = content.substring(0, 500)
-  
+
   // If content was truncated, try to end at a word boundary and add ellipsis
   if (preview.length < content.length) {
     // Find the last space or newline before the 500 char limit
@@ -362,15 +471,15 @@ const getContentPreview = (content: string) => {
       preview.lastIndexOf('\n'),
       preview.lastIndexOf('.')
     )
-    
+
     // If we found a good break point (within last 50 chars), use it
     if (lastSpace > 450) {
       return preview.substring(0, lastSpace + 1) + '...'
     }
-    
+
     return preview + '...'
   }
-  
+
   return preview
 }
 
@@ -379,14 +488,14 @@ onMounted(() => {
   searchQuery.value = (route.query.q as string) || ''
   tagFilter.value = (route.query.tag as string) || ''
   sortBy.value = (route.query.sort as string) || 'newest'
-  
+
   pagination.value = {
     page: parseInt((route.query.page as string) || '1', 10),
     pageSize: 10,
     total: 0,
     totalPages: 1,
   }
-  
+
   fetchWritings()
 })
 </script>
