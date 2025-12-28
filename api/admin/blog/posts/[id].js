@@ -32,6 +32,12 @@ export default async function handler(req, res) {
   })
 
   try {
+    // Normalize method to uppercase for consistent checking
+    const method = (req.method || '').toUpperCase()
+    
+    // Log for debugging
+    console.log(`[blog/posts/[id]] ${method} request (original: ${req.method}) for id: ${req.query.id}`)
+    
     const username = checkAuth(req)
     if (!username) {
       await prisma.$disconnect()
@@ -43,8 +49,9 @@ export default async function handler(req, res) {
     if (!id) {
       return res.status(400).json({ ok: false, error: 'ID is required' })
     }
+    
     // GET /api/admin/blog/posts/:id
-    if (req.method === 'GET') {
+    if (method === 'GET') {
       const post = await prisma.blogPost.findUnique({ where: { id } })
       
       if (!post) {
@@ -55,7 +62,7 @@ export default async function handler(req, res) {
     }
 
     // PUT /api/admin/blog/posts/:id
-    if (req.method === 'PUT') {
+    if (method === 'PUT' || req.method === 'PUT' || req.method === 'put') {
       const { title, slug, excerpt, contentMarkdown, tags, status } = req.body
 
       const existing = await prisma.blogPost.findUnique({ where: { id } })
@@ -118,7 +125,7 @@ export default async function handler(req, res) {
     }
 
     // POST /api/admin/blog/posts/:id (for duplication)
-    if (req.method === 'POST') {
+    if (method === 'POST') {
       const existing = await prisma.blogPost.findUnique({ where: { id } })
       
       if (!existing) {
@@ -142,7 +149,7 @@ export default async function handler(req, res) {
     }
 
     // DELETE /api/admin/blog/posts/:id
-    if (req.method === 'DELETE' || req.method === 'delete') {
+    if (method === 'DELETE' || req.method === 'DELETE' || req.method === 'delete') {
       const existing = await prisma.blogPost.findUnique({ where: { id } })
       if (!existing) {
         return res.status(404).json({ ok: false, error: 'Post not found' })
@@ -152,8 +159,10 @@ export default async function handler(req, res) {
     }
 
     // Method not allowed
-    console.error(`[blog/posts/[id]] Method not allowed: ${req.method}`)
-    return res.status(405).json({ ok: false, error: `Method not allowed: ${req.method}` })
+    console.error(`[blog/posts/[id]] Method not allowed: ${req.method} (normalized: ${method})`)
+    console.error(`[blog/posts/[id]] Available methods: GET, PUT, POST, DELETE`)
+    console.error(`[blog/posts/[id]] Method comparison: method === 'PUT' = ${method === 'PUT'}, method === 'GET' = ${method === 'GET'}`)
+    return res.status(405).json({ ok: false, error: `Method not allowed: ${req.method}. Expected one of: GET, PUT, POST, DELETE` })
   } catch (error) {
     console.error('[blog/posts/[id]] Error:', error)
     console.error('[blog/posts/[id]] Error stack:', error.stack)

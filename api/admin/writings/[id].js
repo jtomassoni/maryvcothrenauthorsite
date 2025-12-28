@@ -85,17 +85,27 @@ function checkAuth(req) {
 }
 
 export default async function handler(req, res) {
-  // Set content type to JSON
+  // Set content type to JSON immediately to prevent HTML fallback
   res.setHeader('Content-Type', 'application/json')
   
-  // Initialize Prisma client inside handler to avoid initialization issues
-  const prisma = new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-  })
+  let prisma
+  try {
+    // Initialize Prisma client inside handler to avoid initialization issues
+    prisma = new PrismaClient({
+      log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    })
+  } catch (initError) {
+    console.error('[writings/[id]] Failed to initialize Prisma:', initError)
+    return res.status(500).json({ ok: false, error: 'Failed to initialize database connection' })
+  }
 
   try {
-    // Log the method for debugging
-    console.log(`[writings/[id]] ${req.method} request for id: ${req.query.id}`)
+    // Normalize method to uppercase for consistent checking
+    const method = (req.method || '').toUpperCase()
+    
+    // Log everything for debugging
+    console.log(`[writings/[id]] ${method} request (original: ${req.method}) for id: ${req.query.id}`)
+    console.log(`[writings/[id]] Request details:`, { method, originalMethod: req.method, id: req.query.id, url: req.url })
     
     const username = checkAuth(req)
     if (!username) {
@@ -110,7 +120,7 @@ export default async function handler(req, res) {
     }
 
     // GET /api/admin/writings/:id
-    if (req.method === 'GET') {
+    if (method === 'GET') {
       const writing = await prisma.writing.findUnique({ where: { id } })
       
       if (!writing) {
@@ -121,7 +131,7 @@ export default async function handler(req, res) {
     }
 
     // PUT /api/admin/writings/:id
-    if (req.method === 'PUT') {
+    if (method === 'PUT' || req.method === 'PUT' || req.method === 'put') {
       const { title, slug, excerpt, contentMarkdown, tags, status } = req.body
 
       const existing = await prisma.writing.findUnique({ where: { id } })
@@ -184,7 +194,7 @@ export default async function handler(req, res) {
     }
 
     // POST /api/admin/writings/:id (for duplication)
-    if (req.method === 'POST') {
+    if (method === 'POST') {
       const original = await prisma.writing.findUnique({ where: { id } })
       
       if (!original) {
@@ -208,7 +218,7 @@ export default async function handler(req, res) {
     }
 
     // DELETE /api/admin/writings/:id
-    if (req.method === 'DELETE' || req.method === 'delete') {
+    if (method === 'DELETE' || req.method === 'DELETE' || req.method === 'delete') {
       const existing = await prisma.writing.findUnique({ where: { id } })
       if (!existing) {
         return res.status(404).json({ ok: false, error: 'Writing not found' })
@@ -218,12 +228,19 @@ export default async function handler(req, res) {
     }
 
     // Method not allowed
-    console.error(`[writings/[id]] Method not allowed: ${req.method}`)
-    return res.status(405).json({ ok: false, error: `Method not allowed: ${req.method}` })
+    console.error(`[writings/[id]] Method not allowed: ${req.method} (normalized: ${method})`)
+    console.error(`[writings/[id]] Available methods: GET, PUT, POST, DELETE`)
+    console.error(`[writings/[id]] Method comparison: method === 'PUT' = ${method === 'PUT'}, method === 'GET' = ${method === 'GET'}`)
+    return res.status(405).json({ ok: false, error: `Method not allowed: ${req.method}. Expected one of: GET, PUT, POST, DELETE` })
   } catch (error) {
-    console.error('[writings/:id] Error:', error)
-    console.error('[writings/:id] Error stack:', error.stack)
-    console.error('[writings/:id] Error code:', error.code)
+    console.error('[writings/[id]] Error:', error)
+    console.error('[writings/[id]] Error stack:', error.stack)
+    console.error('[writings/[id]] Error code:', error.code)
+    
+    // Ensure we always return JSON, never HTML
+    if (!res.headersSent) {
+      res.setHeader('Content-Type', 'application/json')
+    }
     
     // Handle Prisma table missing error (P2021)
     if (error.code === 'P2021') {
@@ -254,7 +271,13 @@ export default async function handler(req, res) {
     
     return res.status(500).json(errorResponse)
   } finally {
-    await prisma.$disconnect()
+    if (prisma) {
+      try {
+        await prisma.$disconnect()
+      } catch (disconnectError) {
+        console.error('[writings/[id]] Error disconnecting Prisma:', disconnectError)
+      }
+    }
   }
 }
 
