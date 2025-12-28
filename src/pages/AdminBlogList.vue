@@ -293,6 +293,13 @@ const fetchContent = async () => {
   error.value = ''
 
   try {
+    // Get token from localStorage
+    const token = localStorage.getItem('auth_token')
+    const headers: Record<string, string> = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+
     // Fetch both blog posts and writings
     const params = new URLSearchParams()
     if (searchQuery.value) params.append('q', searchQuery.value)
@@ -301,9 +308,11 @@ const fetchContent = async () => {
 
     const [blogResponse, writingResponse] = await Promise.all([
       typeFilter.value === 'writing' ? null : fetch(`/api/admin/blog/posts?${params.toString()}`, {
+        headers,
         credentials: 'include',
       }),
       typeFilter.value === 'blog' ? null : fetch(`/api/admin/writings?${params.toString()}`, {
+        headers,
         credentials: 'include',
       }),
     ])
@@ -366,15 +375,22 @@ const toggleStatus = async (item: any) => {
   togglingStatus.value = itemKey
 
   try {
+    // Get token from localStorage
+    const token = localStorage.getItem('auth_token')
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    }
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+
     const endpoint = item.type === 'blog' 
       ? `/api/admin/blog/posts/${item.id}`
       : `/api/admin/writings/${item.id}`
     
     const response = await fetch(endpoint, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       credentials: 'include',
       body: JSON.stringify({
         status: newStatus,
@@ -410,12 +426,20 @@ const handleDuplicate = async (item: any) => {
   duplicatingItem.value = itemKey
 
   try {
+    // Get token from localStorage
+    const token = localStorage.getItem('auth_token')
+    const headers: Record<string, string> = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+
     const endpoint = item.type === 'blog'
       ? `/api/admin/blog/posts/${item.id}/duplicate`
       : `/api/admin/writings/${item.id}/duplicate`
     
     const response = await fetch(endpoint, {
       method: 'POST',
+      headers,
       credentials: 'include',
     })
 
@@ -443,12 +467,20 @@ const handleDelete = async (item: any) => {
   }
 
   try {
+    // Get token from localStorage
+    const token = localStorage.getItem('auth_token')
+    const headers: Record<string, string> = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+
     const endpoint = item.type === 'blog'
       ? `/api/admin/blog/posts/${item.id}`
       : `/api/admin/writings/${item.id}`
     
     const response = await fetch(endpoint, {
       method: 'DELETE',
+      headers,
       credentials: 'include',
     })
 

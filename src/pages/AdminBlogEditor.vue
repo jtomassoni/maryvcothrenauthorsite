@@ -248,12 +248,20 @@ const loadPost = async () => {
   error.value = ''
 
   try {
+    // Get token from localStorage
+    const token = localStorage.getItem('auth_token')
+    const headers: Record<string, string> = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+
     // Try to determine type from query param or try both endpoints
     const typeFromQuery = route.query.type as string
     let response, data
 
     if (typeFromQuery === 'writing') {
       response = await fetch(`/api/admin/writings/${route.params.id}`, {
+        headers,
         credentials: 'include',
       })
       data = await response.json()
@@ -262,6 +270,7 @@ const loadPost = async () => {
       }
     } else if (typeFromQuery === 'blog') {
       response = await fetch(`/api/admin/blog/posts/${route.params.id}`, {
+        headers,
         credentials: 'include',
       })
       data = await response.json()
@@ -271,6 +280,7 @@ const loadPost = async () => {
     } else {
       // Try blog first, then writing
       response = await fetch(`/api/admin/blog/posts/${route.params.id}`, {
+        headers,
         credentials: 'include',
       })
       data = await response.json()
@@ -278,6 +288,7 @@ const loadPost = async () => {
         currentType.value = 'blog'
       } else {
         response = await fetch(`/api/admin/writings/${route.params.id}`, {
+          headers,
           credentials: 'include',
         })
         data = await response.json()
@@ -327,11 +338,18 @@ const handleSubmit = async () => {
 
     const method = isEdit.value ? 'PUT' : 'POST'
 
+    // Get token from localStorage
+    const token = localStorage.getItem('auth_token')
+    const headers = {
+      'Content-Type': 'application/json',
+    }
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+
     const response = await fetch(url, {
       method,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       credentials: 'include',
       body: JSON.stringify({
         ...form.value,
