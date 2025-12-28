@@ -1,6 +1,7 @@
 // Vercel serverless function for /api/admin/writings/:id
 export const config = {
-  runtime: 'nodejs20.x',
+  // Vercel supports 'nodejs' (current LTS) or edge runtimes
+  runtime: 'nodejs',
 }
 
 import { PrismaClient } from '@prisma/client'
