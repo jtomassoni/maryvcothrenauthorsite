@@ -85,12 +85,18 @@ function checkAuth(req) {
 }
 
 export default async function handler(req, res) {
+  // Set content type to JSON
+  res.setHeader('Content-Type', 'application/json')
+  
   // Initialize Prisma client inside handler to avoid initialization issues
   const prisma = new PrismaClient({
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   })
 
   try {
+    // Log the method for debugging
+    console.log(`[writings/[id]] ${req.method} request for id: ${req.query.id}`)
+    
     const username = checkAuth(req)
     if (!username) {
       await prisma.$disconnect()
@@ -98,6 +104,10 @@ export default async function handler(req, res) {
     }
 
     const { id } = req.query
+
+    if (!id) {
+      return res.status(400).json({ ok: false, error: 'ID is required' })
+    }
 
     // GET /api/admin/writings/:id
     if (req.method === 'GET') {
@@ -198,7 +208,7 @@ export default async function handler(req, res) {
     }
 
     // DELETE /api/admin/writings/:id
-    if (req.method === 'DELETE') {
+    if (req.method === 'DELETE' || req.method === 'delete') {
       const existing = await prisma.writing.findUnique({ where: { id } })
       if (!existing) {
         return res.status(404).json({ ok: false, error: 'Writing not found' })
@@ -208,7 +218,8 @@ export default async function handler(req, res) {
     }
 
     // Method not allowed
-    return res.status(405).json({ ok: false, error: 'Method not allowed' })
+    console.error(`[writings/[id]] Method not allowed: ${req.method}`)
+    return res.status(405).json({ ok: false, error: `Method not allowed: ${req.method}` })
   } catch (error) {
     console.error('[writings/:id] Error:', error)
     console.error('[writings/:id] Error stack:', error.stack)

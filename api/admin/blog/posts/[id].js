@@ -23,6 +23,9 @@ function checkAuth(req) {
 }
 
 export default async function handler(req, res) {
+  // Set content type to JSON
+  res.setHeader('Content-Type', 'application/json')
+  
   // Initialize Prisma client inside handler to avoid initialization issues
   const prisma = new PrismaClient({
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
@@ -35,9 +38,11 @@ export default async function handler(req, res) {
       return res.status(401).json({ ok: false, error: 'Unauthorized' })
     }
 
-  const { id } = req.query
+    const { id } = req.query
 
-  try {
+    if (!id) {
+      return res.status(400).json({ ok: false, error: 'ID is required' })
+    }
     // GET /api/admin/blog/posts/:id
     if (req.method === 'GET') {
       const post = await prisma.blogPost.findUnique({ where: { id } })
@@ -137,7 +142,7 @@ export default async function handler(req, res) {
     }
 
     // DELETE /api/admin/blog/posts/:id
-    if (req.method === 'DELETE') {
+    if (req.method === 'DELETE' || req.method === 'delete') {
       const existing = await prisma.blogPost.findUnique({ where: { id } })
       if (!existing) {
         return res.status(404).json({ ok: false, error: 'Post not found' })
@@ -147,10 +152,28 @@ export default async function handler(req, res) {
     }
 
     // Method not allowed
-    return res.status(405).json({ ok: false, error: 'Method not allowed' })
+    console.error(`[blog/posts/[id]] Method not allowed: ${req.method}`)
+    return res.status(405).json({ ok: false, error: `Method not allowed: ${req.method}` })
   } catch (error) {
-    console.error('Error in blog post handler:', error)
-    return res.status(500).json({ ok: false, error: 'Internal server error' })
+    console.error('[blog/posts/[id]] Error:', error)
+    console.error('[blog/posts/[id]] Error stack:', error.stack)
+    console.error('[blog/posts/[id]] Error code:', error.code)
+    
+    // Handle Prisma table missing error (P2021)
+    if (error.code === 'P2021') {
+      return res.status(500).json({
+        ok: false,
+        error: 'Database tables not found',
+        message: 'The database tables do not exist. Please run database migrations.',
+        code: error.code,
+      })
+    }
+    
+    return res.status(500).json({ 
+      ok: false, 
+      error: 'Internal server error',
+      message: error.message || 'An unexpected error occurred'
+    })
   } finally {
     await prisma.$disconnect()
   }

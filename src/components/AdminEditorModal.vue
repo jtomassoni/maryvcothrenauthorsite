@@ -707,27 +707,70 @@ const loadPost = async () => {
         headers,
         credentials: 'include',
       })
-      data = await response.json()
-      if (response.ok && data.ok) {
-        currentType.value = 'writing'
-      }
     } else {
       response = await fetch(`/api/admin/blog/posts/${props.editId}`, {
         headers,
         credentials: 'include',
       })
-      data = await response.json()
-      if (response.ok && data.ok) {
+    }
+
+    // Try to parse JSON - if it fails, check what we actually got
+    try {
+      const responseText = await response.text()
+      
+      // Try to parse as JSON
+      try {
+        data = JSON.parse(responseText)
+      } catch (parseError) {
+        // If parsing fails, check if it's HTML (routing issue)
+        if (responseText.trim().startsWith('<!DOCTYPE') || responseText.trim().startsWith('<html')) {
+          console.error('Received HTML instead of JSON - API route may not be configured correctly')
+          error.value = 'API endpoint not found. The route may not be properly configured on the server.'
+          return
+        }
+        // If it's not HTML, it might be plain text error
+        console.error('Failed to parse response as JSON:', responseText.substring(0, 200))
+        error.value = `Server returned invalid response: ${responseText.substring(0, 100)}`
+        return
+      }
+    } catch (textError) {
+      console.error('Error reading response:', textError)
+      error.value = 'Failed to read server response'
+      return
+    }
+
+    if (response.ok && data.ok) {
+      if (typeFromQuery === 'writing' || data.writing) {
+        currentType.value = 'writing'
+      } else if (typeFromQuery === 'blog' || data.post) {
         currentType.value = 'blog'
-      } else {
-        // Try writing if blog fails
-        response = await fetch(`/api/admin/writings/${props.editId}`, {
-          headers,
-          credentials: 'include',
-        })
-        data = await response.json()
-        if (response.ok && data.ok) {
-          currentType.value = 'writing'
+      }
+    } else {
+      // If first attempt failed and we didn't specify type, try the other type
+      if (!typeFromQuery) {
+        try {
+          const otherResponse = await fetch(
+            typeFromQuery === 'blog' 
+              ? `/api/admin/writings/${props.editId}`
+              : `/api/admin/blog/posts/${props.editId}`,
+            {
+              headers,
+              credentials: 'include',
+            }
+          )
+          const otherText = await otherResponse.text()
+          try {
+            const otherData = JSON.parse(otherText)
+            if (otherResponse.ok && otherData.ok) {
+              response = otherResponse
+              data = otherData
+              currentType.value = typeFromQuery === 'blog' ? 'writing' : 'blog'
+            }
+          } catch {
+            // Ignore parse errors for fallback attempt
+          }
+        } catch {
+          // Ignore errors for fallback attempt
         }
       }
     }
@@ -761,7 +804,7 @@ const loadPost = async () => {
     updateTagsInput()
   } catch (err) {
     console.error('Error loading content:', err)
-    error.value = 'An error occurred while loading the content'
+    error.value = `An error occurred while loading the content: ${err instanceof Error ? err.message : 'Unknown error'}`
   } finally {
     loading.value = false
   }

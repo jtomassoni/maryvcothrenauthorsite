@@ -908,10 +908,29 @@ const executeDelete = async () => {
       credentials: 'include',
     })
 
-    const data = await response.json()
+    // Handle response - might be empty or JSON
+    let data
+    const contentType = response.headers.get('content-type')
+    if (contentType && contentType.includes('application/json')) {
+      try {
+        const text = await response.text()
+        data = text ? JSON.parse(text) : { ok: false, error: 'Empty response' }
+      } catch (parseError) {
+        console.error('Failed to parse delete response:', parseError)
+        data = { ok: false, error: 'Invalid server response' }
+      }
+    } else {
+      // If not JSON, check status
+      if (response.ok) {
+        data = { ok: true }
+      } else {
+        const text = await response.text()
+        data = { ok: false, error: text || `Server returned ${response.status}` }
+      }
+    }
 
     if (!response.ok || !data.ok) {
-      showNotification('error', data.error || 'Failed to delete')
+      showNotification('error', data.error || `Failed to delete (${response.status})`)
       return
     }
 
