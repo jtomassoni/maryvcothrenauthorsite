@@ -115,7 +115,7 @@
         <!-- Writings List - Vertical Timeline Style -->
         <div v-else-if="writings.length > 0" class="space-y-8 mb-16">
           <article
-            v-for="(writing, index) in writings"
+            v-for="writing in writings"
             :key="writing.id"
             class="group relative pl-10 border-l-2 border-stone-300 dark:border-stone-700 hover:border-amber-400 dark:hover:border-amber-600 transition-all duration-300"
           >
@@ -159,37 +159,47 @@
         </div>
 
         <!-- Empty state -->
-        <div v-else class="text-center py-16">
-          <div class="max-w-md mx-auto">
-            <svg
-              class="mx-auto h-16 w-16 text-stone-400 dark:text-stone-600 mb-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="1.5"
-                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-              />
-            </svg>
-            <h3 class="text-xl font-serif text-stone-900 dark:text-stone-100 mb-3">
-              {{ searchQuery || tagFilter ? 'No writings match your filters' : 'No writings yet' }}
+        <div v-else class="text-center py-20">
+          <div class="max-w-lg mx-auto">
+            <div class="mb-8">
+              <svg
+                class="mx-auto h-24 w-24 text-amber-200 dark:text-amber-800/40 mb-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                />
+              </svg>
+            </div>
+            <h3 class="text-3xl font-serif text-stone-900 dark:text-stone-100 mb-4">
+              {{ searchQuery || tagFilter ? 'No writings match your filters' : 'Coming Soon' }}
             </h3>
-            <p class="text-stone-600 dark:text-stone-400 font-light italic">
+            <p class="text-xl text-stone-600 dark:text-stone-400 font-light italic mb-8 leading-relaxed">
               {{ searchQuery || tagFilter 
-                ? 'Try adjusting your search or filter criteria.' 
-                : 'Check back soon for new content!' }}
+                ? 'Try adjusting your search or filter criteria to discover new stories.' 
+                : 'New writings are being crafted with care. Check back soon for stories that explore the depths of human experience.' }}
             </p>
-            <div v-if="searchQuery || tagFilter" class="mt-6">
+            <div v-if="searchQuery || tagFilter" class="mt-8">
               <button
                 @click="clearFilters"
-                class="inline-flex items-center px-6 py-2 border-2 border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-300 bg-transparent hover:bg-stone-100 dark:hover:bg-stone-900 focus:outline-none transition-colors font-serif"
+                class="inline-flex items-center px-8 py-3 border-2 border-amber-500 dark:border-amber-400 text-amber-700 dark:text-amber-300 bg-transparent hover:bg-amber-50 dark:hover:bg-amber-900/20 focus:outline-none transition-all font-serif italic text-lg shadow-sm hover:shadow-md"
               >
                 Clear filters
               </button>
+            </div>
+            <div v-else class="mt-8">
+              <router-link
+                to="/"
+                class="inline-flex items-center px-8 py-3 border-2 border-amber-500 dark:border-amber-400 text-amber-700 dark:text-amber-300 bg-transparent hover:bg-amber-50 dark:hover:bg-amber-900/20 focus:outline-none transition-all font-serif italic text-lg shadow-sm hover:shadow-md"
+              >
+                Return to Home
+              </router-link>
             </div>
           </div>
         </div>

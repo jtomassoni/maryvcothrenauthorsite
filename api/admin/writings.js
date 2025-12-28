@@ -75,15 +75,25 @@ export default async function handler(req, res) {
         orderBy = { updatedAt: 'desc' }
       }
 
-      const [writings, total] = await Promise.all([
-        prisma.writing.findMany({
-          where,
-          orderBy,
-          skip,
-          take: pageSizeNum,
-        }),
-        prisma.writing.count({ where }),
-      ])
+      let writings, total
+      try {
+        [writings, total] = await Promise.all([
+          prisma.writing.findMany({
+            where,
+            orderBy,
+            skip,
+            take: pageSizeNum,
+          }),
+          prisma.writing.count({ where }),
+        ])
+      } catch (queryError) {
+        // If it's a table missing error, throw it so it gets caught by the outer catch
+        if (queryError.code === 'P2021' || queryError.message?.includes('does not exist')) {
+          throw queryError
+        }
+        // Re-throw other errors
+        throw queryError
+      }
 
       return res.status(200).json({
         ok: true,
@@ -162,15 +172,19 @@ export default async function handler(req, res) {
     console.error('[writings] Error stack:', error.stack)
     console.error('[writings] Error code:', error.code)
     console.error('[writings] Error name:', error.name)
+    console.error('[writings] Error message:', error.message)
     console.error('[writings] Full error object:', JSON.stringify(error, Object.getOwnPropertyNames(error)))
     
-    // Handle Prisma table missing error (P2021)
-    if (error.code === 'P2021') {
+    // Handle Prisma table missing error (P2021) or any table-related errors
+    if (error.code === 'P2021' || 
+        error.message?.includes('does not exist') || 
+        error.message?.includes('table') && error.message?.includes('not found')) {
       return res.status(500).json({
         ok: false,
         error: 'Database tables not found',
-        message: 'The database tables do not exist. Please run database migrations.',
-        code: error.code,
+        message: 'The writings table does not exist in the database. Please run database migrations to create it.',
+        code: error.code || 'TABLE_MISSING',
+        details: error.message,
       })
     }
     

@@ -211,6 +211,47 @@ For production deployment, use Neon Postgres:
 
 **Note**: The app automatically detects whether you're using local Postgres or Neon based on the `DATABASE_URL`. Local URLs (localhost, 127.0.0.1) use local Postgres, while Neon URLs use the cloud database.
 
+### Running Database Migrations in Vercel
+
+The database migrations run automatically during the Vercel build process. However, if you need to run them manually:
+
+#### Option 1: Automatic (During Build) ✅ Recommended
+Migrations run automatically when you deploy. Make sure `DATABASE_URL` is set in your Vercel project settings:
+1. Go to your Vercel project dashboard
+2. Navigate to Settings → Environment Variables
+3. Add `DATABASE_URL` with your production database connection string
+4. Redeploy your project
+
+#### Option 2: Manual via Vercel CLI
+If you need to run migrations manually:
+
+```bash
+# Install Vercel CLI (if not already installed)
+npm i -g vercel
+
+# Pull environment variables from Vercel
+vercel env pull .env.local
+
+# Run migrations
+npm run db:setup-prod
+```
+
+#### Option 3: Manual with Local Script
+Run migrations locally with your production database:
+
+```bash
+# Set your production DATABASE_URL
+export DATABASE_URL="your-production-database-url"
+
+# Run the migration script
+node scripts/vercel-migrate.js
+```
+
+#### Troubleshooting
+- **Tables don't exist**: Make sure `DATABASE_URL` is set correctly in Vercel
+- **Connection errors**: Check that your database allows connections from Vercel IPs
+- **Build fails**: Check the build logs in Vercel dashboard for specific error messages
+
 ### Creating Your First Post
 
 1. Start the development server: `npm run dev`

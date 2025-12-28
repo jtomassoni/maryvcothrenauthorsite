@@ -157,37 +157,47 @@
         </div>
 
         <!-- Empty state -->
-        <div v-else class="text-center py-12">
-          <div class="max-w-md mx-auto">
-            <svg
-              class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500 mb-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
-              {{ searchQuery || tagFilter ? 'No posts match your filters' : 'No posts yet' }}
+        <div v-else class="text-center py-16">
+          <div class="max-w-lg mx-auto">
+            <div class="mb-6">
+              <svg
+                class="mx-auto h-20 w-20 text-blue-200 dark:text-blue-800/50 mb-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+              {{ searchQuery || tagFilter ? 'No posts match your filters' : 'Coming Soon' }}
             </h3>
-            <p class="text-gray-600 dark:text-gray-400">
+            <p class="text-lg text-gray-600 dark:text-gray-400 mb-6">
               {{ searchQuery || tagFilter 
-                ? 'Try adjusting your search or filter criteria.' 
-                : 'Check back soon for new content!' }}
+                ? 'Try adjusting your search or filter criteria to find what you\'re looking for.' 
+                : 'New blog posts are on the way! Check back soon for fresh content and updates.' }}
             </p>
-            <div v-if="searchQuery || tagFilter" class="mt-4">
+            <div v-if="searchQuery || tagFilter" class="mt-6">
               <button
                 @click="clearFilters"
-                class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                class="inline-flex items-center px-6 py-3 border-2 border-blue-500 dark:border-blue-400 rounded-lg text-base font-medium text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-900 hover:bg-blue-50 dark:hover:bg-blue-900/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all shadow-sm hover:shadow-md"
               >
                 Clear filters
               </button>
+            </div>
+            <div v-else class="mt-6">
+              <router-link
+                to="/"
+                class="inline-flex items-center px-6 py-3 border-2 border-blue-500 dark:border-blue-400 rounded-lg text-base font-medium text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-900 hover:bg-blue-50 dark:hover:bg-blue-900/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all shadow-sm hover:shadow-md"
+              >
+                Return to Home
+              </router-link>
             </div>
           </div>
         </div>
