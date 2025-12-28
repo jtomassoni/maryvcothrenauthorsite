@@ -11,11 +11,22 @@
  */
 
 import { execSync } from 'child_process'
+import { existsSync } from 'fs'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
+import { config as loadEnv } from 'dotenv'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
+
+// Load env vars locally so DATABASE_URL is available during builds
+const envFiles = ['.env.local', '.env']
+for (const envFile of envFiles) {
+  const envPath = join(__dirname, '..', envFile)
+  if (existsSync(envPath)) {
+    loadEnv({ path: envPath })
+  }
+}
 
 console.log('🚀 Running database migrations for Vercel...\n')
 
