@@ -27,8 +27,8 @@ export default async function handler(req, res) {
       })
     }
 
-    // Get JWT secret
-    const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
+    // Get JWT secret (use AUTH_SECRET if JWT_SECRET not set, for consistency)
+    const JWT_SECRET = process.env.JWT_SECRET || process.env.AUTH_SECRET || 'your-secret-key-change-in-production'
 
     // Generate JWT token
     const token = jwt.sign(
@@ -45,10 +45,13 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('Login error:', error)
-    return res.status(500).json({ 
-      ok: false, 
-      error: 'Login failed. Please try again later.' 
-    })
+    // Ensure we always return JSON, even on unexpected errors
+    if (!res.headersSent) {
+      return res.status(500).json({ 
+        ok: false, 
+        error: 'Login failed. Please try again later.' 
+      })
+    }
   }
 }
 
