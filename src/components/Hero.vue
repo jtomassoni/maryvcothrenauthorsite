@@ -1,5 +1,5 @@
 <template>
-  <section class="py-20 lg:py-32 bg-gradient-to-br from-slate-50 via-gray-50 to-blue-50 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800 relative overflow-hidden">
+  <section class="py-8 lg:py-10 bg-gradient-to-br from-slate-50 via-gray-50 to-blue-50 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800 relative overflow-hidden">
     <!-- Background Effects -->
     <div class="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-pink-600/10 dark:from-blue-500/20 dark:via-purple-500/20 dark:to-pink-500/20"></div>
     <div class="absolute top-0 left-0 w-full h-full">
@@ -10,7 +10,7 @@
     
     <Container class="relative z-10">
       <!-- Mobile Image (shown first on mobile) -->
-      <div class="lg:hidden relative flex justify-center mb-8">
+      <div class="lg:hidden relative flex justify-center mb-4">
         <div class="relative">
           <!-- Mobile Image Container -->
           <div class="relative w-48 h-48 rounded-2xl overflow-hidden shadow-xl shadow-blue-900/20">
@@ -23,21 +23,21 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
         <!-- Hero Content -->
-        <div class="lg:col-span-1 space-y-4 flex flex-col justify-center">
-          <div class="space-y-3">
-            <h1 class="text-4xl lg:text-6xl font-serif font-bold leading-tight">
+        <div class="lg:col-span-1 space-y-3 flex flex-col justify-center">
+          <div class="space-y-2">
+            <h1 class="text-3xl lg:text-5xl font-serif font-bold leading-tight">
               <span class="gradient-text dark:bg-gradient-to-r dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 dark:bg-clip-text dark:text-transparent">
                 {{ title }}
               </span>
             </h1>
             
-            <h2 v-if="subheading" class="text-3xl lg:text-4xl font-serif font-medium gradient-text dark:text-blue-300 italic">
+            <h2 v-if="subheading" class="text-2xl lg:text-3xl font-serif font-medium gradient-text dark:text-blue-300 italic">
               {{ subheading }}
             </h2>
             
-            <div class="text-base lg:text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+            <div class="text-sm lg:text-base text-gray-700 dark:text-gray-300 leading-relaxed">
               <p>{{ subtitle }}</p>
             </div>
           </div>
@@ -61,7 +61,7 @@
         <div class="hidden lg:block lg:col-span-1 relative flex justify-center">
           <div class="relative">
             <!-- Desktop Image Container -->
-            <div class="relative w-[32rem] h-[32rem] rounded-3xl overflow-hidden shadow-2xl shadow-blue-900/20 dark:shadow-blue-500/20 dark:ring-2 dark:ring-blue-500/30">
+            <div class="relative w-[24rem] h-[24rem] rounded-3xl overflow-hidden shadow-2xl shadow-blue-900/20 dark:shadow-blue-500/20 dark:ring-2 dark:ring-blue-500/30">
               <img
                 :src="imageSrc"
                 :alt="imageAlt"

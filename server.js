@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import dotenv from 'dotenv'
+import jwt from 'jsonwebtoken'
 import { prisma } from './lib/db.js'
 import { 
   createSession, 
@@ -187,6 +188,48 @@ app.get('/health', (req, res) => {
 })
 
 // ============================================================================
+// AUTH HELPERS
+// ============================================================================
+
+// Helper to check JWT token from Authorization header
+function checkJWTToken(req) {
+  const authHeader = req.headers.authorization || req.headers.Authorization
+  if (!authHeader || (!authHeader.startsWith('Bearer ') && !authHeader.startsWith('bearer '))) {
+    return null
+  }
+  
+  const token = authHeader.substring(7) // Remove 'Bearer ' or 'bearer ' prefix
+  const JWT_SECRET = process.env.AUTH_SECRET
+  if (!JWT_SECRET) return null
+  
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET)
+    return decoded.username
+  } catch (e) {
+    return null
+  }
+}
+
+// Enhanced requireAuth that checks both cookies and JWT tokens
+function requireAuthEnhanced(req, res, next) {
+  // First try JWT token from Authorization header (for frontend)
+  const jwtUsername = checkJWTToken(req)
+  if (jwtUsername) {
+    req.user = jwtUsername
+    return next()
+  }
+  
+  // Fall back to cookie-based session (for backward compatibility)
+  const session = getSession(req)
+  if (session && session.u) {
+    req.user = session.u
+    return next()
+  }
+  
+  return res.status(401).json({ ok: false, error: 'Unauthorized' })
+}
+
+// ============================================================================
 // AUTH ENDPOINTS
 // ============================================================================
 
@@ -258,11 +301,33 @@ app.post('/api/auth/login', async (req, res) => {
     // Reset rate limit on successful login
     loginRateLimitMap.delete(clientIP)
 
-    // Create session
-    const token = createSession(username)
-    setAuthCookie(res, token)
+    // Create session cookie (for backward compatibility)
+    const sessionToken = createSession(username)
+    setAuthCookie(res, sessionToken)
 
-    return res.status(200).json({ ok: true })
+    // Also generate JWT token for frontend (matches production behavior)
+    const JWT_SECRET = process.env.AUTH_SECRET
+    if (!JWT_SECRET) {
+      console.error('Login: AUTH_SECRET not properly configured')
+      return res.status(500).json({
+        ok: false,
+        error: 'Server configuration error. Please contact administrator.',
+      })
+    }
+
+    const jwtToken = jwt.sign(
+      { username },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    )
+
+    console.log('Login: Token generated successfully for user:', username)
+
+    return res.status(200).json({ 
+      ok: true, 
+      token: jwtToken,
+      username 
+    })
   } catch (error) {
     console.error('Login error:', error)
     return res.status(500).json({
@@ -280,10 +345,32 @@ app.post('/api/auth/logout', (req, res) => {
 
 // GET /api/auth/check
 app.get('/api/auth/check', (req, res) => {
+  // Check JWT token first (matches production behavior)
+  const authHeader = req.headers.authorization || req.headers.Authorization
+  if (authHeader && (authHeader.startsWith('Bearer ') || authHeader.startsWith('bearer '))) {
+    const token = authHeader.substring(7)
+    const JWT_SECRET = process.env.AUTH_SECRET
+    
+    if (JWT_SECRET) {
+      try {
+        const decoded = jwt.verify(token, JWT_SECRET)
+        return res.status(200).json({
+          ok: true,
+          authenticated: true,
+          username: decoded.username
+        })
+      } catch (jwtError) {
+        // JWT invalid, fall through to check cookies
+      }
+    }
+  }
+  
+  // Fall back to cookie-based session check
   const session = getSession(req)
   return res.status(200).json({
     ok: true,
     authenticated: !!session,
+    username: session?.u || null
   })
 })
 
@@ -597,7 +684,7 @@ app.get('/api/latest', async (req, res) => {
 // ============================================================================
 
 // GET /api/admin/blog/posts
-app.get('/api/admin/blog/posts', requireAuth, async (req, res) => {
+app.get('/api/admin/blog/posts', requireAuthEnhanced, async (req, res) => {
   try {
     const { q, tag, status, sort = 'newest', page = '1', pageSize = '20' } = req.query
     
@@ -667,7 +754,7 @@ app.get('/api/admin/blog/posts', requireAuth, async (req, res) => {
 })
 
 // GET /api/admin/blog/posts/:id
-app.get('/api/admin/blog/posts/:id', requireAuth, async (req, res) => {
+app.get('/api/admin/blog/posts/:id', requireAuthEnhanced, async (req, res) => {
   try {
     const { id } = req.params
 
@@ -696,7 +783,7 @@ app.get('/api/admin/blog/posts/:id', requireAuth, async (req, res) => {
 })
 
 // POST /api/admin/blog/posts
-app.post('/api/admin/blog/posts', requireAuth, async (req, res) => {
+app.post('/api/admin/blog/posts', requireAuthEnhanced, async (req, res) => {
   try {
     const { title, slug, excerpt, contentMarkdown, tags, status } = req.body
 
@@ -779,7 +866,7 @@ app.post('/api/admin/blog/posts', requireAuth, async (req, res) => {
 })
 
 // PUT /api/admin/blog/posts/:id
-app.put('/api/admin/blog/posts/:id', requireAuth, async (req, res) => {
+app.put('/api/admin/blog/posts/:id', requireAuthEnhanced, async (req, res) => {
   try {
     const { id } = req.params
     const { title, slug, excerpt, contentMarkdown, tags, status } = req.body
@@ -894,7 +981,7 @@ app.put('/api/admin/blog/posts/:id', requireAuth, async (req, res) => {
 // ============================================================================
 
 // GET /api/admin/writings
-app.get('/api/admin/writings', requireAuth, async (req, res) => {
+app.get('/api/admin/writings', requireAuthEnhanced, async (req, res) => {
   try {
     const { q, tag, status, sort = 'newest', page = '1', pageSize = '20' } = req.query
     
@@ -960,7 +1047,7 @@ app.get('/api/admin/writings', requireAuth, async (req, res) => {
 })
 
 // GET /api/admin/writings/:id
-app.get('/api/admin/writings/:id', requireAuth, async (req, res) => {
+app.get('/api/admin/writings/:id', requireAuthEnhanced, async (req, res) => {
   try {
     const { id } = req.params
 
@@ -989,7 +1076,7 @@ app.get('/api/admin/writings/:id', requireAuth, async (req, res) => {
 })
 
 // POST /api/admin/writings
-app.post('/api/admin/writings', requireAuth, async (req, res) => {
+app.post('/api/admin/writings', requireAuthEnhanced, async (req, res) => {
   try {
     const { title, slug, excerpt, contentMarkdown, tags, status } = req.body
 
@@ -1068,7 +1155,7 @@ app.post('/api/admin/writings', requireAuth, async (req, res) => {
 })
 
 // PUT /api/admin/writings/:id
-app.put('/api/admin/writings/:id', requireAuth, async (req, res) => {
+app.put('/api/admin/writings/:id', requireAuthEnhanced, async (req, res) => {
   try {
     const { id } = req.params
     const { title, slug, excerpt, contentMarkdown, tags, status } = req.body
@@ -1171,7 +1258,7 @@ app.put('/api/admin/writings/:id', requireAuth, async (req, res) => {
 })
 
 // DELETE /api/admin/writings/:id
-app.delete('/api/admin/writings/:id', requireAuth, async (req, res) => {
+app.delete('/api/admin/writings/:id', requireAuthEnhanced, async (req, res) => {
   try {
     const { id } = req.params
 
@@ -1203,7 +1290,7 @@ app.delete('/api/admin/writings/:id', requireAuth, async (req, res) => {
 })
 
 // POST /api/admin/writings/:id/duplicate
-app.post('/api/admin/writings/:id/duplicate', requireAuth, async (req, res) => {
+app.post('/api/admin/writings/:id/duplicate', requireAuthEnhanced, async (req, res) => {
   try {
     const { id } = req.params
 
@@ -1253,7 +1340,7 @@ app.post('/api/admin/writings/:id/duplicate', requireAuth, async (req, res) => {
 })
 
 // POST /api/admin/blog/posts/:id/duplicate
-app.post('/api/admin/blog/posts/:id/duplicate', requireAuth, async (req, res) => {
+app.post('/api/admin/blog/posts/:id/duplicate', requireAuthEnhanced, async (req, res) => {
   try {
     const { id } = req.params
 
@@ -1306,7 +1393,7 @@ app.post('/api/admin/blog/posts/:id/duplicate', requireAuth, async (req, res) =>
 })
 
 // DELETE /api/admin/blog/posts/:id
-app.delete('/api/admin/blog/posts/:id', requireAuth, async (req, res) => {
+app.delete('/api/admin/blog/posts/:id', requireAuthEnhanced, async (req, res) => {
   try {
     const { id } = req.params
 

@@ -3,6 +3,41 @@
     :title="isEdit ? (contentType === 'writing' ? 'Edit Writing' : 'Edit Post') : (contentType === 'writing' ? 'New Writing' : 'New Post')" 
     :subtitle="isEdit ? (contentType === 'writing' ? 'Update your writing' : 'Update your blog post') : (contentType === 'writing' ? 'Create a new writing (longer format)' : 'Create a new blog post (SEO & engagement)')"
   >
+    <!-- Breadcrumbs -->
+    <nav class="mb-6" aria-label="Breadcrumb">
+      <ol class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+        <li>
+          <router-link
+            to="/admin"
+            class="hover:text-gray-900 dark:hover:text-white transition-colors"
+          >
+            Admin Dashboard
+          </router-link>
+        </li>
+        <li>
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+          </svg>
+        </li>
+        <li>
+          <router-link
+            to="/admin"
+            class="hover:text-gray-900 dark:hover:text-white transition-colors"
+          >
+            Content Management
+          </router-link>
+        </li>
+        <li>
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+          </svg>
+        </li>
+        <li class="text-gray-900 dark:text-white font-medium" aria-current="page">
+          {{ isEdit ? (contentType === 'writing' ? 'Edit Writing' : 'Edit Post') : (contentType === 'writing' ? 'New Writing' : 'New Post') }}
+        </li>
+      </ol>
+    </nav>
+
     <div v-if="loading" class="text-center py-12">
       <p class="text-gray-600 dark:text-gray-400">Loading...</p>
     </div>
@@ -187,6 +222,7 @@ const router = useRouter()
 const route = useRoute()
 
 const isEdit = computed(() => !!route.params.id)
+const currentType = ref<'blog' | 'writing'>('blog')
 const contentType = computed(() => {
   // Check query param first (for new items)
   if (route.query.type === 'writing' || route.query.type === 'blog') {
@@ -195,7 +231,6 @@ const contentType = computed(() => {
   // For editing, we'll determine from the loaded data
   return currentType.value || 'blog'
 })
-const currentType = ref<'blog' | 'writing'>('blog')
 
 const loading = ref(false)
 const saving = ref(false)
@@ -358,8 +393,8 @@ const handleSubmit = async () => {
     })
 
     // Check if response is JSON
-    const contentType = response.headers.get('content-type')
-    if (!contentType || !contentType.includes('application/json')) {
+    const responseContentType = response.headers.get('content-type')
+    if (!responseContentType || !responseContentType.includes('application/json')) {
       const text = await response.text()
       console.error('Non-JSON response:', text)
       error.value = `Server error: ${response.status} ${response.statusText}`

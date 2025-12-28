@@ -13,13 +13,13 @@
     />
 
     <!-- Latest Posts Section -->
-    <section class="py-16 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
+    <section class="py-6 lg:py-8 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
       <Container>
-        <div class="text-center mb-12">
-          <h2 class="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent mb-4">
+        <div class="text-center mb-6">
+          <h2 class="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent mb-2">
             Latest
           </h2>
-          <p class="text-lg text-gray-700 dark:text-gray-300">
+          <p class="text-base text-gray-700 dark:text-gray-300">
             Recent thoughts and updates
           </p>
         </div>
@@ -30,7 +30,7 @@
         </div>
 
         <!-- Items Grid -->
-        <div v-else-if="latestItems.length > 0" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div v-else-if="latestItems.length > 0" class="grid grid-cols-1 md:grid-cols-3 gap-3 lg:gap-4 mb-4">
           <article
             v-for="(item, index) in latestItems"
             :key="`${item.type}-${item.id}`"
@@ -51,8 +51,8 @@
               }"
             ></div>
             
-            <div class="p-6">
-              <div class="mb-3 flex items-center gap-2 flex-wrap">
+            <div class="p-3 lg:p-4">
+              <div class="mb-2 flex items-center gap-2 flex-wrap">
                 <span
                   class="inline-block px-3 py-1 text-xs font-semibold rounded-full shadow-sm"
                   :class="{
@@ -74,7 +74,7 @@
                   {{ tag }}
                 </span>
               </div>
-              <h3 class="text-xl font-bold mb-2 group-hover:scale-105 transition-transform duration-200">
+              <h3 class="text-lg font-bold mb-1.5 group-hover:scale-105 transition-transform duration-200">
                 <router-link
                   :to="item.type === 'blog' ? `/blog/${item.slug}` : `/writings/${item.slug}`"
                   class="bg-gradient-to-r from-gray-900 to-gray-700 dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent hover:from-blue-600 hover:to-purple-600 dark:hover:from-blue-400 dark:hover:to-purple-400 transition-all duration-300"
@@ -82,10 +82,10 @@
                   {{ item.title }}
                 </router-link>
               </h3>
-              <p class="text-sm text-gray-600 dark:text-gray-400 mb-3 font-medium">
+              <p class="text-xs text-gray-600 dark:text-gray-400 mb-2 font-medium">
                 {{ formatDate(item.publishedAt || item.createdAt) }}
               </p>
-              <p class="text-gray-700 dark:text-gray-300 line-clamp-3 mb-4 leading-relaxed">
+              <p class="text-sm text-gray-700 dark:text-gray-300 line-clamp-3 mb-3 leading-relaxed">
                 {{ item.excerpt }}
               </p>
               <router-link

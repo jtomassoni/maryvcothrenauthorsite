@@ -3,11 +3,6 @@ import { PrismaClient } from '@prisma/client'
 import { generateSlug, ensureUniqueSlug } from '../../../lib/slug.js'
 import jwt from 'jsonwebtoken'
 
-// Initialize Prisma client for serverless
-const prisma = new PrismaClient({
-  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-})
-
 // Helper to check auth from JWT token
 function checkAuth(req) {
   const authHeader = req.headers.authorization || req.headers.Authorization
@@ -28,17 +23,22 @@ function checkAuth(req) {
 }
 
 export default async function handler(req, res) {
-  console.log(`[writings] ${req.method} request received`)
-  
-  const username = checkAuth(req)
-  if (!username) {
-    console.error('[writings] Unauthorized - no valid token')
-    return res.status(401).json({ ok: false, error: 'Unauthorized' })
-  }
-
-  console.log(`[writings] Authenticated user: ${username}`)
+  // Initialize Prisma client inside handler to avoid initialization issues
+  const prisma = new PrismaClient({
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  })
 
   try {
+    console.log(`[writings] ${req.method} request received`)
+    
+    const username = checkAuth(req)
+    if (!username) {
+      console.error('[writings] Unauthorized - no valid token')
+      await prisma.$disconnect()
+      return res.status(401).json({ ok: false, error: 'Unauthorized' })
+    }
+
+    console.log(`[writings] Authenticated user: ${username}`)
     // GET /api/admin/writings
     if (req.method === 'GET') {
       const { q, tag, status, sort = 'newest', page = '1', pageSize = '20' } = req.query
@@ -169,6 +169,8 @@ export default async function handler(req, res) {
       error: 'Internal server error',
       message: error.message 
     })
+  } finally {
+    await prisma.$disconnect()
   }
 }
 
