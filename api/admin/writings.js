@@ -29,7 +29,7 @@ export default async function handler(req, res) {
   })
 
   try {
-    console.log(`[writings] ${req.method} request received - v2`)
+    console.log(`[writings] ${req.method} request received`)
     
     const username = checkAuth(req)
     if (!username) {
