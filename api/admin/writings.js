@@ -164,6 +164,16 @@ export default async function handler(req, res) {
     console.error('[writings] Error name:', error.name)
     console.error('[writings] Full error object:', JSON.stringify(error, Object.getOwnPropertyNames(error)))
     
+    // Handle Prisma table missing error (P2021)
+    if (error.code === 'P2021') {
+      return res.status(500).json({
+        ok: false,
+        error: 'Database tables not found',
+        message: 'The database tables do not exist. Please run database migrations.',
+        code: error.code,
+      })
+    }
+    
     // Handle Prisma unique constraint errors
     if (error.code === 'P2002') {
       return res.status(400).json({ ok: false, error: 'A writing with this slug already exists' })

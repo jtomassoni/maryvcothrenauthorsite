@@ -81,6 +81,10 @@ function logout() {
   username.value = null
   localStorage.removeItem('auth_token')
   localStorage.removeItem('auth_username')
+  // Redirect to login page
+  if (typeof window !== 'undefined') {
+    window.location.href = '/login'
+  }
 }
 
 export function useAuth() {

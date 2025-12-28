@@ -29,6 +29,16 @@
                 {{ subtitle }}
               </p>
             </div>
+            <button
+              @click="handleLogout"
+              class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg transition-all duration-200 focus-ring hover:shadow-md hover:shadow-red-500/20 dark:hover:shadow-red-400/30"
+              aria-label="Logout"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              Logout
+            </button>
           </div>
 
           <!-- Admin content slot -->
@@ -47,6 +57,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import Container from './Container.vue'
 import DebugLogViewer from './DebugLogViewer.vue'
+import { useAuth } from '@/composables/useAuth'
 
 defineProps<{
   title: string
@@ -54,6 +65,7 @@ defineProps<{
 }>()
 
 const router = useRouter()
+const { logout } = useAuth()
 
 const authenticated = ref(false)
 const checkingAuth = ref(true)
@@ -113,6 +125,10 @@ const checkAuth = async () => {
   }
 }
 
+
+const handleLogout = () => {
+  logout()
+}
 
 onMounted(() => {
   checkAuth()

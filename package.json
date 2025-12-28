@@ -7,11 +7,12 @@
     "dev": "concurrently \"npm run dev:api\" \"vite\"",
     "dev:api": "node server.js",
     "dev:frontend": "vite",
-    "build": "prisma generate && vite build",
+    "build": "prisma generate && (prisma db push --skip-generate --accept-data-loss || echo 'Warning: Database push failed, tables may need to be created manually') && vite build",
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",
     "db:migrate": "node scripts/db-migrate.js",
     "db:push": "node scripts/db-push.js",
+    "db:setup-prod": "node scripts/db-setup-prod.js",
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write ."

@@ -546,11 +546,58 @@ const fetchContent = async () => {
       }),
     ])
 
-    const blogData = blogResponse ? await blogResponse.json() : { ok: true, posts: [], pagination: { total: 0 } }
-    const writingData = writingResponse ? await writingResponse.json() : { ok: true, writings: [], pagination: { total: 0 } }
+    // Parse responses safely
+    let blogData: any = { ok: true, posts: [], pagination: { total: 0 } }
+    let writingData: any = { ok: true, writings: [], pagination: { total: 0 } }
+
+    if (blogResponse) {
+      if (!blogResponse.ok) {
+        try {
+          blogData = await blogResponse.json()
+        } catch (e) {
+          // Response is not JSON, use error message from status
+          blogData = { 
+            ok: false, 
+            error: `Database error: Tables may not exist. Please run database migrations.`,
+            message: `Server returned ${blogResponse.status} ${blogResponse.statusText}`
+          }
+        }
+      } else {
+        try {
+          blogData = await blogResponse.json()
+        } catch (e) {
+          blogData = { ok: false, error: 'Invalid response from server' }
+        }
+      }
+    }
+
+    if (writingResponse) {
+      if (!writingResponse.ok) {
+        try {
+          writingData = await writingResponse.json()
+        } catch (e) {
+          // Response is not JSON, use error message from status
+          writingData = { 
+            ok: false, 
+            error: `Database error: Tables may not exist. Please run database migrations.`,
+            message: `Server returned ${writingResponse.status} ${writingResponse.statusText}`
+          }
+        }
+      } else {
+        try {
+          writingData = await writingResponse.json()
+        } catch (e) {
+          writingData = { ok: false, error: 'Invalid response from server' }
+        }
+      }
+    }
 
     if ((blogResponse && (!blogResponse.ok || !blogData.ok)) || (writingResponse && (!writingResponse.ok || !writingData.ok))) {
-      error.value = blogData.error || writingData.error || 'Failed to fetch content'
+      const errorMsg = blogData.error || writingData.error || blogData.message || writingData.message || 'Failed to fetch content'
+      error.value = errorMsg
+      // Still set empty arrays so the UI doesn't break
+      items.value = []
+      pagination.value = { page: 1, pageSize: 12, total: 0, totalPages: 1 }
       return
     }
 
