@@ -1,7 +1,12 @@
 // Vercel serverless function for /api/admin/writings/:id
-import { prisma } from '../../../../lib/db.js'
+import { PrismaClient } from '@prisma/client'
 import { generateSlug, ensureUniqueSlug } from '../../../../lib/slug.js'
 import jwt from 'jsonwebtoken'
+
+// Initialize Prisma client for serverless
+const prisma = new PrismaClient({
+  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+})
 
 // Helper to check auth from JWT token
 function checkAuth(req) {
