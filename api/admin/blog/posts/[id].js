@@ -60,13 +60,21 @@ export default async function handler(req, res) {
     
     // GET /api/admin/blog/posts/:id - check all variations
     if (method === 'GET' || originalMethod === 'GET' || originalMethod === 'get' || originalMethod?.toUpperCase() === 'GET') {
+      // Ensure JSON header is set
+      res.setHeader('Content-Type', 'application/json')
+      
+      console.log(`[blog/posts/[id]] GET request - fetching post with id: ${id}`)
       const post = await prisma.blogPost.findUnique({ where: { id } })
       
       if (!post) {
+        console.log(`[blog/posts/[id]] Post not found for id: ${id}`)
         return res.status(404).json({ ok: false, error: 'Post not found' })
       }
       
-      return res.status(200).json({ ok: true, post })
+      console.log(`[blog/posts/[id]] Post found, returning JSON response`)
+      // Explicitly return JSON
+      const response = { ok: true, post }
+      return res.status(200).json(response)
     }
 
     // PUT /api/admin/blog/posts/:id - check all variations
@@ -183,6 +191,11 @@ export default async function handler(req, res) {
     console.error('[blog/posts/[id]] Error stack:', error.stack)
     console.error('[blog/posts/[id]] Error code:', error.code)
     
+    // Ensure we always return JSON, never HTML
+    if (!res.headersSent) {
+      res.setHeader('Content-Type', 'application/json')
+    }
+    
     // Handle Prisma table missing error (P2021)
     if (error.code === 'P2021') {
       return res.status(500).json({
@@ -199,7 +212,13 @@ export default async function handler(req, res) {
       message: error.message || 'An unexpected error occurred'
     })
   } finally {
-    await prisma.$disconnect()
+    if (prisma) {
+      try {
+        await prisma.$disconnect()
+      } catch (disconnectError) {
+        console.error('[blog/posts/[id]] Error disconnecting Prisma:', disconnectError)
+      }
+    }
   }
 }
 

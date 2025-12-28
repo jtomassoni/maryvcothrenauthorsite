@@ -129,12 +129,16 @@ export default async function handler(req, res) {
 
     // GET /api/admin/writings/:id - check all variations
     if (method === 'GET' || originalMethod === 'GET' || originalMethod === 'get' || originalMethod?.toUpperCase() === 'GET') {
+      // Ensure JSON header is set
+      res.setHeader('Content-Type', 'application/json')
+      
       const writing = await prisma.writing.findUnique({ where: { id } })
       
       if (!writing) {
         return res.status(404).json({ ok: false, error: 'Writing not found' })
       }
       
+      // Explicitly return JSON
       return res.status(200).json({ ok: true, writing })
     }
 
