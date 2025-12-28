@@ -466,10 +466,17 @@ const loadWriting = async () => {
       credentials: 'include',
     })
 
-    const data = await response.json()
+    const contentType = response.headers.get('content-type') || ''
+    let data: any = null
+    if (contentType.includes('application/json')) {
+      data = await response.json()
+    } else {
+      const text = await response.text()
+      throw new Error(`Unexpected response (status ${response.status}): ${text.substring(0, 200)}`)
+    }
 
-    if (!response.ok || !data.ok) {
-      error.value = data.error || 'Failed to load writing'
+    if (!response.ok || !data?.ok) {
+      error.value = data?.error || data?.message || 'Failed to load writing'
       return
     }
 
@@ -515,18 +522,19 @@ const handleSubmit = async () => {
       body: JSON.stringify(form.value),
     })
 
-    const contentType = response.headers.get('content-type')
-    if (!contentType || !contentType.includes('application/json')) {
+    const contentType = response.headers.get('content-type') || ''
+    let data: any = null
+    if (contentType.includes('application/json')) {
+      data = await response.json()
+    } else {
       const text = await response.text()
       error.value = text || `Server error: ${response.status}`
       saving.value = false
       return
     }
 
-    const data = await response.json()
-
-    if (!response.ok || !data.ok) {
-      error.value = data.error || data.message || `Failed to save writing`
+    if (!response.ok || !data?.ok) {
+      error.value = data?.error || data?.message || `Failed to save writing`
       saving.value = false
       return
     }

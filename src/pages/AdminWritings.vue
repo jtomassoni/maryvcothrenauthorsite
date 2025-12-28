@@ -317,16 +317,17 @@ const fetchWritings = async () => {
       credentials: 'include',
     })
 
-    const contentType = response.headers.get('content-type')
-    if (!contentType || !contentType.includes('application/json')) {
+    const contentType = response.headers.get('content-type') || ''
+    let data: any = null
+    if (contentType.includes('application/json')) {
+      data = await response.json()
+    } else {
       const text = await response.text()
       throw new Error(text || 'Invalid response from server')
     }
 
-    const data = await response.json()
-
-    if (!response.ok || !data.ok) {
-      throw new Error(data.error || data.message || 'Failed to fetch writings')
+    if (!response.ok || !data?.ok) {
+      throw new Error(data?.error || data?.message || 'Failed to fetch writings')
     }
 
     writings.value = data.writings || []
@@ -407,11 +408,17 @@ const toggleStatus = async (item: any) => {
       body: JSON.stringify({ status: newStatus }),
     })
 
-    const contentType = response.headers.get('content-type')
-    const data = contentType && contentType.includes('application/json') ? await response.json() : { ok: response.ok }
+    const contentType = response.headers.get('content-type') || ''
+    let data: any = null
+    if (contentType.includes('application/json')) {
+      data = await response.json()
+    } else {
+      const text = await response.text()
+      throw new Error(text || `Server returned ${response.status}`)
+    }
 
-    if (!response.ok || !data.ok) {
-      throw new Error(data.error || `Failed to update status (${response.status})`)
+    if (!response.ok || !data?.ok) {
+      throw new Error(data?.error || `Failed to update status (${response.status})`)
     }
 
     const updated = data.writing || { ...item, status: newStatus, publishedAt: newStatus === 'published' ? new Date().toISOString() : null }
@@ -438,10 +445,17 @@ const handleDuplicate = async (item: any) => {
       credentials: 'include',
     })
 
-    const data = await response.json()
+    const contentType = response.headers.get('content-type') || ''
+    let data: any = null
+    if (contentType.includes('application/json')) {
+      data = await response.json()
+    } else {
+      const text = await response.text()
+      throw new Error(text || `Server returned ${response.status}`)
+    }
 
-    if (!response.ok || !data.ok) {
-      throw new Error(data.error || 'Failed to duplicate writing')
+    if (!response.ok || !data?.ok) {
+      throw new Error(data?.error || 'Failed to duplicate writing')
     }
 
     fetchWritings()
@@ -472,11 +486,17 @@ const executeDelete = async () => {
       credentials: 'include',
     })
 
-    const contentType = response.headers.get('content-type')
-    const data = contentType && contentType.includes('application/json') ? await response.json() : { ok: response.ok }
+    const contentType = response.headers.get('content-type') || ''
+    let data: any = null
+    if (contentType.includes('application/json')) {
+      data = await response.json()
+    } else {
+      const text = await response.text()
+      throw new Error(text || `Server returned ${response.status}`)
+    }
 
-    if (!response.ok || !data.ok) {
-      throw new Error(data.error || `Failed to delete (${response.status})`)
+    if (!response.ok || !data?.ok) {
+      throw new Error(data?.error || `Failed to delete (${response.status})`)
     }
 
     fetchWritings()
