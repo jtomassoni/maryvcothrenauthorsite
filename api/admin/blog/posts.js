@@ -161,11 +161,28 @@ export default async function handler(req, res) {
     console.error('[blog/posts] Error:', error)
     console.error('[blog/posts] Error stack:', error.stack)
     console.error('[blog/posts] Error code:', error.code)
-    return res.status(500).json({ 
-      ok: false, 
+    console.error('[blog/posts] Error name:', error.name)
+    console.error('[blog/posts] Full error object:', JSON.stringify(error, Object.getOwnPropertyNames(error)))
+    
+    // Return more detailed error information
+    const errorResponse = {
+      ok: false,
       error: 'Internal server error',
-      message: error.message 
-    })
+      message: error.message || 'An unexpected error occurred',
+    }
+    
+    // Include error code if it's a Prisma error
+    if (error.code) {
+      errorResponse.code = error.code
+    }
+    
+    // Include more details in development
+    if (process.env.NODE_ENV === 'development') {
+      errorResponse.stack = error.stack
+      errorResponse.name = error.name
+    }
+    
+    return res.status(500).json(errorResponse)
   } finally {
     await prisma.$disconnect()
   }

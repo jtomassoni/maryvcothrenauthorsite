@@ -36,6 +36,9 @@
         </template>
       </div>
     </Container>
+    
+    <!-- Debug Log Viewer -->
+    <DebugLogViewer />
   </div>
 </template>
 
@@ -43,6 +46,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import Container from './Container.vue'
+import DebugLogViewer from './DebugLogViewer.vue'
 
 defineProps<{
   title: string

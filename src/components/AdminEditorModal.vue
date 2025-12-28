@@ -34,8 +34,16 @@
 
         <form v-else @submit.prevent="handleSubmit" class="flex-1 flex flex-col min-h-0">
           <!-- Error message -->
-          <div v-if="error" class="rounded-md bg-red-50 dark:bg-red-900/20 p-3">
-            <p class="text-sm text-red-800 dark:text-red-200">{{ error }}</p>
+          <div v-if="error" class="rounded-md bg-red-50 dark:bg-red-900/20 p-3 border border-red-200 dark:border-red-800">
+            <div class="flex items-start gap-2">
+              <svg class="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-red-800 dark:text-red-200 mb-1">Error</p>
+                <p class="text-sm text-red-700 dark:text-red-300 whitespace-pre-wrap">{{ error }}</p>
+              </div>
+            </div>
           </div>
 
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1 min-h-0" style="grid-template-rows: 1fr; max-height: 100%;">
@@ -447,7 +455,28 @@ const handleSubmit = async () => {
 
     if (!response.ok || !data.ok) {
       console.error('Save error:', data)
-      error.value = data.error || data.message || `Failed to save ${type === 'writing' ? 'writing' : 'post'}`
+      console.error('Response status:', response.status)
+      console.error('Response headers:', Object.fromEntries(response.headers.entries()))
+      
+      // Build detailed error message
+      let errorMsg = data.error || data.message || `Failed to save ${type === 'writing' ? 'writing' : 'post'}`
+      
+      // Add more context if available
+      if (data.code) {
+        errorMsg += ` (Error code: ${data.code})`
+      }
+      
+      if (data.message && data.message !== data.error) {
+        errorMsg += `: ${data.message}`
+      }
+      
+      // In development, show more details
+      if (import.meta.env.DEV && data.stack) {
+        console.error('Error stack:', data.stack)
+        errorMsg += `\n\nStack: ${data.stack.substring(0, 200)}...`
+      }
+      
+      error.value = errorMsg
       saving.value = false
       return
     }

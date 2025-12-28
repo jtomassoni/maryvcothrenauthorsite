@@ -161,14 +161,33 @@ export default async function handler(req, res) {
     console.error('[writings] Error:', error)
     console.error('[writings] Error stack:', error.stack)
     console.error('[writings] Error code:', error.code)
+    console.error('[writings] Error name:', error.name)
+    console.error('[writings] Full error object:', JSON.stringify(error, Object.getOwnPropertyNames(error)))
+    
+    // Handle Prisma unique constraint errors
     if (error.code === 'P2002') {
       return res.status(400).json({ ok: false, error: 'A writing with this slug already exists' })
     }
-    return res.status(500).json({ 
-      ok: false, 
+    
+    // Return more detailed error information
+    const errorResponse = {
+      ok: false,
       error: 'Internal server error',
-      message: error.message 
-    })
+      message: error.message || 'An unexpected error occurred',
+    }
+    
+    // Include error code if it's a Prisma error
+    if (error.code) {
+      errorResponse.code = error.code
+    }
+    
+    // Include more details in development
+    if (process.env.NODE_ENV === 'development') {
+      errorResponse.stack = error.stack
+      errorResponse.name = error.name
+    }
+    
+    return res.status(500).json(errorResponse)
   } finally {
     await prisma.$disconnect()
   }
