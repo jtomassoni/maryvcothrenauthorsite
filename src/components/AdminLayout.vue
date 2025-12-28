@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+  <div class="min-h-screen bg-gray-50 dark:bg-slate-950">
     <Container>
-      <div class="py-8">
+      <div class="py-4">
         <!-- Loading state - show nothing admin-related -->
         <div v-if="checkingAuth" class="flex items-center justify-center min-h-[60vh]">
           <div class="text-center">
@@ -13,19 +13,19 @@
         <!-- Not authenticated - show nothing admin-related -->
         <div v-else-if="!authenticated" class="flex items-center justify-center min-h-[60vh]">
           <div class="text-center">
-            <p class="text-gray-600 dark:text-gray-400 mb-4">Access denied. Redirecting to login...</p>
+            <p class="text-gray-600 dark:text-slate-300 mb-4">Access denied. Redirecting to login...</p>
           </div>
         </div>
 
         <!-- Authenticated content - only show when authenticated -->
         <template v-else>
           <!-- Admin Header -->
-          <div class="mb-8 flex items-center justify-between">
+          <div class="mb-4 flex items-center justify-between">
             <div>
-              <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+              <h1 class="text-2xl font-bold text-gray-900 dark:text-slate-100">
                 {{ title }}
               </h1>
-              <p v-if="subtitle" class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+              <p v-if="subtitle" class="mt-0.5 text-xs text-gray-600 dark:text-slate-300">
                 {{ subtitle }}
               </p>
             </div>

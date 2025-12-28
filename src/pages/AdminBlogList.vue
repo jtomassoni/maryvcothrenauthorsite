@@ -33,7 +33,7 @@
       </div>
       <button
         @click="clearNotification"
-        class="ml-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 flex-shrink-0"
+        class="ml-4 text-gray-400 hover:text-gray-600 dark:text-slate-300 dark:hover:text-slate-100 flex-shrink-0"
         aria-label="Dismiss notification"
       >
         <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
@@ -50,12 +50,12 @@
             v-model="searchQuery"
             type="text"
             placeholder="Search content..."
-            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+            class="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent"
             @input="debouncedSearch"
           />
           <select
             v-model="typeFilter"
-            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+            class="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent"
             @change="fetchContent"
           >
             <option value="">All Types</option>
@@ -64,7 +64,7 @@
           </select>
           <select
             v-model="statusFilter"
-            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+            class="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent"
             @change="fetchContent"
           >
             <option value="">All Status</option>
@@ -73,24 +73,24 @@
           </select>
         </div>
         <div class="flex gap-2">
-          <router-link
-            to="/admin/blog/new?type=blog"
-            class="px-4 py-2 bg-primary-800 text-white rounded-md hover:bg-primary-700 transition-colors"
+          <button
+            @click="openModal(null, 'blog')"
+            class="px-4 py-2 bg-primary-800 dark:bg-primary-700 text-white rounded-md hover:bg-primary-700 dark:hover:bg-primary-600 transition-colors shadow-sm dark:shadow-md"
           >
             New Blog Post
-          </router-link>
-          <router-link
-            to="/admin/blog/new?type=writing"
-            class="px-4 py-2 bg-purple-800 text-white rounded-md hover:bg-purple-700 transition-colors"
+          </button>
+          <button
+            @click="openModal(null, 'writing')"
+            class="px-4 py-2 bg-purple-800 dark:bg-purple-700 text-white rounded-md hover:bg-purple-700 dark:hover:bg-purple-600 transition-colors shadow-sm dark:shadow-md"
           >
             New Writing
-          </router-link>
+          </button>
         </div>
       </div>
 
       <!-- Loading -->
       <div v-if="loading" class="text-center py-12">
-        <p class="text-gray-600 dark:text-gray-400">Loading content...</p>
+        <p class="text-gray-600 dark:text-slate-300">Loading content...</p>
       </div>
 
       <!-- Error -->
@@ -99,26 +99,26 @@
       </div>
 
       <!-- Posts Table -->
-      <div v-if="!loading" class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead class="bg-gray-50 dark:bg-gray-700">
+      <div v-if="!loading" class="bg-white dark:bg-slate-900 shadow rounded-lg overflow-hidden border border-gray-200 dark:border-slate-700">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+          <thead class="bg-gray-50 dark:bg-slate-800">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider">
                 Type
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider">
                 Title
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider">
                 Status
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider">
                 Updated
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider">
                 Published
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider">
                 Tags
               </th>
               <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -126,8 +126,8 @@
               </th>
             </tr>
           </thead>
-          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-            <tr v-for="item in items" :key="`${item.type}-${item.id}`" class="hover:bg-gray-50 dark:hover:bg-gray-700">
+          <tbody class="bg-white dark:bg-slate-900 divide-y divide-gray-200 dark:divide-slate-700">
+            <tr v-for="item in items" :key="`${item.type}-${item.id}`" class="hover:bg-gray-50 dark:hover:bg-slate-800">
               <td class="px-6 py-4 whitespace-nowrap">
                 <span
                   :class="{
@@ -140,10 +140,10 @@
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900 dark:text-white">
+                <div class="text-sm font-medium text-gray-900 dark:text-slate-100">
                   {{ item.title }}
                 </div>
-                <div class="text-sm text-gray-500 dark:text-gray-400">
+                <div class="text-sm text-gray-500 dark:text-slate-400">
                   /{{ item.slug }}
                 </div>
               </td>
@@ -173,10 +173,10 @@
                   </span>
                 </button>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-slate-400">
                 {{ formatDate(item.updatedAt) }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-slate-400">
                 {{ item.publishedAt ? formatDate(item.publishedAt) : '-' }}
               </td>
               <td class="px-6 py-4">
@@ -184,11 +184,11 @@
                   <span
                     v-for="tag in (item.tags || []).slice(0, 3)"
                     :key="tag"
-                    class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded"
+                    class="px-2 py-1 text-xs bg-gray-100 dark:bg-slate-700 dark:border dark:border-slate-600 text-gray-700 dark:text-slate-200 rounded"
                   >
                     {{ tag }}
                   </span>
-                  <span v-if="(item.tags || []).length > 3" class="text-xs text-gray-500 dark:text-gray-400">
+                  <span v-if="(item.tags || []).length > 3" class="text-xs text-gray-500 dark:text-slate-400">
                     +{{ (item.tags || []).length - 3 }}
                   </span>
                 </div>
@@ -215,12 +215,12 @@
                       Duplicate
                     </span>
                   </button>
-                  <router-link
-                    :to="`/admin/blog/${item.id}/edit?type=${item.type}`"
+                  <button
+                    @click="openModal(item.id, item.type)"
                     class="text-primary-600 dark:text-blue-400 hover:text-primary-900 dark:hover:text-blue-300"
                   >
                     Edit
-                  </router-link>
+                  </button>
                   <button
                     @click="handleDelete(item)"
                     class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
@@ -235,13 +235,13 @@
 
         <!-- Empty state -->
         <div v-if="items.length === 0" class="text-center py-12">
-          <p class="text-gray-600 dark:text-gray-400">No content found.</p>
+          <p class="text-gray-600 dark:text-slate-300">No content found.</p>
         </div>
       </div>
 
       <!-- Pagination -->
       <div v-if="pagination && pagination.totalPages > 1" class="flex items-center justify-between">
-        <div class="text-sm text-gray-700 dark:text-gray-300">
+        <div class="text-sm text-gray-700 dark:text-slate-300">
           Showing {{ (pagination.page - 1) * pagination.pageSize + 1 }} to
           {{ Math.min(pagination.page * pagination.pageSize, pagination.total) }} of
           {{ pagination.total }} items
@@ -250,29 +250,65 @@
           <button
             @click="changePage(pagination.page - 1)"
             :disabled="pagination.page === 1"
-            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
+            class="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-slate-700"
           >
             Previous
           </button>
           <button
             @click="changePage(pagination.page + 1)"
             :disabled="pagination.page === pagination.totalPages"
-            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
+            class="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-slate-700"
           >
             Next
           </button>
         </div>
       </div>
     </div>
+
+    <!-- Editor Modal -->
+    <AdminEditorModal
+      :is-open="showEditorModal"
+      :edit-id="editId"
+      :content-type="editorContentType"
+      @close="closeModal"
+      @saved="handleEditorSaved"
+    />
+
+    <!-- Delete Confirmation Modal -->
+    <ConfirmModal
+      :is-open="showDeleteConfirmModal"
+      title="Confirm Deletion"
+      :message="deleteConfirmMessage"
+      confirm-text="Delete"
+      cancel-text="Cancel"
+      confirm-button-class="bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600"
+      @confirm="executeDelete"
+      @cancel="cancelDelete"
+    />
+
+    <!-- Duplicate Confirmation Modal -->
+    <ConfirmModal
+      :is-open="showDuplicateConfirmModal"
+      title="Confirm Duplication"
+      :message="duplicateConfirmMessage"
+      confirm-text="Duplicate"
+      cancel-text="Cancel"
+      confirm-button-class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600"
+      @confirm="executeDuplicate"
+      @cancel="cancelDuplicate"
+    />
   </AdminLayout>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import AdminLayout from '@/components/AdminLayout.vue'
+import AdminEditorModal from '@/components/AdminEditorModal.vue'
+import ConfirmModal from '@/components/ConfirmModal.vue'
 
 const router = useRouter()
+const route = useRoute()
 
 const items = ref<any[]>([])
 const loading = ref(false)
@@ -286,7 +322,66 @@ const duplicatingItem = ref<string | null>(null)
 const notification = ref<{ type: 'success' | 'error'; message: string } | null>(null)
 let notificationTimeout: ReturnType<typeof setTimeout> | null = null
 
+// Editor modal state
+const showEditorModal = ref(false)
+const editId = ref<string | null>(null)
+const editorContentType = ref<'blog' | 'writing'>('blog')
+
+// Delete confirmation modal state
+const showDeleteConfirmModal = ref(false)
+const deleteConfirmMessage = ref('')
+const itemToDelete = ref<any>(null)
+
+// Duplicate confirmation modal state
+const showDuplicateConfirmModal = ref(false)
+const duplicateConfirmMessage = ref('')
+const itemToDuplicate = ref<any>(null)
+
 let searchTimeout: ReturnType<typeof setTimeout> | null = null
+
+const openModal = (id: string | null, type: 'blog' | 'writing') => {
+  editId.value = id
+  editorContentType.value = type
+  showEditorModal.value = true
+  // Update route without navigation
+  if (id) {
+    router.push(`/admin/blog/${id}/edit?type=${type}`).catch(() => {})
+  } else {
+    router.push(`/admin/blog/new?type=${type}`).catch(() => {})
+  }
+}
+
+const closeModal = () => {
+  showEditorModal.value = false
+  editId.value = null
+  // Return to admin list
+  if (route.path !== '/admin') {
+    router.push('/admin').catch(() => {})
+  }
+}
+
+const handleEditorSaved = () => {
+  fetchContent()
+  showNotification('Content saved successfully', 'success')
+}
+
+// Watch route changes to open modal
+watch(() => route.path, (newPath) => {
+  if (newPath === '/admin/blog/new') {
+    const type = route.query.type === 'writing' ? 'writing' : 'blog'
+    if (!showEditorModal.value || editId.value !== null || editorContentType.value !== type) {
+      openModal(null, type)
+    }
+  } else if (newPath.match(/^\/admin\/blog\/[^/]+\/edit$/)) {
+    const id = route.params.id as string
+    const type = route.query.type === 'writing' ? 'writing' : 'blog'
+    if (!showEditorModal.value || editId.value !== id || editorContentType.value !== type) {
+      openModal(id, type)
+    }
+  } else if (newPath === '/admin' && showEditorModal.value) {
+    closeModal()
+  }
+}, { immediate: true })
 
 const fetchContent = async () => {
   loading.value = true
@@ -419,8 +514,22 @@ const toggleStatus = async (item: any) => {
   }
 }
 
-const handleDuplicate = async (item: any) => {
+const handleDuplicate = (item: any) => {
+  itemToDuplicate.value = item
+  duplicateConfirmMessage.value = `Are you sure you want to duplicate "${item.title}"? A copy will be created as a draft.`
+  showDuplicateConfirmModal.value = true
+}
+
+const executeDuplicate = async () => {
+  if (!itemToDuplicate.value) {
+    showDuplicateConfirmModal.value = false
+    return
+  }
+
+  const item = itemToDuplicate.value
   const itemKey = `${item.type}-${item.id}`
+  showDuplicateConfirmModal.value = false
+  
   if (duplicatingItem.value === itemKey) return
   
   duplicatingItem.value = itemKey
@@ -458,13 +567,29 @@ const handleDuplicate = async (item: any) => {
     showNotification('error', 'An error occurred while duplicating')
   } finally {
     duplicatingItem.value = null
+    itemToDuplicate.value = null
   }
 }
 
-const handleDelete = async (item: any) => {
-  if (!confirm(`Are you sure you want to delete "${item.title}"? This action cannot be undone.`)) {
+const cancelDuplicate = () => {
+  showDuplicateConfirmModal.value = false
+  itemToDuplicate.value = null
+}
+
+const handleDelete = (item: any) => {
+  itemToDelete.value = item
+  deleteConfirmMessage.value = `Are you sure you want to delete "${item.title}"? This action cannot be undone.`
+  showDeleteConfirmModal.value = true
+}
+
+const executeDelete = async () => {
+  if (!itemToDelete.value) {
+    showDeleteConfirmModal.value = false
     return
   }
+
+  const item = itemToDelete.value
+  showDeleteConfirmModal.value = false
 
   try {
     // Get token from localStorage
@@ -497,7 +622,14 @@ const handleDelete = async (item: any) => {
   } catch (err) {
     console.error('Error deleting:', err)
     showNotification('error', 'An error occurred while deleting')
+  } finally {
+    itemToDelete.value = null
   }
+}
+
+const cancelDelete = () => {
+  showDeleteConfirmModal.value = false
+  itemToDelete.value = null
 }
 
 const showNotification = (type: 'success' | 'error', message: string) => {
@@ -536,4 +668,5 @@ onMounted(() => {
   fetchContent()
 })
 </script>
+
 

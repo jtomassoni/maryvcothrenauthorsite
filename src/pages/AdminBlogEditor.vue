@@ -4,8 +4,8 @@
     :subtitle="isEdit ? (contentType === 'writing' ? 'Update your writing' : 'Update your blog post') : (contentType === 'writing' ? 'Create a new writing (longer format)' : 'Create a new blog post (SEO & engagement)')"
   >
     <!-- Breadcrumbs -->
-    <nav class="mb-6" aria-label="Breadcrumb">
-      <ol class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+    <nav class="mb-3" aria-label="Breadcrumb">
+      <ol class="flex items-center space-x-2 text-sm text-gray-600 dark:text-slate-400">
         <li>
           <router-link
             to="/admin"
@@ -39,10 +39,10 @@
     </nav>
 
     <div v-if="loading" class="text-center py-12">
-      <p class="text-gray-600 dark:text-gray-400">Loading...</p>
+      <p class="text-gray-600 dark:text-slate-300">Loading...</p>
     </div>
 
-    <form v-else @submit.prevent="handleSubmit" class="space-y-6">
+    <form v-else @submit.prevent="handleSubmit" class="space-y-3">
       <!-- Error message -->
       <div v-if="error" class="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
         <p class="text-sm text-red-800 dark:text-red-200">{{ error }}</p>
@@ -50,10 +50,10 @@
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Left column: Form inputs -->
-        <div class="space-y-6">
+        <div class="space-y-3">
           <!-- Title -->
           <div>
-            <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label for="title" class="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-1">
               Title *
             </label>
             <input
@@ -61,14 +61,14 @@
               v-model="form.title"
               type="text"
               required
-              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+              class="w-full px-3 py-1.5 border border-gray-300 dark:border-slate-600 dark:bg-slate-800 rounded-md bg-white text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent text-sm"
               @input="updateSlug"
             />
           </div>
 
           <!-- Slug -->
           <div>
-            <label for="slug" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label for="slug" class="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-2">
               Slug *
             </label>
             <input
@@ -77,30 +77,30 @@
               type="text"
               required
               pattern="[a-z0-9-]+"
-              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-mono text-sm"
+              class="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 dark:bg-slate-800 rounded-md bg-white text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent font-mono text-sm"
             />
-            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            <p class="mt-0.5 text-xs text-gray-500 dark:text-slate-400">
               URL-friendly identifier (lowercase, hyphens only)
             </p>
           </div>
 
           <!-- Excerpt -->
           <div>
-            <label for="excerpt" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label for="excerpt" class="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-2">
               Excerpt *
             </label>
             <textarea
               id="excerpt"
               v-model="form.excerpt"
               required
-              rows="3"
-              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+              rows="2"
+              class="w-full px-3 py-1.5 border border-gray-300 dark:border-slate-600 dark:bg-slate-800 rounded-md bg-white text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent text-sm"
             />
           </div>
 
           <!-- Tags -->
           <div>
-            <label for="tags" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label for="tags" class="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-2">
               Tags
             </label>
             <input
@@ -108,17 +108,17 @@
               v-model="tagsInput"
               type="text"
               placeholder="tag1, tag2, tag3"
-              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+              class="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 dark:bg-slate-800 rounded-md bg-white text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent"
               @blur="updateTags"
             />
-            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            <p class="mt-0.5 text-xs text-gray-500 dark:text-slate-400">
               Comma-separated list of tags
             </p>
             <div v-if="form.tags.length > 0" class="mt-2 flex flex-wrap gap-2">
               <span
                 v-for="tag in form.tags"
                 :key="tag"
-                class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded"
+                class="px-2 py-1 text-xs bg-gray-100 dark:bg-slate-700 dark:border dark:border-slate-600 text-gray-700 dark:text-slate-200 rounded"
               >
                 {{ tag }}
               </span>
@@ -127,51 +127,61 @@
 
           <!-- Status -->
           <div>
-            <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label for="status" class="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-2">
               Status *
             </label>
             <select
               id="status"
               v-model="form.status"
               required
-              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+              class="w-full px-3 py-1.5 border border-gray-300 dark:border-slate-600 dark:bg-slate-800 rounded-md bg-white text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent text-sm"
             >
-              <option value="draft">Draft</option>
-              <option value="published">Published</option>
+              <option value="draft" class="dark:bg-slate-800">Draft</option>
+              <option value="published" class="dark:bg-slate-800">Published</option>
             </select>
           </div>
 
           <!-- Content Markdown -->
           <div>
-            <label for="contentMarkdown" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Content (Markdown) *
-              <span v-if="contentType === 'writing'" class="text-xs text-gray-500 dark:text-gray-400 ml-2">
+            <div class="flex items-center gap-2 mb-1">
+              <label for="contentMarkdown" class="block text-sm font-medium text-gray-700 dark:text-slate-200">
+                Content (Markdown) *
+              </label>
+              <button
+                type="button"
+                @click="showMarkdownModal = true"
+                class="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+                title="Markdown formatting help"
+              >
+                Markdown hints
+              </button>
+              <span v-if="contentType === 'writing'" class="text-xs text-gray-500 dark:text-slate-400">
                 (Longer format for writings)
               </span>
-            </label>
+            </div>
             <textarea
               id="contentMarkdown"
               v-model="form.contentMarkdown"
               required
-              :rows="contentType === 'writing' ? 30 : 20"
-              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 font-mono text-sm"
+              :rows="contentType === 'writing' ? 12 : 8"
+              class="w-full px-3 py-1.5 border border-gray-300 dark:border-slate-600 dark:bg-slate-800 rounded-md bg-white text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent font-mono text-sm"
             />
           </div>
 
           <!-- Actions -->
-          <div class="flex items-center gap-4 pt-4">
+          <div class="flex items-center gap-3 pt-2 sticky top-0 bg-white dark:bg-slate-950 pb-2 z-10 border-t dark:border-slate-800 mt-2">
             <button
               type="submit"
               :disabled="saving"
-              :class="contentType === 'writing' ? 'bg-purple-800 hover:bg-purple-700' : 'bg-primary-800 hover:bg-primary-700'"
-              class="px-6 py-2 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              :class="contentType === 'writing' ? 'bg-purple-800 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-600' : 'bg-primary-800 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-600'"
+              class="px-4 py-1.5 text-sm text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm dark:shadow-md"
             >
               <span v-if="!saving">{{ isEdit ? (contentType === 'writing' ? 'Update Writing' : 'Update Post') : (contentType === 'writing' ? 'Create Writing' : 'Create Post') }}</span>
               <span v-else>Saving...</span>
             </button>
             <router-link
               to="/admin"
-              class="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              class="px-4 py-1.5 text-sm border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-200 rounded-md hover:bg-gray-50 dark:hover:bg-slate-800 dark:bg-slate-900 transition-colors"
             >
               Cancel
             </router-link>
@@ -181,27 +191,27 @@
         <!-- Right column: Preview -->
         <div class="space-y-6">
           <div class="sticky top-8">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100 mb-4">
               Preview
             </h3>
-            <div class="border border-gray-300 dark:border-gray-600 rounded-md p-6 bg-white dark:bg-gray-800 min-h-[400px]">
+            <div class="border border-gray-300 dark:border-slate-700 rounded-md p-6 bg-white dark:bg-slate-900 min-h-[400px] shadow-sm dark:shadow-lg">
               <div v-if="form.title" class="mb-4">
-                <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-slate-100 mb-2">
                   {{ form.title }}
                 </h1>
-                <div v-if="form.excerpt" class="text-gray-600 dark:text-gray-400 mb-4">
+                <div v-if="form.excerpt" class="text-gray-600 dark:text-slate-300 mb-4">
                   {{ form.excerpt }}
                 </div>
                 <div v-if="form.tags.length > 0" class="flex flex-wrap gap-2 mb-4">
                   <span
                     v-for="tag in form.tags"
                     :key="tag"
-                    class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded"
+                    class="px-2 py-1 text-xs bg-gray-100 dark:bg-slate-700 dark:border dark:border-slate-600 text-gray-700 dark:text-slate-200 rounded"
                   >
                     {{ tag }}
                   </span>
                 </div>
-                <hr class="my-4 border-gray-300 dark:border-gray-600" />
+                <hr class="my-4 border-gray-300 dark:border-slate-700" />
               </div>
               <MarkdownRenderer :content="form.contentMarkdown || '*Start typing to see preview...*'" />
             </div>
@@ -209,11 +219,141 @@
         </div>
       </div>
     </form>
+
+    <!-- Markdown Hints Modal -->
+    <div
+      v-if="showMarkdownModal"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 dark:bg-opacity-70"
+      @click.self="showMarkdownModal = false"
+    >
+      <div class="bg-white dark:bg-slate-900 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col">
+        <!-- Modal Header -->
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between">
+          <h2 class="text-xl font-bold text-gray-900 dark:text-slate-100">Markdown Formatting Guide</h2>
+          <button
+            @click="showMarkdownModal = false"
+            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 rounded"
+            aria-label="Close modal"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Modal Content -->
+        <div class="px-6 py-4 overflow-y-auto flex-1">
+          <div class="space-y-6 text-sm text-gray-700 dark:text-slate-300">
+            <!-- Headers -->
+            <div>
+              <h3 class="text-base font-semibold text-gray-900 dark:text-slate-100 mb-2">Headers</h3>
+              <div class="bg-gray-50 dark:bg-slate-800 p-3 rounded font-mono text-xs">
+                <div># H1 Header</div>
+                <div>## H2 Header</div>
+                <div>### H3 Header</div>
+              </div>
+            </div>
+
+            <!-- Emphasis -->
+            <div>
+              <h3 class="text-base font-semibold text-gray-900 dark:text-slate-100 mb-2">Emphasis</h3>
+              <div class="bg-gray-50 dark:bg-slate-800 p-3 rounded font-mono text-xs space-y-1">
+                <div>*italic* or _italic_</div>
+                <div>**bold** or __bold__</div>
+                <div>***bold italic***</div>
+                <div>~~strikethrough~~</div>
+              </div>
+            </div>
+
+            <!-- Lists -->
+            <div>
+              <h3 class="text-base font-semibold text-gray-900 dark:text-slate-100 mb-2">Lists</h3>
+              <div class="bg-gray-50 dark:bg-slate-800 p-3 rounded font-mono text-xs space-y-1">
+                <div>Unordered:</div>
+                <div class="ml-2">- Item 1</div>
+                <div class="ml-2">- Item 2</div>
+                <div class="mt-2">Ordered:</div>
+                <div class="ml-2">1. First item</div>
+                <div class="ml-2">2. Second item</div>
+              </div>
+            </div>
+
+            <!-- Links -->
+            <div>
+              <h3 class="text-base font-semibold text-gray-900 dark:text-slate-100 mb-2">Links</h3>
+              <div class="bg-gray-50 dark:bg-slate-800 p-3 rounded font-mono text-xs space-y-1">
+                <div>[Link text](https://example.com)</div>
+                <div>[Link with title](https://example.com "Title")</div>
+              </div>
+            </div>
+
+            <!-- Images -->
+            <div>
+              <h3 class="text-base font-semibold text-gray-900 dark:text-slate-100 mb-2">Images</h3>
+              <div class="bg-gray-50 dark:bg-slate-800 p-3 rounded font-mono text-xs">
+                <div>![Alt text](image-url.jpg)</div>
+                <div class="mt-1">![Alt text](image-url.jpg "Image title")</div>
+              </div>
+            </div>
+
+            <!-- Code -->
+            <div>
+              <h3 class="text-base font-semibold text-gray-900 dark:text-slate-100 mb-2">Code</h3>
+              <div class="bg-gray-50 dark:bg-slate-800 p-3 rounded font-mono text-xs space-y-1">
+                <div>Inline: `code`</div>
+                <div class="mt-2">Code block:</div>
+                <div class="ml-2">```</div>
+                <div class="ml-2">code here</div>
+                <div class="ml-2">```</div>
+              </div>
+            </div>
+
+            <!-- Blockquotes -->
+            <div>
+              <h3 class="text-base font-semibold text-gray-900 dark:text-slate-100 mb-2">Blockquotes</h3>
+              <div class="bg-gray-50 dark:bg-slate-800 p-3 rounded font-mono text-xs">
+                <div>&gt; This is a quote</div>
+                <div>&gt; Multiple lines</div>
+              </div>
+            </div>
+
+            <!-- Horizontal Rule -->
+            <div>
+              <h3 class="text-base font-semibold text-gray-900 dark:text-slate-100 mb-2">Horizontal Rule</h3>
+              <div class="bg-gray-50 dark:bg-slate-800 p-3 rounded font-mono text-xs">
+                <div>---</div>
+                <div>or</div>
+                <div>***</div>
+              </div>
+            </div>
+
+            <!-- Line Breaks -->
+            <div>
+              <h3 class="text-base font-semibold text-gray-900 dark:text-slate-100 mb-2">Line Breaks</h3>
+              <div class="bg-gray-50 dark:bg-slate-800 p-3 rounded text-xs">
+                <div>End a line with two spaces for a line break</div>
+                <div class="mt-1">Or use a blank line for a paragraph break</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="px-6 py-4 border-t border-gray-200 dark:border-slate-700 flex justify-end">
+          <button
+            @click="showMarkdownModal = false"
+            class="px-4 py-2 bg-primary-800 dark:bg-primary-700 text-white rounded-md hover:bg-primary-700 dark:hover:bg-primary-600 transition-colors text-sm"
+          >
+            Got it
+          </button>
+        </div>
+      </div>
+    </div>
   </AdminLayout>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import AdminLayout from '@/components/AdminLayout.vue'
 import MarkdownRenderer from '@/components/MarkdownRenderer.vue'
@@ -235,6 +375,7 @@ const contentType = computed(() => {
 const loading = ref(false)
 const saving = ref(false)
 const error = ref('')
+const showMarkdownModal = ref(false)
 
 const form = ref({
   title: '',
@@ -420,8 +561,19 @@ const handleSubmit = async () => {
   }
 }
 
+const handleEscape = (e: KeyboardEvent) => {
+  if (e.key === 'Escape' && showMarkdownModal.value) {
+    showMarkdownModal.value = false
+  }
+}
+
 onMounted(() => {
   loadPost()
+  window.addEventListener('keydown', handleEscape)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleEscape)
 })
 </script>
 

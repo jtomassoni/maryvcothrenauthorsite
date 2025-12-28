@@ -13,24 +13,24 @@
     />
 
     <!-- Latest Posts Section -->
-    <section class="py-6 lg:py-8 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
+    <section class="py-4 lg:py-5 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
       <Container>
-        <div class="text-center mb-6">
-          <h2 class="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent mb-2">
+        <div class="text-center mb-4">
+          <h2 class="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent mb-1">
             Latest
           </h2>
-          <p class="text-base text-gray-700 dark:text-gray-300">
+          <p class="text-sm text-gray-700 dark:text-gray-300">
             Recent thoughts and updates
           </p>
         </div>
 
         <!-- Loading -->
-        <div v-if="loadingPosts" class="text-center py-8">
+        <div v-if="loadingPosts" class="text-center py-4">
           <p class="text-gray-600 dark:text-gray-400">Loading posts...</p>
         </div>
 
         <!-- Items Grid -->
-        <div v-else-if="latestItems.length > 0" class="grid grid-cols-1 md:grid-cols-3 gap-3 lg:gap-4 mb-4">
+        <div v-else-if="latestItems.length > 0" class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
           <article
             v-for="(item, index) in latestItems"
             :key="`${item.type}-${item.id}`"
@@ -51,8 +51,8 @@
               }"
             ></div>
             
-            <div class="p-3 lg:p-4">
-              <div class="mb-2 flex items-center gap-2 flex-wrap">
+            <div class="p-3">
+              <div class="mb-1.5 flex items-center gap-1.5 flex-wrap">
                 <span
                   class="inline-block px-3 py-1 text-xs font-semibold rounded-full shadow-sm"
                   :class="{
@@ -74,7 +74,7 @@
                   {{ tag }}
                 </span>
               </div>
-              <h3 class="text-lg font-bold mb-1.5 group-hover:scale-105 transition-transform duration-200">
+              <h3 class="text-base font-bold mb-1 group-hover:scale-105 transition-transform duration-200">
                 <router-link
                   :to="item.type === 'blog' ? `/blog/${item.slug}` : `/writings/${item.slug}`"
                   class="bg-gradient-to-r from-gray-900 to-gray-700 dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent hover:from-blue-600 hover:to-purple-600 dark:hover:from-blue-400 dark:hover:to-purple-400 transition-all duration-300"
@@ -82,10 +82,10 @@
                   {{ item.title }}
                 </router-link>
               </h3>
-              <p class="text-xs text-gray-600 dark:text-gray-400 mb-2 font-medium">
+              <p class="text-xs text-gray-600 dark:text-gray-400 mb-1.5 font-medium">
                 {{ formatDate(item.publishedAt || item.createdAt) }}
               </p>
-              <p class="text-sm text-gray-700 dark:text-gray-300 line-clamp-3 mb-3 leading-relaxed">
+              <p class="text-xs text-gray-700 dark:text-gray-300 line-clamp-2 mb-2 leading-relaxed">
                 {{ item.excerpt }}
               </p>
               <router-link
@@ -107,27 +107,27 @@
         </div>
 
         <!-- Empty state -->
-        <div v-else class="text-center py-8">
+        <div v-else class="text-center py-4">
           <p class="text-gray-600 dark:text-gray-400">No content yet. Check back soon!</p>
         </div>
 
         <!-- View More Buttons -->
-        <div v-if="latestItems.length > 0" class="text-center flex gap-4 justify-center flex-wrap">
+        <div v-if="latestItems.length > 0" class="text-center flex gap-3 justify-center flex-wrap mt-3">
           <router-link
             to="/blog"
-            class="group inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            class="group inline-flex items-center gap-1.5 px-4 py-2 text-sm bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105"
           >
             View All Blog Posts
-            <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
           </router-link>
           <router-link
             to="/writings"
-            class="group inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            class="group inline-flex items-center gap-1.5 px-4 py-2 text-sm bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105"
           >
             View All Writings
-            <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
           </router-link>

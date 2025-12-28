@@ -14,6 +14,7 @@ import BlogPost from './pages/BlogPost.vue'
 import Login from './pages/Login.vue'
 import AdminBlogList from './pages/AdminBlogList.vue'
 import AdminBlogEditor from './pages/AdminBlogEditor.vue'
+import MarkdownHelp from './pages/MarkdownHelp.vue'
 import NotFound from './pages/NotFound.vue'
 
 // Router configuration
@@ -28,8 +29,9 @@ const routes = [
   { path: '/login', name: 'Login', component: Login },
   { path: '/admin', name: 'AdminBlogList', component: AdminBlogList },
   { path: '/admin/blog', redirect: '/admin' },
-  { path: '/admin/blog/new', name: 'AdminBlogNew', component: AdminBlogEditor },
-  { path: '/admin/blog/:id/edit', name: 'AdminBlogEdit', component: AdminBlogEditor },
+  { path: '/admin/blog/new', name: 'AdminBlogNew', component: AdminBlogList },
+  { path: '/admin/blog/:id/edit', name: 'AdminBlogEdit', component: AdminBlogList },
+  { path: '/markdown-help', name: 'MarkdownHelp', component: MarkdownHelp },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
 ]
 
