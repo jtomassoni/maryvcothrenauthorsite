@@ -10,7 +10,12 @@ These scripts help you work with your production environment from your local mac
 npm run prod:env
 ```
 
-This pulls all environment variables from Vercel into `.env.local`.
+**What this does:**
+- Downloads your **PRODUCTION** environment variables **FROM Vercel**
+- Saves them **TO** a local file called `.env.local`
+- The `.env.local` file is just a temporary local file to store prod vars
+
+**Note:** `.env.local` is the destination file, not the source. The source is Vercel (production).
 
 ### 2. Run Commands Against Production
 

@@ -25,26 +25,33 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 // Load .env.local if it exists
+// NOTE: .env.local is a LOCAL file that contains PRODUCTION vars downloaded from Vercel
+// The command "vercel env pull .env.local" means:
+//   - Pull FROM: Vercel (production)
+//   - Save TO: .env.local (local file)
 const envPath = join(__dirname, '..', '.env.local')
 if (existsSync(envPath)) {
   dotenv.config({ path: envPath })
-  console.log('✅ Loaded .env.local\n')
+  console.log('✅ Loaded PRODUCTION environment variables from .env.local')
+  console.log('💡 Note: .env.local contains PRODUCTION vars downloaded from Vercel\n')
 } else {
-  console.log('⚠️  No .env.local found. Pulling from Vercel...\n')
+  console.log('⚠️  No .env.local found.')
+  console.log('📥 Downloading PRODUCTION variables FROM Vercel...')
+  console.log('   (Saving them TO .env.local file)\n')
   
   // Try to pull from Vercel
   try {
-    execSync('vercel env pull .env.local', {
+    execSync('npx vercel env pull .env.local', {
       stdio: 'inherit',
       cwd: join(__dirname, '..')
     })
     dotenv.config({ path: envPath })
-    console.log('✅ Pulled environment variables from Vercel\n')
+    console.log('\n✅ Downloaded PRODUCTION env vars FROM Vercel TO .env.local\n')
   } catch (error) {
-    console.error('❌ Failed to pull from Vercel. Make sure you have Vercel CLI installed:')
-    console.error('   npm i -g vercel')
-    console.error('   vercel login')
-    console.error('   vercel link\n')
+    console.error('❌ Failed to pull from Vercel. Try:')
+    console.error('   npx vercel login')
+    console.error('   npx vercel link')
+    console.error('   npx vercel env pull .env.local\n')
     process.exit(1)
   }
 }
