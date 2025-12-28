@@ -23,12 +23,13 @@ function checkAuth(req) {
 }
 
 export default async function handler(req, res) {
-  // Initialize Prisma client inside handler to avoid initialization issues
-  const prisma = new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-  })
-
+  let prisma = null
+  
   try {
+    // Initialize Prisma client inside handler to avoid initialization issues
+    prisma = new PrismaClient({
+      log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    })
     console.log(`[writings] ${req.method} request received`)
     
     const username = checkAuth(req)
@@ -42,14 +43,6 @@ export default async function handler(req, res) {
     
     // GET /api/admin/writings
     if (req.method === 'GET') {
-      // Quick check: try to verify table exists first
-      try {
-        await prisma.$queryRaw`SELECT 1 FROM writings LIMIT 1`.catch(() => {
-          // If this fails, the table likely doesn't exist
-        })
-      } catch (tableCheckError) {
-        // Ignore - we'll catch the real error in the actual query
-      }
       const { q, tag, status, sort = 'newest', page = '1', pageSize = '20' } = req.query
       
       const pageNum = parseInt(page, 10) || 1
@@ -90,6 +83,7 @@ export default async function handler(req, res) {
         console.log('[writings] OrderBy:', JSON.stringify(orderBy))
         console.log('[writings] Skip:', skip, 'Take:', pageSizeNum)
         
+        // Execute queries - simplified to avoid timeout issues
         [writings, total] = await Promise.all([
           prisma.writing.findMany({
             where,
@@ -107,6 +101,7 @@ export default async function handler(req, res) {
           message: queryError.message,
           name: queryError.name,
           meta: queryError.meta,
+          stack: queryError.stack,
         })
         // Re-throw so outer catch can handle it
         throw queryError
@@ -185,12 +180,19 @@ export default async function handler(req, res) {
     // Method not allowed
     return res.status(405).json({ ok: false, error: 'Method not allowed' })
   } catch (error) {
-    console.error('[writings] Error:', error)
-    console.error('[writings] Error stack:', error.stack)
-    console.error('[writings] Error code:', error.code)
-    console.error('[writings] Error name:', error.name)
-    console.error('[writings] Error message:', error.message)
-    console.error('[writings] Full error object:', JSON.stringify(error, Object.getOwnPropertyNames(error)))
+    // Ensure we log the error before anything else
+    try {
+      console.error('[writings] Error caught:', error)
+      console.error('[writings] Error stack:', error?.stack)
+      console.error('[writings] Error code:', error?.code)
+      console.error('[writings] Error name:', error?.name)
+      console.error('[writings] Error message:', error?.message)
+      if (error?.meta) {
+        console.error('[writings] Error meta:', JSON.stringify(error.meta))
+      }
+    } catch (logError) {
+      console.error('[writings] Failed to log error:', logError)
+    }
     
     // Handle Prisma table missing error (P2021) or any table-related errors
     if (error.code === 'P2021' || 
@@ -235,9 +237,25 @@ export default async function handler(req, res) {
       errorResponse.stack = error.stack
     }
     
-    return res.status(500).json(errorResponse)
+    // Make sure we return a response even if something goes wrong
+    try {
+      return res.status(500).json(errorResponse)
+    } catch (responseError) {
+      console.error('[writings] Failed to send error response:', responseError)
+      // If we can't send JSON, try to send a plain text response
+      if (!res.headersSent) {
+        res.status(500).send(`Internal Server Error: ${errorResponse.message || 'Unknown error'}`)
+      }
+    }
   } finally {
-    await prisma.$disconnect()
+    // Always disconnect Prisma, but handle errors gracefully
+    if (prisma) {
+      try {
+        await prisma.$disconnect()
+      } catch (disconnectError) {
+        console.error('[writings] Error disconnecting Prisma:', disconnectError)
+      }
+    }
   }
 }
 
