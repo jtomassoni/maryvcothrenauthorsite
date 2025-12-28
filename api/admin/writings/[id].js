@@ -100,20 +100,8 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Normalize method to uppercase for consistent checking
-    const method = (req.method || '').toUpperCase()
-    const originalMethod = req.method || 'UNKNOWN'
-    
-    // Log everything for debugging
-    console.log(`[writings/[id]] ${method} request (original: ${originalMethod}) for id: ${req.query.id}`)
-    console.log(`[writings/[id]] Request details:`, { 
-      method, 
-      originalMethod, 
-      methodType: typeof req.method,
-      id: req.query.id, 
-      url: req.url,
-      headers: Object.keys(req.headers || {})
-    })
+    // Normalize method to uppercase - that's all we need
+    const method = String(req.method || '').toUpperCase()
     
     const username = checkAuth(req)
     if (!username) {
@@ -122,28 +110,21 @@ export default async function handler(req, res) {
     }
 
     const { id } = req.query
-
     if (!id) {
       return res.status(400).json({ ok: false, error: 'ID is required' })
     }
 
-    // GET /api/admin/writings/:id - check all variations
-    if (method === 'GET' || originalMethod === 'GET' || originalMethod === 'get' || originalMethod?.toUpperCase() === 'GET') {
-      // Ensure JSON header is set
-      res.setHeader('Content-Type', 'application/json')
-      
+    // GET /api/admin/writings/:id
+    if (method === 'GET') {
       const writing = await prisma.writing.findUnique({ where: { id } })
-      
       if (!writing) {
         return res.status(404).json({ ok: false, error: 'Writing not found' })
       }
-      
-      // Explicitly return JSON
       return res.status(200).json({ ok: true, writing })
     }
 
-    // PUT /api/admin/writings/:id - check all variations
-    if (method === 'PUT' || originalMethod === 'PUT' || originalMethod === 'put' || originalMethod?.toUpperCase() === 'PUT') {
+    // PUT /api/admin/writings/:id
+    if (method === 'PUT') {
       const { title, slug, excerpt, contentMarkdown, tags, status } = req.body
 
       const existing = await prisma.writing.findUnique({ where: { id } })
@@ -205,8 +186,8 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: true, writing })
     }
 
-    // POST /api/admin/writings/:id (for duplication) - check all variations
-    if (method === 'POST' || originalMethod === 'POST' || originalMethod === 'post' || originalMethod?.toUpperCase() === 'POST') {
+    // POST /api/admin/writings/:id (for duplication)
+    if (method === 'POST') {
       const original = await prisma.writing.findUnique({ where: { id } })
       
       if (!original) {
@@ -229,8 +210,8 @@ export default async function handler(req, res) {
       return res.status(201).json({ ok: true, writing: duplicated })
     }
 
-    // DELETE /api/admin/writings/:id - check all variations
-    if (method === 'DELETE' || originalMethod === 'DELETE' || originalMethod === 'delete' || originalMethod?.toUpperCase() === 'DELETE') {
+    // DELETE /api/admin/writings/:id
+    if (method === 'DELETE') {
       const existing = await prisma.writing.findUnique({ where: { id } })
       if (!existing) {
         return res.status(404).json({ ok: false, error: 'Writing not found' })
@@ -239,19 +220,8 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: true })
     }
 
-    // Method not allowed - log everything we know
-    console.error(`[writings/[id]] Method not allowed: ${originalMethod} (normalized: ${method})`)
-    console.error(`[writings/[id]] Available methods: GET, PUT, POST, DELETE`)
-    console.error(`[writings/[id]] Method comparisons:`, {
-      'method === GET': method === 'GET',
-      'method === PUT': method === 'PUT',
-      'method === POST': method === 'POST',
-      'method === DELETE': method === 'DELETE',
-      'originalMethod === GET': originalMethod === 'GET',
-      'originalMethod === DELETE': originalMethod === 'DELETE',
-    })
-    console.error(`[writings/[id]] Full request object keys:`, Object.keys(req))
-    return res.status(405).json({ ok: false, error: `Method not allowed: ${originalMethod} (normalized: ${method}). Expected one of: GET, PUT, POST, DELETE` })
+    // Method not allowed
+    return res.status(405).json({ ok: false, error: `Method not allowed: ${method}` })
   } catch (error) {
     console.error('[writings/[id]] Error:', error)
     console.error('[writings/[id]] Error stack:', error.stack)

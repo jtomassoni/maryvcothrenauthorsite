@@ -7,6 +7,7 @@
     "dev": "concurrently \"npm run dev:api\" \"vite\"",
     "dev:api": "node server.js",
     "dev:frontend": "vite",
+    "test:api": "node test-serverless-local.js",
     "build": "prisma generate && node scripts/vercel-migrate.js && vite build",
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",
