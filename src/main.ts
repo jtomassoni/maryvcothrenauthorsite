@@ -9,11 +9,8 @@ import About from './pages/About.vue'
 import Writings from './pages/Writings.vue'
 import WritingPost from './pages/WritingPost.vue'
 import Contact from './pages/Contact.vue'
-import Blog from './pages/Blog.vue'
-import BlogPost from './pages/BlogPost.vue'
 import Login from './pages/Login.vue'
-import AdminBlogList from './pages/AdminBlogList.vue'
-import AdminBlogEditor from './pages/AdminBlogEditor.vue'
+import AdminWritings from './pages/AdminWritings.vue'
 import MarkdownHelp from './pages/MarkdownHelp.vue'
 import NotFound from './pages/NotFound.vue'
 
@@ -24,13 +21,8 @@ const routes = [
   { path: '/writings', name: 'Writings', component: Writings },
   { path: '/writings/:slug', name: 'WritingPost', component: WritingPost },
   { path: '/contact', name: 'Contact', component: Contact },
-  { path: '/blog', name: 'Blog', component: Blog },
-  { path: '/blog/:slug', name: 'BlogPost', component: BlogPost },
   { path: '/login', name: 'Login', component: Login },
-  { path: '/admin', name: 'AdminBlogList', component: AdminBlogList },
-  { path: '/admin/blog', redirect: '/admin' },
-  { path: '/admin/blog/new', name: 'AdminBlogNew', component: AdminBlogList },
-  { path: '/admin/blog/:id/edit', name: 'AdminBlogEdit', component: AdminBlogList },
+  { path: '/admin', name: 'AdminWritings', component: AdminWritings },
   { path: '/markdown-help', name: 'MarkdownHelp', component: MarkdownHelp },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
 ]

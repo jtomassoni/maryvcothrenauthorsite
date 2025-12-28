@@ -13,30 +13,8 @@ export default async function handler(req, res) {
     }
 
     const limit = parseInt(req.query.limit || '3', 10)
-    
-    // Fetch published blog posts
-    const blogPosts = await prisma.blogPost.findMany({
-      where: {
-        status: 'published',
-      },
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        excerpt: true,
-        tags: true,
-        publishedAt: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-      orderBy: [
-        { publishedAt: 'desc' },
-        { updatedAt: 'desc' }, // Fallback to updatedAt if publishedAt is null
-      ],
-      take: limit * 2, // Get more to ensure we have enough after combining
-    })
 
-    // Fetch published writings
+    // Fetch published writings only
     const writings = await prisma.writing.findMany({
       where: {
         status: 'published',
@@ -55,32 +33,12 @@ export default async function handler(req, res) {
         { publishedAt: 'desc' },
         { updatedAt: 'desc' }, // Fallback to updatedAt if publishedAt is null
       ],
-      take: limit * 2, // Get more to ensure we have enough after combining
+      take: limit,
     })
-
-    // Combine and add type identifier
-    const combined = [
-      ...blogPosts.map(post => ({ ...post, type: 'blog' })),
-      ...writings.map(writing => ({ ...writing, type: 'writing' })),
-    ]
-
-    // Sort by publishedAt (most recently published), fallback to updatedAt, then createdAt
-    combined.sort((a, b) => {
-      // Use publishedAt if available, otherwise use updatedAt, then createdAt
-      const dateA = a.publishedAt 
-        ? new Date(a.publishedAt).getTime() 
-        : (a.updatedAt ? new Date(a.updatedAt).getTime() : new Date(a.createdAt).getTime())
-      const dateB = b.publishedAt 
-        ? new Date(b.publishedAt).getTime() 
-        : (b.updatedAt ? new Date(b.updatedAt).getTime() : new Date(b.createdAt).getTime())
-      return dateB - dateA // Descending (newest first)
-    })
-
-    const latest = combined.slice(0, limit)
 
     return res.status(200).json({
       ok: true,
-      items: latest,
+      items: writings.map(item => ({ ...item, type: 'writing' })),
     })
   } catch (error) {
     console.error('[latest] Error:', error)

@@ -375,86 +375,8 @@ app.get('/api/auth/check', (req, res) => {
 })
 
 // ============================================================================
-// PUBLIC BLOG ENDPOINTS
+// PUBLIC WRITING ENDPOINTS
 // ============================================================================
-
-// GET /api/blog/posts
-app.get('/api/blog/posts', async (req, res) => {
-  try {
-    const { q, tag, sort = 'newest', page = '1', pageSize = '10' } = req.query
-    
-    const pageNum = parseInt(page, 10) || 1
-    const pageSizeNum = Math.min(parseInt(pageSize, 10) || 10, 50)
-    const skip = (pageNum - 1) * pageSizeNum
-
-    // Build where clause - only published posts
-    const where = {
-      status: 'published',
-    }
-
-    // Search query
-    if (q && typeof q === 'string' && q.trim()) {
-      const searchTerm = q.trim()
-      where.OR = [
-        { title: { contains: searchTerm, mode: 'insensitive' } },
-        { excerpt: { contains: searchTerm, mode: 'insensitive' } },
-        { contentMarkdown: { contains: searchTerm, mode: 'insensitive' } },
-      ]
-    }
-
-    // Tag filter
-    if (tag && typeof tag === 'string' && tag.trim()) {
-      where.tags = { has: tag.trim() }
-    }
-
-    // Sort order
-    let orderBy = {}
-    if (sort === 'oldest') {
-      orderBy = { publishedAt: 'asc' }
-    } else if (sort === 'title') {
-      orderBy = { title: 'asc' }
-    } else {
-      orderBy = { publishedAt: 'desc' }
-    }
-
-    const [posts, total] = await Promise.all([
-      prisma.blogPost.findMany({
-        where,
-        orderBy,
-        skip,
-        take: pageSizeNum,
-        select: {
-          id: true,
-          title: true,
-          slug: true,
-          excerpt: true,
-          contentMarkdown: true,
-          tags: true,
-          publishedAt: true,
-          createdAt: true,
-        },
-      }),
-      prisma.blogPost.count({ where }),
-    ])
-
-    return res.status(200).json({
-      ok: true,
-      posts,
-      pagination: {
-        page: pageNum,
-        pageSize: pageSizeNum,
-        total,
-        totalPages: Math.ceil(total / pageSizeNum),
-      },
-    })
-  } catch (error) {
-    console.error('Error fetching blog posts:', error)
-    return res.status(500).json({
-      ok: false,
-      error: 'Failed to fetch blog posts',
-    })
-  }
-})
 
 // GET /api/writings
 app.get('/api/writings', async (req, res) => {
@@ -566,66 +488,11 @@ app.get('/api/writings/:slug', async (req, res) => {
   }
 })
 
-// GET /api/blog/posts/:slug
-app.get('/api/blog/posts/:slug', async (req, res) => {
-  try {
-    const { slug } = req.params
-
-    const post = await prisma.blogPost.findUnique({
-      where: {
-        slug,
-        status: 'published',
-        publishedAt: { not: null },
-      },
-    })
-
-    if (!post) {
-      return res.status(404).json({
-        ok: false,
-        error: 'Post not found',
-      })
-    }
-
-    return res.status(200).json({
-      ok: true,
-      post,
-    })
-  } catch (error) {
-    console.error('Error fetching blog post:', error)
-    return res.status(500).json({
-      ok: false,
-      error: 'Failed to fetch blog post',
-    })
-  }
-})
-
-// GET /api/latest - Combined latest blog posts and writings
+// GET /api/latest - Latest writings
 app.get('/api/latest', async (req, res) => {
   try {
     const limit = parseInt(req.query.limit || '3', 10)
     
-    // Fetch published blog posts (include those without publishedAt for backwards compatibility)
-    const blogPosts = await prisma.blogPost.findMany({
-      where: {
-        status: 'published',
-      },
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        excerpt: true,
-        tags: true,
-        publishedAt: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-      orderBy: [
-        { publishedAt: 'desc' },
-        { updatedAt: 'desc' }, // Fallback to updatedAt if publishedAt is null
-      ],
-      take: limit * 2, // Get more to ensure we have enough after combining
-    })
-
     // Fetch published writings (include those without publishedAt for backwards compatibility)
     const writings = await prisma.writing.findMany({
       where: {
@@ -645,32 +512,12 @@ app.get('/api/latest', async (req, res) => {
         { publishedAt: 'desc' },
         { updatedAt: 'desc' }, // Fallback to updatedAt if publishedAt is null
       ],
-      take: limit * 2, // Get more to ensure we have enough after combining
+      take: limit,
     })
-
-    // Combine and add type identifier
-    const combined = [
-      ...blogPosts.map(post => ({ ...post, type: 'blog' })),
-      ...writings.map(writing => ({ ...writing, type: 'writing' })),
-    ]
-
-    // Sort by publishedAt (most recently published), fallback to updatedAt, then createdAt
-    combined.sort((a, b) => {
-      // Use publishedAt if available, otherwise use updatedAt, then createdAt
-      const dateA = a.publishedAt 
-        ? new Date(a.publishedAt).getTime() 
-        : (a.updatedAt ? new Date(a.updatedAt).getTime() : new Date(a.createdAt).getTime())
-      const dateB = b.publishedAt 
-        ? new Date(b.publishedAt).getTime() 
-        : (b.updatedAt ? new Date(b.updatedAt).getTime() : new Date(b.createdAt).getTime())
-      return dateB - dateA // Descending (newest first)
-    })
-
-    const latest = combined.slice(0, limit)
 
     return res.status(200).json({
       ok: true,
-      items: latest,
+      items: writings.map(item => ({ ...item, type: 'writing' })),
     })
   } catch (error) {
     console.error('Error fetching latest items:', error)
@@ -680,355 +527,6 @@ app.get('/api/latest', async (req, res) => {
     })
   }
 })
-
-// ============================================================================
-// ADMIN BLOG ENDPOINTS
-// ============================================================================
-
-// GET /api/admin/blog/posts
-app.get('/api/admin/blog/posts', requireAuthEnhanced, async (req, res) => {
-  try {
-    const { q, tag, status, sort = 'newest', page = '1', pageSize = '20' } = req.query
-    
-    const pageNum = parseInt(page, 10) || 1
-    const pageSizeNum = Math.min(parseInt(pageSize, 10) || 20, 100)
-    const skip = (pageNum - 1) * pageSizeNum
-
-    // Build where clause - includes drafts
-    const where = {}
-
-    if (status && (status === 'draft' || status === 'published')) {
-      where.status = status
-    }
-
-    // Search query
-    if (q && typeof q === 'string' && q.trim()) {
-      const searchTerm = q.trim()
-      where.OR = [
-        { title: { contains: searchTerm, mode: 'insensitive' } },
-        { excerpt: { contains: searchTerm, mode: 'insensitive' } },
-        { contentMarkdown: { contains: searchTerm, mode: 'insensitive' } },
-      ]
-    }
-
-    // Tag filter
-    if (tag && typeof tag === 'string' && tag.trim()) {
-      where.tags = { has: tag.trim() }
-    }
-
-    // Sort order
-    let orderBy = {}
-    if (sort === 'oldest') {
-      orderBy = { createdAt: 'asc' }
-    } else if (sort === 'title') {
-      orderBy = { title: 'asc' }
-    } else {
-      orderBy = { updatedAt: 'desc' }
-    }
-
-    const [posts, total] = await Promise.all([
-      prisma.blogPost.findMany({
-        where,
-        orderBy,
-        skip,
-        take: pageSizeNum,
-      }),
-      prisma.blogPost.count({ where }),
-    ])
-
-    return res.status(200).json({
-      ok: true,
-      posts,
-      pagination: {
-        page: pageNum,
-        pageSize: pageSizeNum,
-        total,
-        totalPages: Math.ceil(total / pageSizeNum),
-      },
-    })
-  } catch (error) {
-    console.error('Error fetching admin blog posts:', error)
-    return res.status(500).json({
-      ok: false,
-      error: 'Failed to fetch blog posts',
-    })
-  }
-})
-
-// GET /api/admin/blog/posts/:id
-app.get('/api/admin/blog/posts/:id', requireAuthEnhanced, async (req, res) => {
-  try {
-    const { id } = req.params
-
-    const post = await prisma.blogPost.findUnique({
-      where: { id },
-    })
-
-    if (!post) {
-      return res.status(404).json({
-        ok: false,
-        error: 'Post not found',
-      })
-    }
-
-    return res.status(200).json({
-      ok: true,
-      post,
-    })
-  } catch (error) {
-    console.error('Error fetching blog post:', error)
-    return res.status(500).json({
-      ok: false,
-      error: 'Failed to fetch blog post',
-    })
-  }
-})
-
-// POST /api/admin/blog/posts
-app.post('/api/admin/blog/posts', requireAuthEnhanced, async (req, res) => {
-  try {
-    const { title, slug, excerpt, contentMarkdown, tags, status } = req.body
-
-    // Validation
-    if (!title || typeof title !== 'string' || !title.trim()) {
-      return res.status(400).json({
-        ok: false,
-        error: 'Title is required',
-      })
-    }
-
-    if (!excerpt || typeof excerpt !== 'string' || !excerpt.trim()) {
-      return res.status(400).json({
-        ok: false,
-        error: 'Excerpt is required',
-      })
-    }
-
-    if (!contentMarkdown || typeof contentMarkdown !== 'string' || !contentMarkdown.trim()) {
-      return res.status(400).json({
-        ok: false,
-        error: 'Content is required',
-      })
-    }
-
-    if (status && status !== 'draft' && status !== 'published') {
-      return res.status(400).json({
-        ok: false,
-        error: 'Status must be "draft" or "published"',
-      })
-    }
-
-    // Generate slug if not provided
-    let finalSlug = slug && typeof slug === 'string' && slug.trim()
-      ? slug.trim()
-      : generateSlug(title)
-    
-    // Ensure unique slug
-    finalSlug = await ensureUniqueSlug(prisma, finalSlug, null, 'blog')
-
-    // Process tags
-    const tagsArray = Array.isArray(tags)
-      ? tags.filter(t => typeof t === 'string' && t.trim()).map(t => t.trim())
-      : typeof tags === 'string' && tags.trim()
-        ? tags.split(',').map(t => t.trim()).filter(t => t)
-        : []
-
-    const finalStatus = status || 'draft'
-    const publishedAt = finalStatus === 'published' ? new Date() : null
-
-    const post = await prisma.blogPost.create({
-      data: {
-        title: title.trim(),
-        slug: finalSlug,
-        excerpt: excerpt.trim(),
-        contentMarkdown: contentMarkdown.trim(),
-        tags: tagsArray,
-        status: finalStatus,
-        publishedAt,
-      },
-    })
-
-    return res.status(201).json({
-      ok: true,
-      post,
-    })
-  } catch (error) {
-    console.error('Error creating blog post:', error)
-    if (error.code === 'P2002') {
-      return res.status(400).json({
-        ok: false,
-        error: 'A post with this slug already exists',
-      })
-    }
-    return res.status(500).json({
-      ok: false,
-      error: 'Failed to create blog post',
-    })
-  }
-})
-
-// PUT /api/admin/blog/posts/:id
-app.put('/api/admin/blog/posts/:id', requireAuthEnhanced, async (req, res) => {
-  try {
-    const { id } = req.params
-    const { title, slug, excerpt, contentMarkdown, tags, status } = req.body
-
-    // Check if post exists
-    const existing = await prisma.blogPost.findUnique({
-      where: { id },
-    })
-
-    if (!existing) {
-      return res.status(404).json({
-        ok: false,
-        error: 'Post not found',
-      })
-    }
-
-    // Validation
-    if (title !== undefined && (!title || typeof title !== 'string' || !title.trim())) {
-      return res.status(400).json({
-        ok: false,
-        error: 'Title is required',
-      })
-    }
-
-    if (excerpt !== undefined && (!excerpt || typeof excerpt !== 'string' || !excerpt.trim())) {
-      return res.status(400).json({
-        ok: false,
-        error: 'Excerpt is required',
-      })
-    }
-
-    if (contentMarkdown !== undefined && (!contentMarkdown || typeof contentMarkdown !== 'string' || !contentMarkdown.trim())) {
-      return res.status(400).json({
-        ok: false,
-        error: 'Content is required',
-      })
-    }
-
-    if (status && status !== 'draft' && status !== 'published') {
-      return res.status(400).json({
-        ok: false,
-        error: 'Status must be "draft" or "published"',
-      })
-    }
-
-    // Handle slug
-    let finalSlug = slug && typeof slug === 'string' && slug.trim()
-      ? slug.trim()
-      : title
-        ? generateSlug(title)
-        : existing.slug
-    
-    // Ensure unique slug (excluding current post)
-    finalSlug = await ensureUniqueSlug(prisma, finalSlug, id, 'blog')
-
-    // Process tags
-    const tagsArray = tags !== undefined
-      ? (Array.isArray(tags)
-          ? tags.filter(t => typeof t === 'string' && t.trim()).map(t => t.trim())
-          : typeof tags === 'string' && tags.trim()
-            ? tags.split(',').map(t => t.trim()).filter(t => t)
-            : [])
-      : existing.tags
-
-    // Handle status change and publishedAt
-    let publishedAt = existing.publishedAt
-    if (status === 'published' && existing.status === 'draft') {
-      // Publishing for the first time
-      publishedAt = new Date()
-    }
-    // If reverting to draft, keep publishedAt (as per requirements)
-
-    const updateData = {}
-    if (title !== undefined) updateData.title = title.trim()
-    if (slug !== undefined || title !== undefined) updateData.slug = finalSlug
-    if (excerpt !== undefined) updateData.excerpt = excerpt.trim()
-    if (contentMarkdown !== undefined) updateData.contentMarkdown = contentMarkdown.trim()
-    if (tags !== undefined) updateData.tags = tagsArray
-    if (status !== undefined) {
-      updateData.status = status
-      if (status === 'published' && !publishedAt) {
-        updateData.publishedAt = new Date()
-      }
-    }
-
-    const post = await prisma.blogPost.update({
-      where: { id },
-      data: updateData,
-    })
-
-    return res.status(200).json({
-      ok: true,
-      post,
-    })
-  } catch (error) {
-    console.error('Error updating blog post:', error)
-    if (error.code === 'P2002') {
-      return res.status(400).json({
-        ok: false,
-        error: 'A post with this slug already exists',
-      })
-    }
-    return res.status(500).json({
-      ok: false,
-      error: 'Failed to update blog post',
-    })
-  }
-})
-
-// POST /api/admin/blog/posts/:id (for duplication)
-app.post('/api/admin/blog/posts/:id', requireAuthEnhanced, async (req, res) => {
-  try {
-    const { id } = req.params
-
-    const existing = await prisma.blogPost.findUnique({
-      where: { id },
-    })
-
-    if (!existing) {
-      return res.status(404).json({
-        ok: false,
-        error: 'Post not found',
-      })
-    }
-
-    const newSlug = await ensureUniqueSlug(prisma, existing.slug, null, 'blog')
-    const duplicated = await prisma.blogPost.create({
-      data: {
-        title: `${existing.title} (Copy)`,
-        slug: newSlug,
-        excerpt: existing.excerpt,
-        contentMarkdown: existing.contentMarkdown,
-        tags: existing.tags,
-        status: 'draft',
-        publishedAt: null,
-      },
-    })
-
-    return res.status(201).json({
-      ok: true,
-      post: duplicated,
-    })
-  } catch (error) {
-    console.error('Error duplicating blog post:', error)
-    if (error.code === 'P2002') {
-      return res.status(400).json({
-        ok: false,
-        error: 'A post with this slug already exists',
-      })
-    }
-    return res.status(500).json({
-      ok: false,
-      error: 'Failed to duplicate blog post',
-    })
-  }
-})
-
-// ============================================================================
-// ADMIN WRITINGS ENDPOINTS
-// ============================================================================
 
 // GET /api/admin/writings
 app.get('/api/admin/writings', requireAuthEnhanced, async (req, res) => {
@@ -1162,7 +660,7 @@ app.post('/api/admin/writings', requireAuthEnhanced, async (req, res) => {
       ? slug.trim()
       : generateSlug(title)
     
-    finalSlug = await ensureUniqueSlug(prisma, finalSlug, null, 'writing')
+    finalSlug = await ensureUniqueSlug(prisma, finalSlug, null)
 
     const tagsArray = Array.isArray(tags)
       ? tags.filter(t => typeof t === 'string' && t.trim()).map(t => t.trim())
@@ -1255,7 +753,7 @@ app.put('/api/admin/writings/:id', requireAuthEnhanced, async (req, res) => {
         ? generateSlug(title)
         : existing.slug
     
-    finalSlug = await ensureUniqueSlug(prisma, finalSlug, id, 'writing')
+    finalSlug = await ensureUniqueSlug(prisma, finalSlug, id)
 
     const tagsArray = tags !== undefined
       ? (Array.isArray(tags)
@@ -1323,7 +821,7 @@ app.post('/api/admin/writings/:id', requireAuthEnhanced, async (req, res) => {
       })
     }
 
-    const newSlug = await ensureUniqueSlug(prisma, original.slug, null, 'writing')
+    const newSlug = await ensureUniqueSlug(prisma, original.slug, null)
     const duplicated = await prisma.writing.create({
       data: {
         title: `${original.title} (Copy)`,
@@ -1383,38 +881,6 @@ app.delete('/api/admin/writings/:id', requireAuthEnhanced, async (req, res) => {
     return res.status(500).json({
       ok: false,
       error: 'Failed to delete writing',
-    })
-  }
-})
-
-// DELETE /api/admin/blog/posts/:id
-app.delete('/api/admin/blog/posts/:id', requireAuthEnhanced, async (req, res) => {
-  try {
-    const { id } = req.params
-
-    const existing = await prisma.blogPost.findUnique({
-      where: { id },
-    })
-
-    if (!existing) {
-      return res.status(404).json({
-        ok: false,
-        error: 'Post not found',
-      })
-    }
-
-    await prisma.blogPost.delete({
-      where: { id },
-    })
-
-    return res.status(200).json({
-      ok: true,
-    })
-  } catch (error) {
-    console.error('Error deleting blog post:', error)
-    return res.status(500).json({
-      ok: false,
-      error: 'Failed to delete blog post',
     })
   }
 })
@@ -1555,7 +1021,7 @@ app.listen(PORT, async () => {
   console.log(`🚀 Local API server running on http://localhost:${PORT}`)
   console.log(`📧 Contact form endpoint: http://localhost:${PORT}/api/contact`)
   console.log(`🔐 Auth endpoints: http://localhost:${PORT}/api/auth/*`)
-  console.log(`📝 Blog endpoints: http://localhost:${PORT}/api/blog/*`)
+  console.log(`📝 Writing endpoints: http://localhost:${PORT}/api/writings*`)
   console.log(`⚙️  Admin endpoints: http://localhost:${PORT}/api/admin/*`)
   console.log('✅ Server is ready to accept requests\n')
   

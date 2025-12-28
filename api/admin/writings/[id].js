@@ -12,7 +12,7 @@ function generateSlug(title) {
     .replace(/^-+|-+$/g, '') // Remove leading/trailing hyphens
 }
 
-async function ensureUniqueSlug(prisma, slug, excludeId = null, modelType = 'blog') {
+async function ensureUniqueSlug(prisma, slug, excludeId = null) {
   if (!slug || typeof slug !== 'string' || !slug.trim()) {
     throw new Error('Slug must be a non-empty string')
   }
@@ -23,34 +23,19 @@ async function ensureUniqueSlug(prisma, slug, excludeId = null, modelType = 'blo
 
   while (counter <= maxAttempts) {
     try {
-      // Check both models to ensure slug is unique across all content
-      const [blogPost, writing] = await Promise.all([
-        prisma.blogPost.findUnique({
-          where: { slug: finalSlug },
-          select: { id: true },
-        }).catch(err => {
-          if (err.code === 'P2021' || err.message?.includes('does not exist')) {
-            return null
-          }
-          throw err
-        }),
-        prisma.writing.findUnique({
-          where: { slug: finalSlug },
-          select: { id: true },
-        }).catch(err => {
-          if (err.code === 'P2021' || err.message?.includes('does not exist')) {
-            return null
-          }
-          throw err
-        }),
-      ])
+      const writing = await prisma.writing.findUnique({
+        where: { slug: finalSlug },
+        select: { id: true },
+      }).catch(err => {
+        if (err.code === 'P2021' || err.message?.includes('does not exist')) {
+          return null
+        }
+        throw err
+      })
 
-      const isExcluded = excludeId && (
-        (modelType === 'blog' && blogPost?.id === excludeId) ||
-        (modelType === 'writing' && writing?.id === excludeId)
-      )
+      const isExcluded = excludeId && writing?.id === excludeId
 
-      if ((!blogPost && !writing) || isExcluded) {
+      if (!writing || isExcluded) {
         return finalSlug
       }
 
@@ -154,7 +139,7 @@ export default async function handler(req, res) {
           ? generateSlug(title)
           : existing.slug
       
-      finalSlug = await ensureUniqueSlug(prisma, finalSlug, id, 'writing')
+      finalSlug = await ensureUniqueSlug(prisma, finalSlug, id)
 
       const tagsArray = tags !== undefined
         ? (Array.isArray(tags)
@@ -194,7 +179,7 @@ export default async function handler(req, res) {
         return res.status(404).json({ ok: false, error: 'Writing not found' })
       }
 
-      const newSlug = await ensureUniqueSlug(prisma, original.slug, null, 'writing')
+      const newSlug = await ensureUniqueSlug(prisma, original.slug, null)
       const duplicated = await prisma.writing.create({
         data: {
           title: `${original.title} (Copy)`,
