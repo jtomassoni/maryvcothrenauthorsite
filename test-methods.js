@@ -13,7 +13,7 @@ dotenv.config({ path: resolve(dirname(fileURLToPath(import.meta.url)), '.env.loc
 function createMockReq(method, id) {
   return {
     method: method,
-    url: `/api/admin/blog/posts/${id}`,
+    url: `/api/admin/writings/${id}`,
     headers: {
       'authorization': 'Bearer fake-token-for-testing'
     },
@@ -50,7 +50,7 @@ function createMockRes() {
 
 async function testMethod(method, testId = 'test-id') {
   try {
-    const handler = (await import('./api/admin/blog/posts/[id].js')).default
+    const handler = (await import('./api/admin/writings/[id].js')).default
     const req = createMockReq(method, testId)
     const res = createMockRes()
     
@@ -79,7 +79,7 @@ async function testMethod(method, testId = 'test-id') {
 }
 
 async function runTests() {
-  console.log('🔍 Testing method handling in blog posts handler...\n')
+  console.log('🔍 Testing method handling in writings handler...\n')
   
   const methods = ['GET', 'PUT', 'POST', 'DELETE']
   const results = {}

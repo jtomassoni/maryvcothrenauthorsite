@@ -19,16 +19,16 @@ Test your Vercel serverless functions locally before deploying.
 3. **Test endpoints:**
    ```bash
    # Test GET (replace TOKEN and ID)
-   curl -X GET http://localhost:3002/api/admin/blog/posts/cmjqaok0a0000i6fu9fktzsbq \
+   curl -X GET http://localhost:3002/api/admin/writings/cmjqaok0a0000i6fu9fktzsbq \
      -H "Authorization: Bearer YOUR_TOKEN" \
      -H "Content-Type: application/json"
 
    # Test DELETE
-   curl -X DELETE http://localhost:3002/api/admin/blog/posts/cmjqaok0a0000i6fu9fktzsbq \
+   curl -X DELETE http://localhost:3002/api/admin/writings/cmjqaok0a0000i6fu9fktzsbq \
      -H "Authorization: Bearer YOUR_TOKEN"
 
    # Test PUT (toggle status)
-   curl -X PUT http://localhost:3002/api/admin/blog/posts/cmjqaok0a0000i6fu9fktzsbq \
+   curl -X PUT http://localhost:3002/api/admin/writings/cmjqaok0a0000i6fu9fktzsbq \
      -H "Authorization: Bearer YOUR_TOKEN" \
      -H "Content-Type: application/json" \
      -d '{"status":"published"}'

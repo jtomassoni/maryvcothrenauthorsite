@@ -5,7 +5,7 @@
         <div class="bg-white dark:bg-slate-900 rounded-lg shadow-lg p-8">
           <h1 class="text-3xl font-bold text-gray-900 dark:text-slate-100 mb-2">Markdown Formatting Guide</h1>
           <p class="text-gray-600 dark:text-slate-400 mb-8">
-            A quick reference guide for writing your nursing stories, blog posts, and reflections
+            A quick reference guide for writing your nursing stories, writings, and reflections
           </p>
 
           <div class="space-y-8 text-sm text-gray-700 dark:text-slate-300">

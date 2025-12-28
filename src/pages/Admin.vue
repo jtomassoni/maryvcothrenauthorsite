@@ -20,7 +20,7 @@
                 Welcome, {{ username || 'Admin' }}
               </h2>
               <p class="text-gray-600 dark:text-gray-400 mb-6">
-                This is your content management dashboard. Blog post management and site content editing tools will be available here.
+                This is your content management dashboard for writings and site content.
               </p>
             </div>
 
@@ -28,10 +28,10 @@
             <div class="grid md:grid-cols-2 gap-6">
               <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-6">
                 <h3 class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">
-                  Blog Posts
+                  Writings
                 </h3>
                 <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
-                  Manage your blog posts and articles
+                  Manage your writings and drafts
                 </p>
                 <p class="text-sm text-gray-500 dark:text-gray-500 italic">
                   Coming soon...

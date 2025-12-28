@@ -6,7 +6,7 @@
           Admin Login
         </h2>
         <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-          Sign in to manage blog posts
+          Sign in to manage writings
         </p>
       </div>
       

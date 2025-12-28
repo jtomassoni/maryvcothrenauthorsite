@@ -5,7 +5,7 @@
  * 
  * Usage:
  *   node test-api-local.js
- *   node test-api-local.js --endpoint /api/admin/blog/posts/[id] --method GET --id cmjqaok0a0000i6fu9fktzsbq
+ *   node test-api-local.js --endpoint /api/admin/writings/[id] --method GET --id cmjqaok0a0000i6fu9fktzsbq
  */
 
 import dotenv from 'dotenv'
@@ -109,10 +109,10 @@ async function runTests() {
   console.log(`   Has Auth Token: ${!!testToken}`)
   console.log('')
   
-  // Test GET /api/admin/blog/posts/[id]
-  console.log('🔍 Testing GET /api/admin/blog/posts/[id]...')
+  // Test GET /api/admin/writings/[id]
+  console.log('🔍 Testing GET /api/admin/writings/[id]...')
   const getResult = await testHandler(
-    './api/admin/blog/posts/[id].js',
+    './api/admin/writings/[id].js',
     'GET',
     {
       query: { id: testId },
@@ -129,10 +129,10 @@ async function runTests() {
   }
   console.log('')
   
-  // Test DELETE /api/admin/blog/posts/[id]
-  console.log('🔍 Testing DELETE /api/admin/blog/posts/[id]...')
+  // Test DELETE /api/admin/writings/[id]
+  console.log('🔍 Testing DELETE /api/admin/writings/[id]...')
   const deleteResult = await testHandler(
-    './api/admin/blog/posts/[id].js',
+    './api/admin/writings/[id].js',
     'DELETE',
     {
       query: { id: testId },
@@ -149,10 +149,10 @@ async function runTests() {
   }
   console.log('')
   
-  // Test PUT /api/admin/blog/posts/[id]
-  console.log('🔍 Testing PUT /api/admin/blog/posts/[id]...')
+  // Test PUT /api/admin/writings/[id]
+  console.log('🔍 Testing PUT /api/admin/writings/[id]...')
   const putResult = await testHandler(
-    './api/admin/blog/posts/[id].js',
+    './api/admin/writings/[id].js',
     'PUT',
     {
       query: { id: testId },

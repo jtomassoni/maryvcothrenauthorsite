@@ -5,7 +5,7 @@
  * 
  * Usage:
  *   node test-serverless-local.js
- *   Then test with: curl http://localhost:3002/api/admin/blog/posts/cmjqaok0a0000i6fu9fktzsbq
+ *   Then test with: curl http://localhost:3002/api/admin/writings/cmjqaok0a0000i6fu9fktzsbq
  */
 
 import express from 'express'
@@ -96,24 +96,6 @@ async function loadServerlessFunction(path) {
   }
 }
 
-// Route handler for dynamic [id] routes
-app.all('/api/admin/blog/posts/:id', async (req, res) => {
-  try {
-    const { req: vercelReq, res: vercelRes } = convertToVercelFormat(req, res)
-    vercelReq.query.id = req.params.id
-    
-    const handler = await loadServerlessFunction('./api/admin/blog/posts/[id].js')
-    if (handler) {
-      await handler(vercelReq, vercelRes)
-    } else {
-      res.status(500).json({ ok: false, error: 'Handler not found' })
-    }
-  } catch (error) {
-    console.error('Error in /api/admin/blog/posts/:id:', error)
-    res.status(500).json({ ok: false, error: error.message })
-  }
-})
-
 app.all('/api/admin/writings/:id', async (req, res) => {
   try {
     const { req: vercelReq, res: vercelRes } = convertToVercelFormat(req, res)
@@ -132,23 +114,6 @@ app.all('/api/admin/writings/:id', async (req, res) => {
 })
 
 // Route handler for dynamic [slug] routes
-app.all('/api/blog/posts/:slug', async (req, res) => {
-  try {
-    const { req: vercelReq, res: vercelRes } = convertToVercelFormat(req, res)
-    vercelReq.query.slug = req.params.slug
-    
-    const handler = await loadServerlessFunction('./api/blog/posts/[slug].js')
-    if (handler) {
-      await handler(vercelReq, vercelRes)
-    } else {
-      res.status(500).json({ ok: false, error: 'Handler not found' })
-    }
-  } catch (error) {
-    console.error('Error in /api/blog/posts/:slug:', error)
-    res.status(500).json({ ok: false, error: error.message })
-  }
-})
-
 app.all('/api/writings/:slug', async (req, res) => {
   try {
     const { req: vercelReq, res: vercelRes } = convertToVercelFormat(req, res)
@@ -168,9 +133,7 @@ app.all('/api/writings/:slug', async (req, res) => {
 
 // Route handler for static routes
 const staticRoutes = [
-  { path: '/api/admin/blog/posts', file: './api/admin/blog/posts.js' },
   { path: '/api/admin/writings', file: './api/admin/writings.js' },
-  { path: '/api/blog/posts', file: './api/blog/posts.js' },
   { path: '/api/writings', file: './api/writings.js' },
   { path: '/api/latest', file: './api/latest.js' },
   { path: '/api/auth/login', file: './api/auth/login.js' },
@@ -196,12 +159,12 @@ app.listen(PORT, () => {
   console.log('📝 This runs your Vercel serverless functions locally')
   console.log('')
   console.log('Test endpoints:')
-  console.log(`  GET  http://localhost:${PORT}/api/admin/blog/posts/:id`)
-  console.log(`  PUT  http://localhost:${PORT}/api/admin/blog/posts/:id`)
-  console.log(`  DELETE http://localhost:${PORT}/api/admin/blog/posts/:id`)
+  console.log(`  GET  http://localhost:${PORT}/api/admin/writings/:id`)
+  console.log(`  PUT  http://localhost:${PORT}/api/admin/writings/:id`)
+  console.log(`  DELETE http://localhost:${PORT}/api/admin/writings/:id`)
   console.log('')
   console.log('Example:')
-  console.log(`  curl -X GET http://localhost:${PORT}/api/admin/blog/posts/cmjqaok0a0000i6fu9fktzsbq \\`)
+  console.log(`  curl -X GET http://localhost:${PORT}/api/admin/writings/cmjqaok0a0000i6fu9fktzsbq \\`)
   console.log(`    -H "Authorization: Bearer YOUR_TOKEN"`)
   console.log('')
 })

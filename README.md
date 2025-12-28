@@ -1,14 +1,14 @@
-# Mary's Blog - Vue 3 + TypeScript Author Website
+# Mary V. Cothren - Vue 3 + TypeScript Author Website
 
-A simple, fast, and accessible website for Mary V. Cothren with blog functionality, email collection, and admin backend. Built with Vue 3, TypeScript, Tailwind CSS, and deployed on Vercel.
+A simple, fast, and accessible website for Mary V. Cothren focused on sharing writings, email collection, and an admin backend. Built with Vue 3, TypeScript, Tailwind CSS, and deployed on Vercel.
 
 ## Features
 
 - **Fast & Lightweight**: Optimized build with small bundle sizes
 - **Accessible**: WCAG AA compliant with proper ARIA labels and keyboard navigation
 - **Responsive**: Mobile-first design that works on all devices
-- **Blog System**: Full-featured blog with Markdown support, search, filtering, and pagination
-- **Admin Backend**: Simple single-user admin interface for managing blog posts
+- **Writings Library**: Markdown support, search, filtering, and pagination
+- **Admin Backend**: Simple single-user admin interface for managing writings
 - **Email Collection**: Serverless contact form with validation and rate limiting
 - **SEO Optimized**: Proper meta tags and Open Graph support
 
@@ -257,15 +257,15 @@ node scripts/vercel-migrate.js
 1. Start the development server: `npm run dev`
 2. Navigate to `http://localhost:3000/login`
 3. Log in with your `AUTH_USERNAME` and `AUTH_PASSWORD`
-4. Click "New Post" to create your first blog post
-5. Set status to "Published" to make it visible on the public blog
+4. Click "New Writing" to create your first writing
+5. Set status to "Published" to make it visible on the public site
 
 ## Admin Access
 
 - **Login URL**: `/login`
-- **Admin Dashboard**: `/admin/blog`
-- **Create Post**: `/admin/blog/new`
-- **Edit Post**: `/admin/blog/[id]/edit`
+- **Admin Dashboard**: `/admin`
+- **Create Writing**: open modal via "New Writing"
+- **Edit Writing**: open modal via "Edit" in the admin table
 
 All admin routes are protected and require authentication.
 

@@ -60,25 +60,19 @@ try {
   const prisma = new PrismaClient()
   
   try {
-    // Try to query both tables (this will fail if tables don't exist)
-    const [blogCheck, writingCheck] = await Promise.allSettled([
-      prisma.blogPost.findFirst(),
+    // Try to query table (this will fail if table doesn't exist)
+    const [writingCheck] = await Promise.allSettled([
       prisma.writing.findFirst()
     ])
     
-    const blogExists = blogCheck.status === 'fulfilled' || 
-      (blogCheck.status === 'rejected' && blogCheck.reason?.code !== 'P2021')
     const writingExists = writingCheck.status === 'fulfilled' || 
       (writingCheck.status === 'rejected' && writingCheck.reason?.code !== 'P2021')
     
-    if (!blogExists) {
-      throw new Error('blog_posts table does not exist (P2021 error)')
-    }
     if (!writingExists) {
       throw new Error('writings table does not exist (P2021 error)')
     }
     
-    console.log('✅ Verified: Both blog_posts and writings tables exist')
+    console.log('✅ Verified: writings table exists')
     await prisma.$disconnect()
   } catch (verifyError) {
     await prisma.$disconnect()
