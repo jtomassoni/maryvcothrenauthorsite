@@ -27,8 +27,16 @@ export default async function handler(req, res) {
       })
     }
 
-    // Get JWT secret (use AUTH_SECRET if JWT_SECRET not set, for consistency)
-    const JWT_SECRET = process.env.JWT_SECRET || process.env.AUTH_SECRET || 'your-secret-key-change-in-production'
+    // Use AUTH_SECRET for JWT signing (same as main server uses for sessions)
+    const JWT_SECRET = process.env.AUTH_SECRET
+    
+    if (!JWT_SECRET) {
+      console.error('Login: AUTH_SECRET not properly configured')
+      return res.status(500).json({ 
+        ok: false, 
+        error: 'Server configuration error. Please contact administrator.' 
+      })
+    }
 
     // Generate JWT token
     const token = jwt.sign(
@@ -36,6 +44,8 @@ export default async function handler(req, res) {
       JWT_SECRET,
       { expiresIn: '7d' }
     )
+    
+    console.log('Login: Token generated successfully for user:', authUsername)
 
     return res.status(200).json({ 
       ok: true, 

@@ -49,12 +49,23 @@ async function checkAuth(): Promise<boolean> {
       },
     })
 
+    // Check if response is JSON before parsing
+    const contentType = response.headers.get('content-type')
+    if (!contentType || !contentType.includes('application/json')) {
+      const text = await response.text()
+      console.error('Auth check: Non-JSON response:', text.substring(0, 100))
+      // If we get HTML or other non-JSON, the endpoint might be broken
+      // Don't log out, but return false so user can try logging in again
+      return false
+    }
+
     const data = await response.json()
 
     if (data.ok && data.authenticated) {
       return true
     } else {
       // Token is invalid, clear it
+      console.log('Auth check: Token invalid, logging out')
       logout()
       return false
     }

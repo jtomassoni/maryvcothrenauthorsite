@@ -64,8 +64,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuth } from '@/composables/useAuth'
 
 const router = useRouter()
+const { login } = useAuth()
 
 const username = ref('')
 const password = ref('')
@@ -77,22 +79,10 @@ const handleLogin = async () => {
   loading.value = true
 
   try {
-    const response = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify({
-        username: username.value,
-        password: password.value,
-      }),
-    })
+    const result = await login(username.value, password.value)
 
-    const data = await response.json()
-
-    if (!response.ok || !data.ok) {
-      error.value = data.error || 'Invalid username or password'
+    if (!result.ok) {
+      error.value = result.error || 'Invalid username or password'
       loading.value = false
       return
     }
