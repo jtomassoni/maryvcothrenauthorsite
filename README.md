@@ -1,12 +1,14 @@
-# Mary's Blog - Vue 3 + TypeScript Email Collection Site
+# Mary's Blog - Vue 3 + TypeScript Author Website
 
-A simple, fast, and accessible website focused on collecting emails for Mary's author mailing list. Built with Vue 3, TypeScript, Tailwind CSS, and deployed on Vercel.
+A simple, fast, and accessible website for Mary V. Cothren with blog functionality, email collection, and admin backend. Built with Vue 3, TypeScript, Tailwind CSS, and deployed on Vercel.
 
 ## Features
 
 - **Fast & Lightweight**: Optimized build with small bundle sizes
 - **Accessible**: WCAG AA compliant with proper ARIA labels and keyboard navigation
 - **Responsive**: Mobile-first design that works on all devices
+- **Blog System**: Full-featured blog with Markdown support, search, filtering, and pagination
+- **Admin Backend**: Simple single-user admin interface for managing blog posts
 - **Email Collection**: Serverless contact form with validation and rate limiting
 - **SEO Optimized**: Proper meta tags and Open Graph support
 
@@ -15,6 +17,10 @@ A simple, fast, and accessible website focused on collecting emails for Mary's a
 - **Frontend**: Vue 3 + TypeScript + Vite
 - **Styling**: Tailwind CSS with typography plugin
 - **Routing**: Vue Router with 404 handling
+- **Backend**: Express.js API server
+- **Database**: Neon Postgres with Prisma ORM
+- **Authentication**: HttpOnly cookie-based sessions
+- **Markdown**: Marked + DOMPurify for safe rendering
 - **Email**: Nodemailer with Gmail SMTP
 - **Deployment**: Vercel with serverless functions
 - **Code Quality**: ESLint + Prettier
@@ -66,20 +72,42 @@ public/
    cp .env.example .env.local
    ```
    
-   Edit `.env.local` with your Gmail credentials:
+   Edit `.env.local` with your configuration (see Environment Variables section below).
+
+4. Set up the database:
+   ```bash
+   # Generate Prisma client
+   npm run db:generate
+   
+   # Run migrations (creates tables)
+   npm run db:migrate
    ```
-   GMAIL_TO=your-email@domain.com
-   GMAIL_USER=your-gmail@gmail.com
-   GMAIL_PASS=your-app-password
+   
+   Or if you prefer to push schema without migrations:
+   ```bash
+   npm run db:push
    ```
 
 ### Development
 
+Run both the frontend and API server:
+
 ```bash
-npm run dev
+npm run dev:full
 ```
 
-Opens the development server at `http://localhost:3000`
+This starts:
+- Frontend dev server at `http://localhost:3000`
+- API server at `http://localhost:3001`
+
+Or run them separately:
+```bash
+# Terminal 1: Frontend
+npm run dev
+
+# Terminal 2: API server
+npm run dev:api
+```
 
 ### Building
 
@@ -97,14 +125,140 @@ npm run preview
 
 Serves the production build locally for testing.
 
+## Environment Variables
+
+Create a `.env.local` file in the root directory with the following variables:
+
+### Required
+
+- `DATABASE_URL`: PostgreSQL connection string
+  - **Local Development**: `postgresql://localhost:5432/your_database_name`
+  - **Production (Neon)**: `postgresql://user:password@hostname/database?sslmode=require`
+  - Get Neon connection string from your [Neon dashboard](https://neon.tech)
+
+- `AUTH_USERNAME`: Username for admin login
+- `AUTH_PASSWORD`: Password for admin login
+- `AUTH_SECRET`: Secret key for signing session cookies (required in production)
+  - Generate with: `openssl rand -base64 32`
+  - In development, a temporary fallback will be used if not set
+
+### Optional
+
+- `AUTH_COOKIE_NAME`: Cookie name for auth session (default: `mvc_auth`)
+- `AUTH_SESSION_DAYS`: Session duration in days (default: `7`)
+
+### Email Configuration (for contact form)
+
+- `RESEND_API_KEY`: Resend API key for sending emails (required)
+  - Get your API key from [Resend Dashboard](https://resend.com/api-keys)
+  - Sign up at [resend.com](https://resend.com) if you don't have an account
+  - The key starts with `re_`
+
+- `RESEND_FROM_EMAIL`: Email address to send from (optional)
+  - Default: `onboarding@resend.dev` (works for development/testing)
+  - For production: Verify your domain at [resend.com/domains](https://resend.com/domains) and use your domain email (e.g., `noreply@maryvcothren.com`)
+
+- `RESEND_FROM_NAME`: Display name for the sender (optional)
+  - Default: `Mary's Website`
+
+## Database Setup
+
+### Local Development (PostgreSQL)
+
+For local development, use a local PostgreSQL instance:
+
+1. **Install PostgreSQL** (if not already installed):
+   ```bash
+   # macOS with Homebrew
+   brew install postgresql@14
+   brew services start postgresql@14
+   
+   # Or use Postgres.app for macOS
+   ```
+
+2. **Create a local database**:
+   ```bash
+   createdb maryvcothren_dev
+   # Or using psql:
+   # psql postgres
+   # CREATE DATABASE maryvcothren_dev;
+   ```
+
+3. **Set DATABASE_URL in `.env.local`**:
+   ```bash
+   DATABASE_URL="postgresql://localhost:5432/maryvcothren_dev"
+   # Or with username:
+   # DATABASE_URL="postgresql://your_username@localhost:5432/maryvcothren_dev"
+   ```
+
+4. **Run migrations**:
+   ```bash
+   # Generate Prisma client
+   npm run db:generate
+   
+   # Push schema to database (creates tables)
+   npm run db:push
+   ```
+
+### Production (Neon Postgres)
+
+For production deployment, use Neon Postgres:
+
+1. Sign up for a free account at [Neon](https://neon.tech)
+2. Create a new project
+3. Copy the connection string from the dashboard
+4. Set it as `DATABASE_URL` in your production environment variables (Vercel, etc.)
+
+**Note**: The app automatically detects whether you're using local Postgres or Neon based on the `DATABASE_URL`. Local URLs (localhost, 127.0.0.1) use local Postgres, while Neon URLs use the cloud database.
+
+### Creating Your First Post
+
+1. Start the development server: `npm run dev`
+2. Navigate to `http://localhost:3000/login`
+3. Log in with your `AUTH_USERNAME` and `AUTH_PASSWORD`
+4. Click "New Post" to create your first blog post
+5. Set status to "Published" to make it visible on the public blog
+
+## Admin Access
+
+- **Login URL**: `/login`
+- **Admin Dashboard**: `/admin/blog`
+- **Create Post**: `/admin/blog/new`
+- **Edit Post**: `/admin/blog/[id]/edit`
+
+All admin routes are protected and require authentication.
+
 ## Email Setup
 
-The contact form uses Gmail SMTP with App Passwords for security:
+The contact form uses [Resend](https://resend.com) for sending emails:
 
-1. Enable 2-factor authentication on your Google account
-2. Go to [Google App Passwords](https://myaccount.google.com/apppasswords)
-3. Generate an app password for "Mail"
-4. Use this password in `GMAIL_PASS` (not your regular Gmail password)
+### Quick Setup (Development)
+
+1. Sign up for a free account at [resend.com](https://resend.com)
+2. Go to [API Keys](https://resend.com/api-keys) in your dashboard
+3. Create a new API key (name it something like "Mary's Website")
+4. Copy the API key (it starts with `re_`)
+5. Add it to your `.env.local` file:
+   ```bash
+   RESEND_API_KEY=re_your_key_here
+   ```
+
+That's it! The code will automatically use `onboarding@resend.dev` as the sender email, which works for development without domain verification.
+
+### Production Setup (Optional)
+
+For production, you can verify your own domain for a more professional sender address:
+
+1. Go to [Resend Domains](https://resend.com/domains)
+2. Add and verify your domain (e.g., `maryvcothren.com`)
+3. Add DNS records as instructed by Resend
+4. Once verified, add to your `.env.local`:
+   ```bash
+   RESEND_FROM_EMAIL=noreply@maryvcothren.com
+   RESEND_FROM_NAME=Mary's Website
+   ```
+
+**Note**: Resend's free tier includes 3,000 emails/month, which is perfect for a personal author website.
 
 ## Deployment
 
@@ -112,10 +266,16 @@ The contact form uses Gmail SMTP with App Passwords for security:
 
 1. Connect your GitHub repository to Vercel
 2. Set environment variables in Vercel dashboard:
-   - `GMAIL_TO`
-   - `GMAIL_USER` 
-   - `GMAIL_PASS`
-3. Deploy automatically on push to main branch
+   - `DATABASE_URL` (Neon Postgres connection string)
+   - `AUTH_USERNAME`
+   - `AUTH_PASSWORD`
+   - `AUTH_SECRET` (required in production)
+   - `RESEND_API_KEY` (Resend API key for email sending)
+   - Optional: `AUTH_COOKIE_NAME`, `AUTH_SESSION_DAYS`
+3. Run database migrations after first deploy (or use `db:push` in build script)
+4. Deploy automatically on push to main branch
+
+**Note**: For Vercel serverless functions, you may need to adapt the Express server setup. Consider using Vercel's API routes format or keep the Express server as a separate service.
 
 ### Other Platforms
 

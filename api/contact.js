@@ -16,12 +16,26 @@ export default async function handler(req, res) {
       })
     }
 
-    // Hardcoded values for now
-    const resendApiKey = process.env.RESEND_API_KEY || 're_1234567890abcdef'
-    const recipientEmail = process.env.GMAIL_TO || 'maryvcothren@gmail.com'
+    // Resend API configuration
+    const resendApiKey = process.env.RESEND_API_KEY
+    if (!resendApiKey) {
+      console.error('❌ RESEND_API_KEY not set in environment variables')
+      return res.status(500).json({ 
+        ok: false, 
+        error: 'Email service not configured. Please contact the administrator.' 
+      })
+    }
+    const recipientEmail = 'maryvcothren@gmail.com'
+    
+    // Use verified domain email if set, otherwise use Resend's test domain
+    // For development: use onboarding@resend.dev (no verification needed)
+    // For production: verify your domain at https://resend.com/domains and use your domain email
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
+    const fromName = process.env.RESEND_FROM_NAME || 'Mary V Cothren'
 
     console.log('Attempting to send email with Resend API...')
     console.log('API Key (first 10 chars):', resendApiKey.substring(0, 10))
+    console.log('From:', fromEmail)
     console.log('Recipient:', recipientEmail)
     
     // Use direct fetch to Resend API
@@ -32,7 +46,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Mary\'s Website <noreply@maryvcothren.com>',
+        from: `${fromName} <${fromEmail}>`,
         to: [recipientEmail],
         subject: `New mailing list signup from ${name.trim()}`,
         html: `
