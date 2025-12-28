@@ -56,23 +56,54 @@ const checkingAuth = ref(true)
 
 const checkAuth = async () => {
   try {
+    // Get token from localStorage
+    const token = localStorage.getItem('auth_token')
+    
+    if (!token) {
+      // No token, redirect to login
+      authenticated.value = false
+      checkingAuth.value = false
+      router.push('/login')
+      return
+    }
+    
     const response = await fetch('/api/auth/check', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
       credentials: 'include',
     })
+    
+    // Check if response is JSON
+    const contentType = response.headers.get('content-type')
+    if (!contentType || !contentType.includes('application/json')) {
+      // Non-JSON response, redirect to login
+      authenticated.value = false
+      checkingAuth.value = false
+      localStorage.removeItem('auth_token')
+      localStorage.removeItem('auth_username')
+      router.push('/login')
+      return
+    }
+    
     const data = await response.json()
     authenticated.value = data.ok && data.authenticated
     
     if (!authenticated.value) {
-      // Redirect to login immediately
+      // Clear token and redirect to login
+      localStorage.removeItem('auth_token')
+      localStorage.removeItem('auth_username')
       router.push('/login')
       return
     }
   } catch (error) {
     console.error('Auth check error:', error)
     authenticated.value = false
-    // Redirect to login immediately on error
+    // Clear token and redirect to login on error
+    localStorage.removeItem('auth_token')
+    localStorage.removeItem('auth_username')
     router.push('/login')
-    return
   } finally {
     checkingAuth.value = false
   }

@@ -56,21 +56,47 @@ router.beforeEach(async (to, from, next) => {
   // Check if route is an admin route
   if (to.path.startsWith('/admin')) {
     try {
+      // Get token from localStorage
+      const token = localStorage.getItem('auth_token')
+      
+      if (!token) {
+        // No token, redirect to login
+        next('/login')
+        return
+      }
+      
       const response = await fetch('/api/auth/check', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
         credentials: 'include',
       })
+      
+      // Check if response is JSON
+      const contentType = response.headers.get('content-type')
+      if (!contentType || !contentType.includes('application/json')) {
+        // Non-JSON response, redirect to login
+        next('/login')
+        return
+      }
+      
       const data = await response.json()
       
       if (data.ok && data.authenticated) {
         // User is authenticated, allow access
         next()
       } else {
-        // User is not authenticated, redirect to login
+        // User is not authenticated, clear token and redirect to login
+        localStorage.removeItem('auth_token')
+        localStorage.removeItem('auth_username')
         next('/login')
       }
     } catch (error) {
       console.error('Auth check error in router guard:', error)
-      // On error, redirect to login
+      // On error, clear token and redirect to login
+      localStorage.removeItem('auth_token')
+      localStorage.removeItem('auth_username')
       next('/login')
     }
   } else {
