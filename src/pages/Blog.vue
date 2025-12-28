@@ -5,10 +5,10 @@
         <!-- Header -->
         <div class="text-center mb-12">
           <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            Writings
+            Blog
           </h1>
           <p class="text-lg text-gray-600 dark:text-gray-400">
-            A collection of stories that explore the depths of human experience and the beauty of everyday moments.
+            Thoughts, stories, and updates
           </p>
         </div>
 
@@ -18,7 +18,7 @@
             <input
               v-model="searchQuery"
               type="text"
-              placeholder="Search writings..."
+              placeholder="Search posts..."
               class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
               @input="debouncedSearch"
             />
@@ -27,7 +27,7 @@
             <select
               v-model="tagFilter"
               class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-              @change="fetchWritings"
+              @change="fetchPosts"
             >
               <option value="">All Tags</option>
               <option v-for="tag in availableTags" :key="tag" :value="tag">
@@ -37,7 +37,7 @@
             <select
               v-model="sortBy"
               class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-              @change="fetchWritings"
+              @change="fetchPosts"
             >
               <option value="newest">Newest First</option>
               <option value="oldest">Oldest First</option>
@@ -48,7 +48,7 @@
 
         <!-- Loading -->
         <div v-if="loading" class="text-center py-12">
-          <p class="text-gray-600 dark:text-gray-400">Loading writings...</p>
+          <p class="text-gray-600 dark:text-gray-400">Loading posts...</p>
         </div>
 
         <!-- Error -->
@@ -56,17 +56,17 @@
           <p class="text-sm text-red-800 dark:text-red-200">{{ error }}</p>
         </div>
 
-        <!-- Writings Grid -->
-        <div v-else-if="writings.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        <!-- Posts Grid -->
+        <div v-else-if="posts.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           <article
-            v-for="writing in writings"
-            :key="writing.id"
+            v-for="post in posts"
+            :key="post.id"
             class="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden"
           >
             <div class="p-6">
               <div class="mb-2">
                 <span
-                  v-for="tag in writing.tags.slice(0, 3)"
+                  v-for="tag in post.tags.slice(0, 3)"
                   :key="tag"
                   class="inline-block px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded mr-2"
                 >
@@ -75,20 +75,20 @@
               </div>
               <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
                 <router-link
-                  :to="`/writings/${writing.slug}`"
+                  :to="`/blog/${post.slug}`"
                   class="hover:text-primary-800 dark:hover:text-blue-400 transition-colors"
                 >
-                  {{ writing.title }}
+                  {{ post.title }}
                 </router-link>
               </h2>
               <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">
-                {{ formatDate(writing.publishedAt) }}
+                {{ formatDate(post.publishedAt) }}
               </p>
               <p class="text-gray-600 dark:text-gray-400 line-clamp-3">
-                {{ writing.excerpt }}
+                {{ post.excerpt }}
               </p>
               <router-link
-                :to="`/writings/${writing.slug}`"
+                :to="`/blog/${post.slug}`"
                 class="inline-block mt-4 text-primary-800 dark:text-blue-400 hover:underline"
               >
                 Read more →
@@ -115,7 +115,7 @@
               />
             </svg>
             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
-              {{ searchQuery || tagFilter ? 'No writings match your filters' : 'No writings yet' }}
+              {{ searchQuery || tagFilter ? 'No posts match your filters' : 'No posts yet' }}
             </h3>
             <p class="text-gray-600 dark:text-gray-400">
               {{ searchQuery || tagFilter 
@@ -166,7 +166,7 @@ import Container from '@/components/Container.vue'
 const route = useRoute()
 const router = useRouter()
 
-const writings = ref<any[]>([])
+const posts = ref<any[]>([])
 const loading = ref(false)
 const error = ref('')
 const searchQuery = ref('')
@@ -176,16 +176,16 @@ const pagination = ref<any>(null)
 
 let searchTimeout: ReturnType<typeof setTimeout> | null = null
 
-// Extract available tags from writings
+// Extract available tags from posts
 const availableTags = computed(() => {
   const tags = new Set<string>()
-  writings.value.forEach(writing => {
-    writing.tags?.forEach((tag: string) => tags.add(tag))
+  posts.value.forEach(post => {
+    post.tags?.forEach((tag: string) => tags.add(tag))
   })
   return Array.from(tags).sort()
 })
 
-const fetchWritings = async () => {
+const fetchPosts = async () => {
   loading.value = true
   error.value = ''
 
@@ -197,7 +197,7 @@ const fetchWritings = async () => {
     if (pagination.value) params.append('page', pagination.value.page.toString())
     params.append('pageSize', '10')
 
-    const response = await fetch(`/api/writings?${params.toString()}`)
+    const response = await fetch(`/api/blog/posts?${params.toString()}`)
     
     // Check if response is ok before trying to parse JSON
     if (!response.ok) {
@@ -205,22 +205,22 @@ const fetchWritings = async () => {
       if (response.status === 500) {
         error.value = 'Unable to connect to the server. Please try again later.'
       } else {
-        error.value = 'Failed to fetch writings. Please try again.'
+        error.value = 'Failed to fetch posts. Please try again.'
       }
-      writings.value = []
+      posts.value = []
       return
     }
 
     const data = await response.json()
 
     if (!data.ok) {
-      error.value = data.error || 'Failed to fetch writings'
-      writings.value = []
+      error.value = data.error || 'Failed to fetch posts'
+      posts.value = []
       return
     }
 
-    // Successfully fetched - writings array might be empty, which is fine
-    writings.value = data.writings || []
+    // Successfully fetched - posts array might be empty, which is fine
+    posts.value = data.posts || []
     pagination.value = data.pagination
 
     // Update URL without reload
@@ -236,10 +236,10 @@ const fetchWritings = async () => {
 
     router.replace({ query: newQuery })
   } catch (err) {
-    console.error('Error fetching writings:', err)
+    console.error('Error fetching posts:', err)
     // Network errors or JSON parsing errors
     error.value = 'Unable to connect to the server. Please check your connection and try again.'
-    writings.value = []
+    posts.value = []
   } finally {
     loading.value = false
   }
@@ -249,21 +249,21 @@ const debouncedSearch = () => {
   if (searchTimeout) clearTimeout(searchTimeout)
   searchTimeout = setTimeout(() => {
     pagination.value = { ...pagination.value, page: 1 }
-    fetchWritings()
+    fetchPosts()
   }, 300)
 }
 
 const changePage = (page: number) => {
   if (!pagination.value) return
   pagination.value = { ...pagination.value, page }
-  fetchWritings()
+  fetchPosts()
 }
 
 const clearFilters = () => {
   searchQuery.value = ''
   tagFilter.value = ''
   pagination.value = { ...pagination.value, page: 1 }
-  fetchWritings()
+  fetchPosts()
 }
 
 const formatDate = (dateString: string) => {
@@ -288,6 +288,7 @@ onMounted(() => {
     totalPages: 1,
   }
   
-  fetchWritings()
+  fetchPosts()
 })
 </script>
+

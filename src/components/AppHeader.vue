@@ -130,6 +130,7 @@ const isDarkMode = ref(false)
 const navItems = [
   { name: 'Home', path: '/' },
   { name: 'About', path: '/about' },
+  { name: 'Blog', path: '/blog' },
   { name: 'Writings', path: '/writings' },
   { name: 'Contact', path: '/', hash: '#contact' },
 ]

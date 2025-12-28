@@ -1,0 +1,507 @@
+<template>
+  <AdminLayout title="Content Management" subtitle="Manage your blog posts and writings">
+    <!-- Toast Notification -->
+    <div
+      v-if="notification && notification.message"
+      :class="{
+        'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200': notification.type === 'success',
+        'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200': notification.type === 'error',
+      }"
+      class="fixed top-4 right-4 z-50 rounded-md border shadow-lg p-4 flex items-center justify-between min-w-[300px] max-w-md animate-slide-in"
+      role="alert"
+    >
+      <div class="flex items-center flex-1">
+        <svg
+          v-if="notification.type === 'success'"
+          class="h-5 w-5 text-green-400 mr-3 flex-shrink-0"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+        </svg>
+        <svg
+          v-else
+          class="h-5 w-5 text-red-400 mr-3 flex-shrink-0"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+        </svg>
+        <p class="text-sm font-medium">
+          {{ notification.message }}
+        </p>
+      </div>
+      <button
+        @click="clearNotification"
+        class="ml-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 flex-shrink-0"
+        aria-label="Dismiss notification"
+      >
+        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="space-y-6">
+      <!-- Actions -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Search content..."
+            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+            @input="debouncedSearch"
+          />
+          <select
+            v-model="typeFilter"
+            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+            @change="fetchContent"
+          >
+            <option value="">All Types</option>
+            <option value="blog">Blog Posts</option>
+            <option value="writing">Writings</option>
+          </select>
+          <select
+            v-model="statusFilter"
+            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+            @change="fetchContent"
+          >
+            <option value="">All Status</option>
+            <option value="draft">Draft</option>
+            <option value="published">Published</option>
+          </select>
+        </div>
+        <div class="flex gap-2">
+          <router-link
+            to="/admin/blog/new?type=blog"
+            class="px-4 py-2 bg-primary-800 text-white rounded-md hover:bg-primary-700 transition-colors"
+          >
+            New Blog Post
+          </router-link>
+          <router-link
+            to="/admin/blog/new?type=writing"
+            class="px-4 py-2 bg-purple-800 text-white rounded-md hover:bg-purple-700 transition-colors"
+          >
+            New Writing
+          </router-link>
+        </div>
+      </div>
+
+      <!-- Loading -->
+      <div v-if="loading" class="text-center py-12">
+        <p class="text-gray-600 dark:text-gray-400">Loading content...</p>
+      </div>
+
+      <!-- Error -->
+      <div v-if="error" class="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
+        <p class="text-sm text-red-800 dark:text-red-200">{{ error }}</p>
+      </div>
+
+      <!-- Posts Table -->
+      <div v-if="!loading" class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead class="bg-gray-50 dark:bg-gray-700">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Type
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Title
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Status
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Updated
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Published
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Tags
+              </th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            <tr v-for="item in items" :key="`${item.type}-${item.id}`" class="hover:bg-gray-50 dark:hover:bg-gray-700">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span
+                  :class="{
+                    'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200': item.type === 'blog',
+                    'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-200': item.type === 'writing',
+                  }"
+                  class="px-2 py-1 text-xs font-medium rounded-full"
+                >
+                  {{ item.type === 'blog' ? 'Blog' : 'Writing' }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900 dark:text-white">
+                  {{ item.title }}
+                </div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                  /{{ item.slug }}
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <button
+                  @click="toggleStatus(item)"
+                  :disabled="togglingStatus === `${item.type}-${item.id}`"
+                  :class="{
+                    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200 hover:bg-yellow-200 dark:hover:bg-yellow-900/50': item.status === 'draft',
+                    'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200 hover:bg-green-200 dark:hover:bg-green-900/50': item.status === 'published',
+                  }"
+                  class="px-3 py-1.5 text-xs font-medium rounded-full cursor-pointer transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
+                  :title="`Click to toggle to ${item.status === 'draft' ? 'published' : 'draft'}`"
+                >
+                  <span v-if="togglingStatus === `${item.type}-${item.id}`" class="inline-flex items-center gap-1.5">
+                    <svg class="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Updating...
+                  </span>
+                  <span v-else class="inline-flex items-center gap-1.5">
+                    {{ item.status }}
+                    <svg class="h-3 w-3 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                  </span>
+                </button>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                {{ formatDate(item.updatedAt) }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                {{ item.publishedAt ? formatDate(item.publishedAt) : '-' }}
+              </td>
+              <td class="px-6 py-4">
+                <div class="flex flex-wrap gap-1">
+                  <span
+                    v-for="tag in (item.tags || []).slice(0, 3)"
+                    :key="tag"
+                    class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded"
+                  >
+                    {{ tag }}
+                  </span>
+                  <span v-if="(item.tags || []).length > 3" class="text-xs text-gray-500 dark:text-gray-400">
+                    +{{ (item.tags || []).length - 3 }}
+                  </span>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <div class="flex items-center justify-end gap-4">
+                  <button
+                    @click="handleDuplicate(item)"
+                    :disabled="duplicatingItem === `${item.type}-${item.id}`"
+                    class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                    :title="`Duplicate this ${item.type}`"
+                  >
+                    <span v-if="duplicatingItem === `${item.type}-${item.id}`" class="inline-flex items-center gap-1">
+                      <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Duplicating...
+                    </span>
+                    <span v-else class="inline-flex items-center gap-1">
+                      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      Duplicate
+                    </span>
+                  </button>
+                  <router-link
+                    :to="`/admin/blog/${item.id}/edit?type=${item.type}`"
+                    class="text-primary-600 dark:text-blue-400 hover:text-primary-900 dark:hover:text-blue-300"
+                  >
+                    Edit
+                  </router-link>
+                  <button
+                    @click="handleDelete(item)"
+                    class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Empty state -->
+        <div v-if="items.length === 0" class="text-center py-12">
+          <p class="text-gray-600 dark:text-gray-400">No content found.</p>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div v-if="pagination && pagination.totalPages > 1" class="flex items-center justify-between">
+        <div class="text-sm text-gray-700 dark:text-gray-300">
+          Showing {{ (pagination.page - 1) * pagination.pageSize + 1 }} to
+          {{ Math.min(pagination.page * pagination.pageSize, pagination.total) }} of
+          {{ pagination.total }} items
+        </div>
+        <div class="flex gap-2">
+          <button
+            @click="changePage(pagination.page - 1)"
+            :disabled="pagination.page === 1"
+            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
+          >
+            Previous
+          </button>
+          <button
+            @click="changePage(pagination.page + 1)"
+            :disabled="pagination.page === pagination.totalPages"
+            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+  </AdminLayout>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import AdminLayout from '@/components/AdminLayout.vue'
+
+const router = useRouter()
+
+const items = ref<any[]>([])
+const loading = ref(false)
+const error = ref('')
+const searchQuery = ref('')
+const typeFilter = ref('')
+const statusFilter = ref('')
+const pagination = ref<any>(null)
+const togglingStatus = ref<string | null>(null)
+const duplicatingItem = ref<string | null>(null)
+const notification = ref<{ type: 'success' | 'error'; message: string } | null>(null)
+let notificationTimeout: ReturnType<typeof setTimeout> | null = null
+
+let searchTimeout: ReturnType<typeof setTimeout> | null = null
+
+const fetchContent = async () => {
+  loading.value = true
+  error.value = ''
+
+  try {
+    // Fetch both blog posts and writings
+    const params = new URLSearchParams()
+    if (searchQuery.value) params.append('q', searchQuery.value)
+    if (statusFilter.value) params.append('status', statusFilter.value)
+    if (pagination.value) params.append('page', pagination.value.page.toString())
+
+    const [blogResponse, writingResponse] = await Promise.all([
+      typeFilter.value === 'writing' ? null : fetch(`/api/admin/blog/posts?${params.toString()}`, {
+        credentials: 'include',
+      }),
+      typeFilter.value === 'blog' ? null : fetch(`/api/admin/writings?${params.toString()}`, {
+        credentials: 'include',
+      }),
+    ])
+
+    const blogData = blogResponse ? await blogResponse.json() : { ok: true, posts: [], pagination: { total: 0 } }
+    const writingData = writingResponse ? await writingResponse.json() : { ok: true, writings: [], pagination: { total: 0 } }
+
+    if ((blogResponse && (!blogResponse.ok || !blogData.ok)) || (writingResponse && (!writingResponse.ok || !writingData.ok))) {
+      error.value = blogData.error || writingData.error || 'Failed to fetch content'
+      return
+    }
+
+    // Combine and add type identifier
+    const combined = [
+      ...(blogData.posts || []).map((post: any) => ({ ...post, type: 'blog' })),
+      ...(writingData.writings || []).map((writing: any) => ({ ...writing, type: 'writing' })),
+    ]
+
+    // Sort by updatedAt (most recent first)
+    combined.sort((a, b) => {
+      const dateA = new Date(a.updatedAt).getTime()
+      const dateB = new Date(b.updatedAt).getTime()
+      return dateB - dateA
+    })
+
+    items.value = combined
+    pagination.value = {
+      page: pagination.value?.page || 1,
+      pageSize: pagination.value?.pageSize || 20,
+      total: (blogData.pagination?.total || 0) + (writingData.pagination?.total || 0),
+      totalPages: Math.ceil(((blogData.pagination?.total || 0) + (writingData.pagination?.total || 0)) / (pagination.value?.pageSize || 20)),
+    }
+  } catch (err) {
+    console.error('Error fetching content:', err)
+    error.value = 'An error occurred while fetching content'
+  } finally {
+    loading.value = false
+  }
+}
+
+const debouncedSearch = () => {
+  if (searchTimeout) clearTimeout(searchTimeout)
+  searchTimeout = setTimeout(() => {
+    pagination.value = { ...pagination.value, page: 1 }
+    fetchContent()
+  }, 300)
+}
+
+const changePage = (page: number) => {
+  if (!pagination.value) return
+  pagination.value = { ...pagination.value, page }
+  fetchContent()
+}
+
+const toggleStatus = async (item: any) => {
+  const itemKey = `${item.type}-${item.id}`
+  if (togglingStatus.value === itemKey) return
+  
+  const newStatus = item.status === 'draft' ? 'published' : 'draft'
+  togglingStatus.value = itemKey
+
+  try {
+    const endpoint = item.type === 'blog' 
+      ? `/api/admin/blog/posts/${item.id}`
+      : `/api/admin/writings/${item.id}`
+    
+    const response = await fetch(endpoint, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        status: newStatus,
+      }),
+    })
+
+    const data = await response.json()
+
+    if (!response.ok || !data.ok) {
+      showNotification('error', data.error || 'Failed to update status')
+      return
+    }
+
+    // Update the item in the list
+    const index = items.value.findIndex(i => i.id === item.id && i.type === item.type)
+    if (index !== -1) {
+      const updated = item.type === 'blog' ? data.post : data.writing
+      items.value[index] = { ...updated, type: item.type }
+    }
+    showNotification('success', `${item.type === 'blog' ? 'Post' : 'Writing'} ${newStatus === 'published' ? 'published' : 'moved to draft'} successfully`)
+  } catch (err) {
+    console.error('Error toggling status:', err)
+    showNotification('error', 'An error occurred while updating the status')
+  } finally {
+    togglingStatus.value = null
+  }
+}
+
+const handleDuplicate = async (item: any) => {
+  const itemKey = `${item.type}-${item.id}`
+  if (duplicatingItem.value === itemKey) return
+  
+  duplicatingItem.value = itemKey
+
+  try {
+    const endpoint = item.type === 'blog'
+      ? `/api/admin/blog/posts/${item.id}/duplicate`
+      : `/api/admin/writings/${item.id}/duplicate`
+    
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      credentials: 'include',
+    })
+
+    const data = await response.json()
+
+    if (!response.ok || !data.ok) {
+      showNotification('error', data.error || 'Failed to duplicate')
+      return
+    }
+
+    // Refresh content to show the new duplicate
+    fetchContent()
+    showNotification('success', `${item.type === 'blog' ? 'Post' : 'Writing'} duplicated successfully`)
+  } catch (err) {
+    console.error('Error duplicating:', err)
+    showNotification('error', 'An error occurred while duplicating')
+  } finally {
+    duplicatingItem.value = null
+  }
+}
+
+const handleDelete = async (item: any) => {
+  if (!confirm(`Are you sure you want to delete "${item.title}"? This action cannot be undone.`)) {
+    return
+  }
+
+  try {
+    const endpoint = item.type === 'blog'
+      ? `/api/admin/blog/posts/${item.id}`
+      : `/api/admin/writings/${item.id}`
+    
+    const response = await fetch(endpoint, {
+      method: 'DELETE',
+      credentials: 'include',
+    })
+
+    const data = await response.json()
+
+    if (!response.ok || !data.ok) {
+      showNotification('error', data.error || 'Failed to delete')
+      return
+    }
+
+    // Refresh content
+    fetchContent()
+    showNotification('success', `${item.type === 'blog' ? 'Post' : 'Writing'} deleted successfully`)
+  } catch (err) {
+    console.error('Error deleting:', err)
+    showNotification('error', 'An error occurred while deleting')
+  }
+}
+
+const showNotification = (type: 'success' | 'error', message: string) => {
+  notification.value = { type, message }
+  
+  // Clear any existing timeout
+  if (notificationTimeout) {
+    clearTimeout(notificationTimeout)
+  }
+  
+  // Auto-dismiss after 5 seconds
+  notificationTimeout = setTimeout(() => {
+    clearNotification()
+  }, 5000)
+}
+
+const clearNotification = () => {
+  notification.value = null
+  if (notificationTimeout) {
+    clearTimeout(notificationTimeout)
+    notificationTimeout = null
+  }
+}
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
+}
+
+onMounted(() => {
+  pagination.value = { page: 1, pageSize: 20, total: 0, totalPages: 1 }
+  fetchContent()
+})
+</script>
+

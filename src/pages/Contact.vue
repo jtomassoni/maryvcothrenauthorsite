@@ -30,20 +30,7 @@
               Other Ways to Connect
             </h2>
             
-            <div class="space-y-4">
-              <div class="flex items-start gap-4">
-                <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                  </svg>
-                </div>
-                <div>
-                  <h3 class="font-semibold text-gray-900 mb-1">Email</h3>
-                  <p class="text-gray-600">For general inquiries and collaboration opportunities</p>
-                  <p class="text-primary-600 font-medium">hello@marysbooks.com</p>
-                </div>
-              </div>
-              
+            <div class="space-y-4">    
               <div class="flex items-start gap-4">
                 <div class="w-12 h-12 bg-accent-100 rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg class="w-6 h-6 text-accent-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
