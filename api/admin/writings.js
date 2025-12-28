@@ -23,10 +23,15 @@ function checkAuth(req) {
 }
 
 export default async function handler(req, res) {
+  console.log(`[writings] ${req.method} request received`)
+  
   const username = checkAuth(req)
   if (!username) {
+    console.error('[writings] Unauthorized - no valid token')
     return res.status(401).json({ ok: false, error: 'Unauthorized' })
   }
+
+  console.log(`[writings] Authenticated user: ${username}`)
 
   try {
     // GET /api/admin/writings
@@ -89,9 +94,15 @@ export default async function handler(req, res) {
 
     // POST /api/admin/writings
     if (req.method === 'POST') {
+      console.log('[writings] Creating new writing with data:', { 
+        title: req.body?.title?.substring(0, 50),
+        hasContent: !!req.body?.contentMarkdown 
+      })
+      
       const { title, slug, excerpt, contentMarkdown, tags, status } = req.body
 
       if (!title || typeof title !== 'string' || !title.trim()) {
+        console.error('[writings] Validation failed: Title is required')
         return res.status(400).json({ ok: false, error: 'Title is required' })
       }
 
@@ -122,6 +133,7 @@ export default async function handler(req, res) {
       const finalStatus = status || 'draft'
       const publishedAt = finalStatus === 'published' ? new Date() : null
 
+      console.log('[writings] Creating writing in database...')
       const writing = await prisma.writing.create({
         data: {
           title: title.trim(),
@@ -134,17 +146,24 @@ export default async function handler(req, res) {
         },
       })
 
+      console.log('[writings] Writing created successfully:', writing.id)
       return res.status(201).json({ ok: true, writing })
     }
 
     // Method not allowed
     return res.status(405).json({ ok: false, error: 'Method not allowed' })
   } catch (error) {
-    console.error('Error in writings handler:', error)
+    console.error('[writings] Error:', error)
+    console.error('[writings] Error stack:', error.stack)
+    console.error('[writings] Error code:', error.code)
     if (error.code === 'P2002') {
       return res.status(400).json({ ok: false, error: 'A writing with this slug already exists' })
     }
-    return res.status(500).json({ ok: false, error: 'Internal server error' })
+    return res.status(500).json({ 
+      ok: false, 
+      error: 'Internal server error',
+      message: error.message 
+    })
   }
 }
 

@@ -357,10 +357,21 @@ const handleSubmit = async () => {
       }),
     })
 
+    // Check if response is JSON
+    const contentType = response.headers.get('content-type')
+    if (!contentType || !contentType.includes('application/json')) {
+      const text = await response.text()
+      console.error('Non-JSON response:', text)
+      error.value = `Server error: ${response.status} ${response.statusText}`
+      saving.value = false
+      return
+    }
+
     const data = await response.json()
 
     if (!response.ok || !data.ok) {
-      error.value = data.error || `Failed to save ${type === 'writing' ? 'writing' : 'post'}`
+      console.error('Save error:', data)
+      error.value = data.error || data.message || `Failed to save ${type === 'writing' ? 'writing' : 'post'}`
       saving.value = false
       return
     }
@@ -369,7 +380,7 @@ const handleSubmit = async () => {
     router.push('/admin')
   } catch (err) {
     console.error('Error saving content:', err)
-    error.value = 'An error occurred while saving'
+    error.value = err instanceof Error ? err.message : 'An error occurred while saving'
     saving.value = false
   }
 }

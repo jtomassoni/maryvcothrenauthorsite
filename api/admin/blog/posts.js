@@ -23,10 +23,15 @@ function checkAuth(req) {
 }
 
 export default async function handler(req, res) {
+  console.log(`[blog/posts] ${req.method} request received`)
+  
   const username = checkAuth(req)
   if (!username) {
+    console.error('[blog/posts] Unauthorized - no valid token')
     return res.status(401).json({ ok: false, error: 'Unauthorized' })
   }
+
+  console.log(`[blog/posts] Authenticated user: ${username}`)
 
   try {
     // GET /api/admin/blog/posts
@@ -89,9 +94,15 @@ export default async function handler(req, res) {
 
     // POST /api/admin/blog/posts
     if (req.method === 'POST') {
+      console.log('[blog/posts] Creating new post with data:', { 
+        title: req.body?.title?.substring(0, 50),
+        hasContent: !!req.body?.contentMarkdown 
+      })
+      
       const { title, slug, excerpt, contentMarkdown, tags, status } = req.body
 
       if (!title || typeof title !== 'string' || !title.trim()) {
+        console.error('[blog/posts] Validation failed: Title is required')
         return res.status(400).json({ ok: false, error: 'Title is required' })
       }
 
@@ -122,6 +133,7 @@ export default async function handler(req, res) {
       const finalStatus = status || 'draft'
       const publishedAt = finalStatus === 'published' ? new Date() : null
 
+      console.log('[blog/posts] Creating post in database...')
       const post = await prisma.blogPost.create({
         data: {
           title: title.trim(),
@@ -134,14 +146,21 @@ export default async function handler(req, res) {
         },
       })
 
+      console.log('[blog/posts] Post created successfully:', post.id)
       return res.status(201).json({ ok: true, post })
     }
 
     // Method not allowed
     return res.status(405).json({ ok: false, error: 'Method not allowed' })
   } catch (error) {
-    console.error('Error in blog posts handler:', error)
-    return res.status(500).json({ ok: false, error: 'Internal server error' })
+    console.error('[blog/posts] Error:', error)
+    console.error('[blog/posts] Error stack:', error.stack)
+    console.error('[blog/posts] Error code:', error.code)
+    return res.status(500).json({ 
+      ok: false, 
+      error: 'Internal server error',
+      message: error.message 
+    })
   }
 }
 
