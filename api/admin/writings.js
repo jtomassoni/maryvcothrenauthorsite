@@ -235,6 +235,30 @@ export default async function handler(req, res) {
       return res.status(201).json({ ok: true, writing })
     }
 
+    // DELETE /api/admin/writings (fallback when dynamic route is not hit)
+    if (req.method === 'DELETE') {
+      // Try to derive ID from query, body, or path
+      const urlPath = (req.url || '').split('?')[0] || ''
+      const pathParts = urlPath.split('/').filter(Boolean)
+      const lastSegment = pathParts[pathParts.length - 1]
+      const id =
+        req.query?.id ||
+        req.body?.id ||
+        (lastSegment && lastSegment !== 'writings' ? lastSegment : null)
+
+      if (!id) {
+        return res.status(400).json({ ok: false, error: 'ID is required' })
+      }
+
+      const existing = await prisma.writing.findUnique({ where: { id } })
+      if (!existing) {
+        return res.status(404).json({ ok: false, error: 'Writing not found' })
+      }
+
+      await prisma.writing.delete({ where: { id } })
+      return res.status(200).json({ ok: true })
+    }
+
     // Method not allowed
     return res.status(405).json({ ok: false, error: 'Method not allowed' })
   } catch (error) {
